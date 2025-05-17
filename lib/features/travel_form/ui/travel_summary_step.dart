@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 
 class TravelSummaryStep extends StatelessWidget {
@@ -18,25 +17,9 @@ class TravelSummaryStep extends StatelessWidget {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Travel Input Summary Card
               _buildTravelSummaryCard(context, state, l10n),
-
-              // Create Travel Plan Button
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    appLogger.i("Create Travel Plan button pressed.");
-                    // Reset the form and navigate back to the first step
-                    context.read<TravelFormBloc>().add(TravelFormStarted());
-                    Navigator.of(context).pushReplacementNamed('/');
-                  },
-                  icon: const Icon(Icons.add),
-                  label: Text(l10n.planAnotherTrip),
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
-                ),
-              ),
+              // TODO: Add disclaimer
             ],
           ),
         );

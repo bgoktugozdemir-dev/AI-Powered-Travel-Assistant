@@ -97,6 +97,6 @@ class Flight {
 
   static Duration _durationFromJson(int duration) => Duration(minutes: duration);
 
-  static List<Duration> _durationListFromJson(List<int> durations) =>
-      durations.map((duration) => _durationFromJson(duration)).toList();
+  static List<Duration>? _durationListFromJson(List<int>? durations) =>
+      durations?.map((duration) => _durationFromJson(duration)).toList();
 }

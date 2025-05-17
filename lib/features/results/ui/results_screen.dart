@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/required_documents.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
+import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -36,10 +38,10 @@ class ResultsScreen extends StatelessWidget {
                   // If we have travel details, show the sections
                   if (travelDetails != null) ...[
                     // City Information Card
-                    _buildCityCard(context, travelDetails, l10n),
+                    CityCard(city: travelDetails.city),
 
                     // Required Documents Card
-                    _buildDocumentsCard(context, travelDetails, l10n),
+                    RequiredDocumentsCard(requiredDocument: travelDetails.requiredDocuments),
 
                     // Currency Information Card
                     _buildCurrencyCard(context, travelDetails, l10n),
@@ -82,200 +84,6 @@ class ResultsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  // City Information Card
-  Widget _buildCityCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // City Image
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-            child: Image.network(
-              details.city.imageUrl,
-              height: 180,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 180,
-                  width: double.infinity,
-                  color: Colors.grey[300],
-                  child: const Center(child: Icon(Icons.image_not_supported, size: 48)),
-                );
-              },
-            ),
-          ),
-
-          // City Details
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${details.city.name}, ${details.city.country}',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    if (details.city.time != null)
-                      Tooltip(
-                        message: 'Time difference: ${details.city.time!.differenceInHours} hours',
-                        child: Chip(
-                          label: Text(details.city.time!.arrivalTimezone),
-                          avatar: const Icon(Icons.access_time, size: 16),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Crowd Level
-                Row(
-                  children: [
-                    const Icon(Icons.people, size: 18),
-                    const SizedBox(width: 8),
-                    Text('Crowd Level: ', style: Theme.of(context).textTheme.bodyMedium),
-                    Expanded(
-                      child: LinearProgressIndicator(
-                        value: details.city.crowdLevel / 100,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          details.city.crowdLevel < 30
-                              ? Colors.green
-                              : details.city.crowdLevel < 70
-                              ? Colors.orange
-                              : Colors.red,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('${details.city.crowdLevel}%'),
-                  ],
-                ),
-
-                // Weather information if available
-                if (details.city.weather != null && details.city.weather!.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Text('Weather Forecast', style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: details.city.weather!.length,
-                      itemBuilder: (context, index) {
-                        final weather = details.city.weather![index];
-
-                        // Get weather icon
-                        IconData weatherIcon;
-                        switch (weather.weather.toLowerCase()) {
-                          case 'sunny':
-                            weatherIcon = Icons.wb_sunny;
-                            break;
-                          case 'cloudy':
-                            weatherIcon = Icons.cloud;
-                            break;
-                          case 'rainy':
-                            weatherIcon = Icons.water_drop;
-                            break;
-                          case 'snowy':
-                            weatherIcon = Icons.ac_unit;
-                            break;
-                          default:
-                            weatherIcon = Icons.cloud;
-                        }
-
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text(DateFormat('MMM d').format(DateTime.parse(weather.date))),
-                                Icon(weatherIcon, size: 28),
-                                Text('${weather.temperature}°C'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Required Documents Card
-  Widget _buildDocumentsCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
-    final requiredDocument = details.requiredDocuments;
-
-    // Document type icon
-    IconData docIcon;
-    switch (requiredDocument.documentType) {
-      case RequiredDocumentType.passport:
-        docIcon = Icons.book;
-        break;
-      case RequiredDocumentType.visa:
-      case RequiredDocumentType.eVisa:
-        docIcon = Icons.article;
-        break;
-      case RequiredDocumentType.idCard:
-        docIcon = Icons.credit_card;
-        break;
-      default:
-        docIcon = Icons.description;
-    }
-
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(docIcon, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text('Required Documents', style: Theme.of(context).textTheme.titleLarge),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            // Document message
-            Text(requiredDocument.message, style: Theme.of(context).textTheme.bodyMedium),
-
-            // Document steps if available
-            if (requiredDocument.steps != null && requiredDocument.steps!.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text('Required Steps:', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              ...requiredDocument.steps!.map((step) => _buildListItem(context, step)),
-            ],
-
-            // More information if available
-            if (requiredDocument.moreInformation != null) ...[
-              const SizedBox(height: 16),
-              Text(requiredDocument.moreInformation!, style: Theme.of(context).textTheme.bodySmall),
-            ],
-          ],
-        ),
-      ),
     );
   }
 

@@ -8,10 +8,11 @@ abstract class _Constants {
 }
 
 class TravelCard extends StatelessWidget {
-  const TravelCard({required this.icon, required this.title, required this.child, super.key});
+  const TravelCard({required this.icon, required this.title, required this.child, this.header, super.key});
 
   final IconData icon;
   final String title;
+  final Widget? header;
   final Widget child;
 
   @override
@@ -19,24 +20,29 @@ class TravelCard extends StatelessWidget {
     return Card(
       elevation: _Constants.elevation,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_Constants.borderRadius)),
-      child: Padding(
-        padding: const EdgeInsets.all(_Constants.padding),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
+      child: Column(
+        children: [
+          if (header != null) ClipRRect(borderRadius: BorderRadius.circular(_Constants.borderRadius), child: header),
+          Padding(
+            padding: const EdgeInsets.all(_Constants.padding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(icon, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text(title, style: Theme.of(context).textTheme.titleLarge),
+                Row(
+                  children: [
+                    Icon(icon, color: Theme.of(context).primaryColor),
+                    const SizedBox(width: 8),
+                    Text(title, style: Theme.of(context).textTheme.titleLarge),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: _Constants.spacing),
+                child,
               ],
             ),
-            const Divider(),
-            const SizedBox(height: _Constants.spacing),
-            child,
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

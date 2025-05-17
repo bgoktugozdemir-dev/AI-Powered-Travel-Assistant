@@ -130,7 +130,7 @@ The output has to be in json format.
     "code": "AED",
     // Optional: `departure_currency_code` is the currency code of the departure location. If it is not provided, it will be the same as the currency code.
     "departure_currency_code": "TRY",
-    // Optional: `exchange_rate` is the exchange rate of the currency. If arrival and departure locations use different currencies, you can provide the exchange rate for each currency.
+    // Optional: `exchange_rate` is the exchange rate of the currency. If arrival and departure locations use different currencies, you can provide the exchange rate for each currency. It has to be in the decimal format.
     "exchange_rate": 0.1,
     // Optional: `departure_average_living_cost_per_day` is the average living cost per day in the departure location. It should be in departure location's currency.
     "departure_average_living_cost_per_day": 1000,
