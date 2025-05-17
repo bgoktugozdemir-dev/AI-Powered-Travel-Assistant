@@ -1,7 +1,7 @@
 import 'dart:convert'; // For jsonEncode
 
 import 'package:dio/dio.dart';
-import 'package:travel_assistant/common/utils/logger.dart'; // Your appLogger
+import 'package:travel_assistant/common/utils/logger/logger.dart'; // Your appLogger
 
 /// A Dio interceptor that logs API request, response, and error details in JSON format.
 class ApiLoggerInterceptor extends Interceptor {

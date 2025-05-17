@@ -1,16 +1,18 @@
 import 'dart:async'; // For Future
 
-import 'package:bloc_concurrency/bloc_concurrency.dart'; // Added
+// Added
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dio/dio.dart'; // For Dio and DioError
-import 'package:equatable/equatable.dart';// For ValueGetter
+// For Dio and DioError
+import 'package:equatable/equatable.dart'; // For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
 import 'package:travel_assistant/common/models/country.dart'; // Import Country model
+import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import TravelPurpose model
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
-import 'package:travel_assistant/common/services/airport_api_service.dart'; // Import service for direct instantiation (temp)
-import 'package:travel_assistant/common/services/api_logger_interceptor.dart'; // Import the interceptor
+import 'package:travel_assistant/common/repositories/gemini_repository.dart';
+// Import service for direct instantiation (temp)
+// Import the interceptor
 import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
 import 'package:travel_assistant/common/services/travel_purpose_service.dart'; // Import TravelPurposeService
 import 'package:rxdart/rxdart.dart'; // Added
@@ -27,20 +29,18 @@ EventTransformer<E> _debounceRestartable<E>(Duration duration) {
 /// Manages the state for the travel input form.
 /// {@endtemplate}
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
-  final AirportRepository _airportRepository;
   final CountryService _countryService;
   final TravelPurposeService _travelPurposeService;
+  final GeminiRepository _geminiRepository;
+  final AirportRepository _airportRepository;
 
   // TODO: Use proper Dependency Injection for services
-  TravelFormBloc()
-      : _airportRepository = AirportRepository(
-            apiService: AirportApiService(
-              Dio()..interceptors.add(ApiLoggerInterceptor()),
-            )
-          ),
-        _countryService = CountryService(),
-        _travelPurposeService = TravelPurposeService(),
-        super(const TravelFormState()) {
+  TravelFormBloc({required GeminiRepository geminiRepository, required AirportRepository airportRepository})
+    : _geminiRepository = geminiRepository,
+      _airportRepository = airportRepository,
+      _countryService = CountryService(),
+      _travelPurposeService = TravelPurposeService(),
+      super(const TravelFormState()) {
     // Initialize services
     _initializeServices();
 
@@ -85,27 +85,18 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     }
   }
 
-  void _onStarted(
-    TravelFormStarted event,
-    Emitter<TravelFormState> emit,
-  ) {
+  void _onStarted(TravelFormStarted event, Emitter<TravelFormState> emit) {
     emit(state.copyWith());
   }
 
-  void _onNextStepRequested(
-    TravelFormNextStepRequested event,
-    Emitter<TravelFormState> emit,
-  ) {
+  void _onNextStepRequested(TravelFormNextStepRequested event, Emitter<TravelFormState> emit) {
     // TODO: Add validation for current step before proceeding
     if (state.currentStep < state.totalSteps - 1) {
       emit(state.copyWith(currentStep: state.currentStep + 1));
     }
   }
 
-  void _onPreviousStepRequested(
-    TravelFormPreviousStepRequested event,
-    Emitter<TravelFormState> emit,
-  ) {
+  void _onPreviousStepRequested(TravelFormPreviousStepRequested event, Emitter<TravelFormState> emit) {
     if (state.currentStep > 0) {
       emit(state.copyWith(currentStep: state.currentStep - 1));
     }
@@ -116,7 +107,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   Future<void> _onDepartureAirportSearchTermChanged(
     TravelFormDepartureAirportSearchTermChanged event,
     Emitter<TravelFormState> emit,
-  ) async { // Made async
+  ) async {
+    // Made async
     emit(state.copyWith(departureAirportSearchTerm: event.searchTerm, selectedDepartureAirport: () => null));
 
     if (event.searchTerm.length < 3) {
@@ -127,29 +119,32 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _airportRepository.searchAirports(event.searchTerm);
-      emit(state.copyWith(
-        departureAirportSuggestions: suggestions,
-        isDepartureAirportLoading: false,
-        errorMessage: () => null,
-      ));
+      emit(
+        state.copyWith(
+          departureAirportSuggestions: suggestions,
+          isDepartureAirportLoading: false,
+          errorMessage: () => null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        isDepartureAirportLoading: false,
-        departureAirportSuggestions: [],
-        errorMessage: () => e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          isDepartureAirportLoading: false,
+          departureAirportSuggestions: [],
+          errorMessage: () => e.toString(),
+        ),
+      );
     }
   }
 
-  void _onDepartureAirportSelected(
-    TravelFormDepartureAirportSelected event,
-    Emitter<TravelFormState> emit,
-  ) {
-    emit(state.copyWith(
-      selectedDepartureAirport: () => event.airport,
-      departureAirportSearchTerm: event.airport.name,
-      departureAirportSuggestions: [],
-    ));
+  void _onDepartureAirportSelected(TravelFormDepartureAirportSelected event, Emitter<TravelFormState> emit) {
+    emit(
+      state.copyWith(
+        selectedDepartureAirport: () => event.airport,
+        departureAirportSearchTerm: event.airport.name,
+        departureAirportSuggestions: [],
+      ),
+    );
   }
 
   // --- Arrival Airport Handlers ---
@@ -157,7 +152,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   Future<void> _onArrivalAirportSearchTermChanged(
     TravelFormArrivalAirportSearchTermChanged event,
     Emitter<TravelFormState> emit,
-  ) async { // Made async
+  ) async {
+    // Made async
     emit(state.copyWith(arrivalAirportSearchTerm: event.searchTerm, selectedArrivalAirport: () => null));
 
     if (event.searchTerm.length < 3) {
@@ -168,44 +164,41 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _airportRepository.searchAirports(event.searchTerm);
-      emit(state.copyWith(
-        arrivalAirportSuggestions: suggestions,
-        isArrivalAirportLoading: false,
-        errorMessage: () => null,
-      ));
+      emit(
+        state.copyWith(
+          arrivalAirportSuggestions: suggestions,
+          isArrivalAirportLoading: false,
+          errorMessage: () => null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        isArrivalAirportLoading: false,
-        arrivalAirportSuggestions: [],
-        errorMessage: () => e.toString(),
-      ));
+      emit(
+        state.copyWith(isArrivalAirportLoading: false, arrivalAirportSuggestions: [], errorMessage: () => e.toString()),
+      );
     }
   }
 
-  void _onArrivalAirportSelected(
-    TravelFormArrivalAirportSelected event,
-    Emitter<TravelFormState> emit,
-  ) {
-    emit(state.copyWith(
-      selectedArrivalAirport: () => event.airport,
-      arrivalAirportSearchTerm: event.airport.name,
-      arrivalAirportSuggestions: [],
-    ));
+  void _onArrivalAirportSelected(TravelFormArrivalAirportSelected event, Emitter<TravelFormState> emit) {
+    emit(
+      state.copyWith(
+        selectedArrivalAirport: () => event.airport,
+        arrivalAirportSearchTerm: event.airport.name,
+        arrivalAirportSuggestions: [],
+      ),
+    );
   }
 
   // --- Travel Dates Handler ---
-  void _onDateRangeSelected(
-    TravelFormDateRangeSelected event,
-    Emitter<TravelFormState> emit,
-  ) {
+  void _onDateRangeSelected(TravelFormDateRangeSelected event, Emitter<TravelFormState> emit) {
     if (event.dateRange.end.isBefore(event.dateRange.start)) {
-      emit(state.copyWith(errorMessage: () => "End date cannot be before start date. See AppLocalizations.errorInvalidDateRange"));
+      emit(
+        state.copyWith(
+          errorMessage: () => "End date cannot be before start date. See AppLocalizations.errorInvalidDateRange",
+        ),
+      );
       return;
     }
-    emit(state.copyWith(
-      selectedDateRange: () => event.dateRange,
-      errorMessage: () => null,
-    ));
+    emit(state.copyWith(selectedDateRange: () => event.dateRange, errorMessage: () => null));
   }
 
   // --- Nationality Handlers ---
@@ -223,59 +216,37 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _countryService.searchCountries(event.searchTerm);
-      emit(state.copyWith(
-        nationalitySuggestions: suggestions,
-        isNationalityLoading: false,
-        errorMessage: () => null,
-      ));
+      emit(state.copyWith(nationalitySuggestions: suggestions, isNationalityLoading: false, errorMessage: () => null));
     } catch (e) {
-      emit(state.copyWith(
-        isNationalityLoading: false,
-        nationalitySuggestions: [],
-        errorMessage: () => e.toString(),
-      ));
+      emit(state.copyWith(isNationalityLoading: false, nationalitySuggestions: [], errorMessage: () => e.toString()));
     }
   }
 
-  void _onNationalitySelected(
-    TravelFormNationalitySelected event,
-    Emitter<TravelFormState> emit,
-  ) {
-    emit(state.copyWith(
-      selectedNationality: () => event.country,
-      nationalitySearchTerm: event.country.name,
-      nationalitySuggestions: [],
-    ));
+  void _onNationalitySelected(TravelFormNationalitySelected event, Emitter<TravelFormState> emit) {
+    emit(
+      state.copyWith(
+        selectedNationality: () => event.country,
+        nationalitySearchTerm: event.country.name,
+        nationalitySuggestions: [],
+      ),
+    );
   }
 
   // --- Travel Purpose Handlers ---
-  Future<void> _onLoadTravelPurposes(
-    LoadTravelPurposesEvent event,
-    Emitter<TravelFormState> emit,
-  ) async {
+  Future<void> _onLoadTravelPurposes(LoadTravelPurposesEvent event, Emitter<TravelFormState> emit) async {
     emit(state.copyWith(isTravelPurposesLoading: true));
 
     try {
       final purposes = await _travelPurposeService.getTravelPurposes();
-      emit(state.copyWith(
-        availableTravelPurposes: purposes,
-        isTravelPurposesLoading: false,
-        errorMessage: () => null,
-      ));
+      emit(state.copyWith(availableTravelPurposes: purposes, isTravelPurposesLoading: false, errorMessage: () => null));
     } catch (e) {
-      emit(state.copyWith(
-        isTravelPurposesLoading: false,
-        errorMessage: () => e.toString(),
-      ));
+      emit(state.copyWith(isTravelPurposesLoading: false, errorMessage: () => e.toString()));
     }
   }
 
-  void _onToggleTravelPurpose(
-    ToggleTravelPurposeEvent event,
-    Emitter<TravelFormState> emit,
-  ) {
+  void _onToggleTravelPurpose(ToggleTravelPurposeEvent event, Emitter<TravelFormState> emit) {
     final currentPurposes = List<TravelPurpose>.from(state.selectedTravelPurposes);
-    
+
     if (event.isSelected) {
       // Add purpose if not already in the list
       if (!currentPurposes.any((p) => p.id == event.purpose.id)) {
@@ -285,23 +256,20 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       // Remove purpose if it exists in the list
       currentPurposes.removeWhere((p) => p.id == event.purpose.id);
     }
-    
-    emit(state.copyWith(
-      selectedTravelPurposes: currentPurposes,
-    ));
+
+    emit(state.copyWith(selectedTravelPurposes: currentPurposes));
   }
 
   // --- Form Submission Handler ---
-  Future<void> _onSubmitTravelForm(
-    SubmitTravelFormEvent event,
-    Emitter<TravelFormState> emit,
-  ) async {
+  Future<void> _onSubmitTravelForm(SubmitTravelFormEvent event, Emitter<TravelFormState> emit) async {
     // Check if form is valid before submission
     if (!state.isFormValid) {
-      emit(state.copyWith(
-        formSubmissionStatus: FormSubmissionStatus.failure,
-        errorMessage: () => "Please complete all required fields before submitting."
-      ));
+      emit(
+        state.copyWith(
+          formSubmissionStatus: FormSubmissionStatus.failure,
+          errorMessage: () => "Please complete all required fields before submitting.",
+        ),
+      );
       return;
     }
 
@@ -309,20 +277,28 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.submitting));
 
     try {
+      if (state.selectedDepartureAirport == null ||
+          state.selectedArrivalAirport == null ||
+          state.selectedDateRange == null ||
+          state.selectedNationality == null) {
+        throw Exception('Missing required fields');
+      }
+
+      final travelInformation = TravelInformation(
+        departureAirport: state.selectedDepartureAirport!,
+        arrivalAirport: state.selectedArrivalAirport!,
+        dateRange: state.selectedDateRange!,
+        nationality: state.selectedNationality!,
+        travelPurposes: state.selectedTravelPurposes,
+      );
       // Simulate API call with delay
-      await Future.delayed(const Duration(seconds: 2));
-      
+      await _geminiRepository.generateTravelPlan(travelInformation);
+
       // Successful form submission
-      emit(state.copyWith(
-        formSubmissionStatus: FormSubmissionStatus.success,
-        errorMessage: () => null,
-      ));
+      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.success, errorMessage: () => null));
     } catch (e) {
       // Handle submission error
-      emit(state.copyWith(
-        formSubmissionStatus: FormSubmissionStatus.failure,
-        errorMessage: () => e.toString(),
-      ));
+      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.failure, errorMessage: () => e.toString()));
     }
   }
-} 
+}

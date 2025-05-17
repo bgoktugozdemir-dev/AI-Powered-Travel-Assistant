@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:travel_assistant/common/models/airport.dart'; // Import the Airport model
-import 'package:travel_assistant/common/models/country.dart'; // Import the Country model
-import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
+import 'package:travel_assistant/common/utils/logger/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_purpose_step.dart'; // Import the TravelPurposeStep
 import 'package:travel_assistant/features/results/ui/results_screen.dart'; // Import the ResultsScreen
@@ -49,11 +47,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
       // Navigate to results screen if form submission is successful
       if (state.formSubmissionStatus == FormSubmissionStatus.success && mounted) {
         appLogger.i("Form submission successful, navigating to results screen");
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ResultsScreen(),
-          ),
-        );
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const ResultsScreen()));
       }
     });
   }
@@ -148,9 +142,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         ),
         if (state.departureAirportSuggestions.isNotEmpty)
           ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.3,
-            ),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: state.departureAirportSuggestions.length,
@@ -204,9 +196,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         ),
         if (state.arrivalAirportSuggestions.isNotEmpty)
           ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.3,
-            ),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: state.arrivalAirportSuggestions.length,
@@ -319,16 +309,15 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         ),
         if (state.nationalitySuggestions.isNotEmpty)
           ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.3,
-            ),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: state.nationalitySuggestions.length,
               itemBuilder: (context, index) {
                 final country = state.nationalitySuggestions[index];
                 return ListTile(
-                  leading: country.flagEmoji != null ? Text(country.flagEmoji!, style: const TextStyle(fontSize: 24)) : null,
+                  leading:
+                      country.flagEmoji != null ? Text(country.flagEmoji!, style: const TextStyle(fontSize: 24)) : null,
                   title: Text(country.name),
                   subtitle: country.nationality != null ? Text(country.nationality!) : Text(country.code),
                   onTap: () {
@@ -346,10 +335,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                 if (state.selectedNationality!.flagEmoji != null)
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Text(
-                      state.selectedNationality!.flagEmoji!,
-                      style: const TextStyle(fontSize: 24),
-                    ),
+                    child: Text(state.selectedNationality!.flagEmoji!, style: const TextStyle(fontSize: 24)),
                   ),
                 Expanded(
                   child: Column(
@@ -360,10 +346,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       ),
                       if (state.selectedNationality!.nationality != null)
-                        Text(
-                          state.selectedNationality!.nationality!,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
+                        Text(state.selectedNationality!.nationality!, style: const TextStyle(color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -388,69 +371,78 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
       children: <Widget>[
         if (state.currentStep > 0)
           ElevatedButton(
-            onPressed: isSubmitting ? null : () {
-              appLogger.i(
-                "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
-              );
-              context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
-            },
+            onPressed:
+                isSubmitting
+                    ? null
+                    : () {
+                      appLogger.i(
+                        "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
+                      );
+                      context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
+                    },
             child: Text(l10n.navigationPrevious),
           )
         else
           const SizedBox(),
         if (state.currentStep < state.totalSteps - 1)
           ElevatedButton(
-            onPressed: isSubmitting ? null : () {
-              appLogger.i(
-                "'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}",
-              );
-              bool canProceed = true;
-              String? validationError;
-              if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
-                canProceed = false;
-                validationError = l10n.validationErrorDepartureAirportMissing;
-              } else if (state.currentStep == 1 && state.selectedArrivalAirport == null) {
-                canProceed = false;
-                validationError = l10n.validationErrorArrivalAirportMissing;
-              } else if (state.currentStep == 2 && state.selectedDateRange == null) {
-                canProceed = false;
-                validationError = l10n.validationErrorDateRangeMissing;
-              } else if (state.currentStep == 3 && state.selectedNationality == null) {
-                canProceed = false;
-                validationError = l10n.validationErrorNationalityMissing;
-              } else if (state.currentStep == 4 && state.selectedTravelPurposes.isEmpty) {
-                canProceed = false;
-                validationError = l10n.validationErrorTravelPurposeMissing;
-              }
+            onPressed:
+                isSubmitting
+                    ? null
+                    : () {
+                      appLogger.i(
+                        "'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}",
+                      );
+                      bool canProceed = true;
+                      String? validationError;
+                      if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
+                        canProceed = false;
+                        validationError = l10n.validationErrorDepartureAirportMissing;
+                      } else if (state.currentStep == 1 && state.selectedArrivalAirport == null) {
+                        canProceed = false;
+                        validationError = l10n.validationErrorArrivalAirportMissing;
+                      } else if (state.currentStep == 2 && state.selectedDateRange == null) {
+                        canProceed = false;
+                        validationError = l10n.validationErrorDateRangeMissing;
+                      } else if (state.currentStep == 3 && state.selectedNationality == null) {
+                        canProceed = false;
+                        validationError = l10n.validationErrorNationalityMissing;
+                      } else if (state.currentStep == 4 && state.selectedTravelPurposes.isEmpty) {
+                        canProceed = false;
+                        validationError = l10n.validationErrorTravelPurposeMissing;
+                      }
 
-              if (canProceed) {
-                appLogger.i("Validation passed, moving to next step.");
-                context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
-              } else if (validationError != null) {
-                appLogger.w("Validation failed for step ${state.currentStep}: $validationError");
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(validationError), backgroundColor: Colors.red));
-              }
-            },
+                      if (canProceed) {
+                        appLogger.i("Validation passed, moving to next step.");
+                        context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
+                      } else if (validationError != null) {
+                        appLogger.w("Validation failed for step ${state.currentStep}: $validationError");
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(validationError), backgroundColor: Colors.red));
+                      }
+                    },
             child: Text(l10n.navigationNext),
           )
         else if (state.currentStep == state.totalSteps - 1)
           ElevatedButton(
-            onPressed: isSubmitting ? null : () {
-              appLogger.i("'Get Travel Plan' (Submit) button pressed.");
-              // Check form validity one more time before submission
-              if (state.isFormValid) {
-                context.read<TravelFormBloc>().add(const SubmitTravelFormEvent());
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.validationErrorTravelPurposeMissing),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
+            onPressed:
+                isSubmitting
+                    ? null
+                    : () {
+                      appLogger.i("'Get Travel Plan' (Submit) button pressed.");
+                      // Check form validity one more time before submission
+                      if (state.isFormValid) {
+                        context.read<TravelFormBloc>().add(const SubmitTravelFormEvent());
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.validationErrorTravelPurposeMissing),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
             child: Text(l10n.navigationSubmit),
           ),
       ],

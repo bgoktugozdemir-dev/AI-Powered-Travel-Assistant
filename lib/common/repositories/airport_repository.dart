@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart'; // Required for DioError
 import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/common/services/airport_api_service.dart';
-import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
+import 'package:travel_assistant/common/utils/logger/logger.dart'; // Import appLogger
 
 /// Repository for fetching airport data.
 class AirportRepository {

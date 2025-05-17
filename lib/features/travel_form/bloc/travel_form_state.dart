@@ -4,15 +4,15 @@ part of 'travel_form_bloc.dart';
 enum FormSubmissionStatus {
   /// Initial status, form not submitted
   initial,
-  
+
   /// Form submission in progress
   submitting,
-  
+
   /// Form successfully submitted
   success,
-  
+
   /// Form submission failed
-  failure
+  failure,
 }
 
 /// Represents the state of the travel form.
@@ -20,24 +20,31 @@ enum FormSubmissionStatus {
 class TravelFormState extends Equatable {
   /// The current step in the multi-step form (0-indexed).
   final int currentStep;
+
   /// The total number of steps in the form.
   final int totalSteps;
 
   /// Search term entered by the user for departure airport.
   final String departureAirportSearchTerm;
+
   /// List of airport suggestions for the departure airport.
   final List<Airport> departureAirportSuggestions;
+
   /// The currently selected departure airport.
   final Airport? selectedDepartureAirport;
+
   /// Flag indicating if departure airport suggestions are being loaded.
   final bool isDepartureAirportLoading;
 
   /// Search term entered by the user for arrival airport.
   final String arrivalAirportSearchTerm;
+
   /// List of airport suggestions for the arrival airport.
   final List<Airport> arrivalAirportSuggestions;
+
   /// The currently selected arrival airport.
   final Airport? selectedArrivalAirport;
+
   /// Flag indicating if arrival airport suggestions are being loaded.
   final bool isArrivalAirportLoading;
 
@@ -46,17 +53,22 @@ class TravelFormState extends Equatable {
 
   /// Search term entered by the user for nationality.
   final String nationalitySearchTerm;
+
   /// List of country suggestions for nationality selection.
   final List<Country> nationalitySuggestions;
+
   /// The currently selected nationality (country).
   final Country? selectedNationality;
+
   /// Flag indicating if nationality suggestions are being loaded.
   final bool isNationalityLoading;
 
   /// List of available travel purposes.
   final List<TravelPurpose> availableTravelPurposes;
+
   /// List of selected travel purposes.
   final List<TravelPurpose> selectedTravelPurposes;
+
   /// Flag indicating if travel purposes are being loaded.
   final bool isTravelPurposesLoading;
 
@@ -118,7 +130,8 @@ class TravelFormState extends Equatable {
       totalSteps: totalSteps, // totalSteps is fixed for now
       departureAirportSearchTerm: departureAirportSearchTerm ?? this.departureAirportSearchTerm,
       departureAirportSuggestions: departureAirportSuggestions ?? this.departureAirportSuggestions,
-      selectedDepartureAirport: selectedDepartureAirport != null ? selectedDepartureAirport() : this.selectedDepartureAirport,
+      selectedDepartureAirport:
+          selectedDepartureAirport != null ? selectedDepartureAirport() : this.selectedDepartureAirport,
       isDepartureAirportLoading: isDepartureAirportLoading ?? this.isDepartureAirportLoading,
       arrivalAirportSearchTerm: arrivalAirportSearchTerm ?? this.arrivalAirportSearchTerm,
       arrivalAirportSuggestions: arrivalAirportSuggestions ?? this.arrivalAirportSuggestions,
@@ -138,34 +151,34 @@ class TravelFormState extends Equatable {
   }
 
   /// Returns true if the form is valid and can be submitted.
-  bool get isFormValid => 
-    selectedDepartureAirport != null &&
-    selectedArrivalAirport != null &&
-    selectedDateRange != null &&
-    selectedNationality != null &&
-    selectedTravelPurposes.isNotEmpty;
+  bool get isFormValid =>
+      selectedDepartureAirport != null &&
+      selectedArrivalAirport != null &&
+      selectedDateRange != null &&
+      selectedNationality != null &&
+      selectedTravelPurposes.isNotEmpty;
 
   @override
   List<Object?> get props => [
-        currentStep,
-        totalSteps,
-        departureAirportSearchTerm,
-        departureAirportSuggestions,
-        selectedDepartureAirport,
-        isDepartureAirportLoading,
-        arrivalAirportSearchTerm,
-        arrivalAirportSuggestions,
-        selectedArrivalAirport,
-        isArrivalAirportLoading,
-        selectedDateRange,
-        nationalitySearchTerm,
-        nationalitySuggestions,
-        selectedNationality,
-        isNationalityLoading,
-        availableTravelPurposes,
-        selectedTravelPurposes,
-        isTravelPurposesLoading,
-        formSubmissionStatus,
-        errorMessage,
-      ];
-} 
+    currentStep,
+    totalSteps,
+    departureAirportSearchTerm,
+    departureAirportSuggestions,
+    selectedDepartureAirport,
+    isDepartureAirportLoading,
+    arrivalAirportSearchTerm,
+    arrivalAirportSuggestions,
+    selectedArrivalAirport,
+    isArrivalAirportLoading,
+    selectedDateRange,
+    nationalitySearchTerm,
+    nationalitySuggestions,
+    selectedNationality,
+    isNationalityLoading,
+    availableTravelPurposes,
+    selectedTravelPurposes,
+    isTravelPurposesLoading,
+    formSubmissionStatus,
+    errorMessage,
+  ];
+}
