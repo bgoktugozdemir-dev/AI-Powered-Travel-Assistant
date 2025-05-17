@@ -299,7 +299,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.success,
-          travelPlan: travelPlan,
+          travelPlan: () => travelPlan,
           errorMessage: () => null,
         ),
       );

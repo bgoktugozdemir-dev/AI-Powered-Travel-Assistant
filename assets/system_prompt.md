@@ -67,6 +67,7 @@ When users submit their travel details:
 
 The output has to be in json format.
 
+```json
 {
   "city": {
     // Required: `name` is the name of the city.
@@ -87,38 +88,22 @@ The output has to be in json format.
       {
         "date": "2025-05-18",
         "weather": "Sunny",
-        "temperature": 25,
-        "humidity": 50,
-        "wind_speed": 10,
-        "wind_direction": "N",
-        "wind_gust": 15
+        "temperature": 25
       },
       {
         "date": "2025-05-19",
         "weather": "Cloudy",
-        "temperature": 22,
-        "humidity": 60,
-        "wind_speed": 12,
-        "wind_direction": "E",
-        "wind_gust": 18
+        "temperature": 22
       },
       {
         "date": "2025-05-20",
         "weather": "Rainy",
-        "temperature": 20,
-        "humidity": 70,
-        "wind_speed": 14,
-        "wind_direction": "S",
-        "wind_gust": 20
+        "temperature": 20
       },
       {
         "date": "2025-05-21",
         "weather": "Snowy",
-        "temperature": 0,
-        "humidity": 50,
-        "wind_speed": 10,
-        "wind_direction": "W",
-        "wind_gust": 15
+        "temperature": 0
       }
     ]
   },
@@ -143,6 +128,8 @@ The output has to be in json format.
     "name": "Emirati Dirham",
     // Required: `symbol` is the symbol of the currency.
     "code": "AED",
+    // Optional: `departure_currency_code` is the currency code of the departure location. If it is not provided, it will be the same as the currency code.
+    "departure_currency_code": "TRY",
     // Optional: `exchange_rate` is the exchange rate of the currency. If arrival and departure locations use different currencies, you can provide the exchange rate for each currency.
     "exchange_rate": 0.1,
     // Optional: `departure_average_living_cost_per_day` is the average living cost per day in the departure location. It should be in departure location's currency.
@@ -155,12 +142,14 @@ The output has to be in json format.
     "cheapest": {
       "departure": {
         "airline": "Pegasus Airlines",
+        "departure_airport": "SAW",
+        "arrival_airport": "DXB",
         "flight_number": "PG 4321",
-        "departure_date": "2025-05-18 10:05", // This is the departure date and time in the departure location's timezone.
-        "arrival_date": "2025-05-18 18:00", // This is the arrival date and time in the arrival location's timezone.
+        "departure_time": "2025-05-18 10:05", // This is the departure date and time in the departure location's timezone.
+        "arrival_time": "2025-05-18 18:00", // This is the arrival date and time in the arrival location's timezone.
         "price": 1000,
         "currency": "TRY", // This is the currency of the departure location.
-        "duration": "10h 05m",
+        "duration": 605, // This is the duration of the flight in minutes.
         "stops": 1,
         "stop_durations": [45],
         "layovers": 1,
@@ -170,16 +159,19 @@ The output has to be in json format.
       },
       "arrival": {
         "airline": "Pegasus Airlines",
+        "departure_airport": "DXB",
+        "arrival_airport": "SAW",
         "flight_number": "PG 1234",
-        "departure_date": "2025-05-21 10:05", // This is the departure date and time in the departure location's timezone.
-        "arrival_date": "2025-05-21 18:00", // This is the arrival date and time in the arrival location's timezone.
+        "departure_time": "2025-05-21 10:05", // This is the departure date and time in the departure location's timezone.
+        "arrival_time": "2025-05-21 18:00", // This is the arrival date and time in the arrival location's timezone.
         "price": 1500,
         "currency": "TRY", // This is the currency of the departure location.
-        "duration": "12h 05m",
+        "duration": 725,
         "stops": 1,
+        // Optional: `stop_durations` is the duration of the stop in minutes. If there is no stop, no need to provide this.
         "stop_durations": [70],
         "layovers": 1,
-        // `layover_durations` is the duration of the layover in minutes.
+        // Optional: `layover_durations` is the duration of the layover in minutes. If there is no layover, no need to provide this.
         "layover_durations": [112],
         "more_information": "You can find more information on the official website of the Pegasus Airlines: [https://www.pegasus.com.tr/](https://www.pegasus.com.tr/)"
       }
@@ -188,33 +180,35 @@ The output has to be in json format.
     "comfortable": {
       "departure": {
         "airline": "Turkish Airlines",
+        "departure_airport": "IST",
+        "arrival_airport": "DXB",
         "flight_number": "TK 123",
-        "departure_date": "2025-05-18 10:05",
-        "arrival_date": "2025-05-18 14:10",
+        "departure_time": "2025-05-18 10:05",
+        "arrival_time": "2025-05-18 14:10",
         "price": 3000,
         "currency": "TRY", // This is the currency of the departure location.
-        "duration": "4h 05m",
+        "duration": 245,
         "stops": 0,
         "layovers": 0,
-        "layover_durations": [],
         "more_information": "You can find more information on the official website of the Turkish Airlines: [https://www.turkishairlines.com/](https://www.turkishairlines.com/)"
       },
       "arrival": {
         "airline": "Turkish Airlines",
+        "departure_airport": "DXB",
+        "arrival_airport": "IST",
         "flight_number": "TK 432",
-        "departure_date": "2025-05-21 10:05",
-        "arrival_date": "2025-05-21 14:10",
+        "departure_time": "2025-05-21 10:05",
+        "arrival_time": "2025-05-21 14:10",
         "price": 4000,
         "currency": "TRY", // This is the currency of the departure location.
-        "duration": "4h 05m",
+        "duration": 245,
         "stops": 0,
         "layovers": 0,
-        "layover_durations": [],
         "more_information": "You can find more information on the official website of the Turkish Airlines: [https://www.turkishairlines.com/](https://www.turkishairlines.com/)"
       }
     },
     // Optional: `recommended` is the recommended flight option. It has to be acceptable price and duration. A great value-for-money flight option.
-    "recommended": {}
+    "recommended": null
   },
   "tax_information": {
     // Required: `has_tax_free_options` is the possibility of tax refund.
@@ -282,6 +276,7 @@ The output has to be in json format.
     "Don't forget your travel insurance."
   ]
 }
+```
 
 ## Important Guidelines
 

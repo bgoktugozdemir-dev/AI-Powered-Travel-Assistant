@@ -31,8 +31,4 @@ Weather _$WeatherFromJson(Map<String, dynamic> json) => Weather(
   date: json['date'] as String,
   weather: json['weather'] as String,
   temperature: (json['temperature'] as num).toDouble(),
-  humidity: (json['humidity'] as num).toInt(),
-  windSpeed: (json['wind_speed'] as num).toDouble(),
-  windDirection: json['wind_direction'] as String,
-  windGust: (json['wind_gust'] as num).toDouble(),
 );

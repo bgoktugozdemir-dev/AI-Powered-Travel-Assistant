@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/required_documents.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -29,54 +30,34 @@ class ResultsScreen extends StatelessWidget {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                spacing: 16,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Travel Input Summary Card
-                  _buildTravelSummaryCard(context, state, l10n),
-
-                  const SizedBox(height: 16),
-
                   // If we have travel details, show the sections
                   if (travelDetails != null) ...[
                     // City Information Card
                     _buildCityCard(context, travelDetails, l10n),
 
-                    const SizedBox(height: 16),
-
                     // Required Documents Card
                     _buildDocumentsCard(context, travelDetails, l10n),
-
-                    const SizedBox(height: 16),
 
                     // Currency Information Card
                     _buildCurrencyCard(context, travelDetails, l10n),
 
-                    const SizedBox(height: 16),
-
                     // Flight Options Card
-                    _buildFlightOptionsCard(context, travelDetails, l10n),
-
-                    const SizedBox(height: 16),
+                    FlightOptionsCard(flightOptions: travelDetails.flightOptions),
 
                     // Tax Information Card
                     _buildTaxInfoCard(context, travelDetails, l10n),
 
-                    const SizedBox(height: 16),
-
                     // Top Spots Card
                     _buildSpotsCard(context, travelDetails, l10n),
-
-                    const SizedBox(height: 16),
 
                     // Travel Plan Card
                     _buildItineraryCard(context, travelDetails, l10n),
 
-                    const SizedBox(height: 16),
-
                     // Recommendations Card
                     _buildRecommendationsCard(context, travelDetails, l10n),
-
-                    const SizedBox(height: 16),
                   ],
 
                   // Plan Another Trip Button
@@ -101,63 +82,6 @@ class ResultsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  // Travel Input Summary Card
-  Widget _buildTravelSummaryCard(BuildContext context, TravelFormState state, AppLocalizations l10n) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.yourTravelPlan, style: Theme.of(context).textTheme.titleLarge),
-            const Divider(),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              context,
-              l10n.fromLabel,
-              '${state.selectedDepartureAirport?.name} (${state.selectedDepartureAirport?.iataCode})',
-              Icons.flight_takeoff,
-            ),
-            _buildInfoRow(
-              context,
-              l10n.toLabel,
-              '${state.selectedArrivalAirport?.name} (${state.selectedArrivalAirport?.iataCode})',
-              Icons.flight_land,
-            ),
-            _buildInfoRow(
-              context,
-              l10n.datesLabel,
-              _formatDateRange(state.selectedDateRange, context),
-              Icons.calendar_today,
-            ),
-            _buildInfoRow(
-              context,
-              l10n.nationalityLabel,
-              '${state.selectedNationality?.flagEmoji ?? ''} ${state.selectedNationality?.name}',
-              Icons.flag,
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.travelPurposesLabel, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children:
-                  state.selectedTravelPurposes.map((purpose) {
-                    return Chip(
-                      label: Text(purpose.name),
-                      avatar: const Icon(Icons.check_circle, size: 18, color: Colors.green),
-                    );
-                  }).toList(),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -394,127 +318,6 @@ class ResultsScreen extends StatelessWidget {
     );
   }
 
-  // Flight Options Card
-  Widget _buildFlightOptionsCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
-    final flightOptions = details.flightOptions;
-
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.flight, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text('Flight Options', style: Theme.of(context).textTheme.titleLarge),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            // Cheapest Option
-            if (flightOptions.cheapest != null) ...[
-              Text('Cheapest Option', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-
-              // Departure flight
-              _buildFlightCard(context, flightOptions.cheapest!.departure, isOutbound: true),
-
-              const SizedBox(height: 8),
-
-              // Return flight
-              _buildFlightCard(context, flightOptions.cheapest!.arrival, isOutbound: false),
-
-              const SizedBox(height: 16),
-            ],
-
-            // Comfortable Option
-            if (flightOptions.comfortable != null) ...[
-              Text('Comfortable Option', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-
-              // Departure flight
-              _buildFlightCard(context, flightOptions.comfortable!.departure, isOutbound: true),
-
-              const SizedBox(height: 8),
-
-              // Return flight
-              _buildFlightCard(context, flightOptions.comfortable!.arrival, isOutbound: false),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Flight Card Widget
-  Widget _buildFlightCard(BuildContext context, dynamic flight, {required bool isOutbound}) {
-    return Card(
-      elevation: 2,
-      color: Theme.of(context).cardColor.withOpacity(0.8),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  isOutbound ? Icons.flight_takeoff : Icons.flight_land,
-                  color: Theme.of(context).primaryColor,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Text(isOutbound ? 'Outbound Flight' : 'Return Flight', style: Theme.of(context).textTheme.titleSmall),
-                const Spacer(),
-                Text(
-                  '${flight.airline} ${flight.flightNumber}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const Divider(),
-
-            // Flight times
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(DateFormat('MMM d, HH:mm').format(DateTime.parse(flight.departureDate.toString()))),
-                const Icon(Icons.arrow_forward, size: 16),
-                Text(DateFormat('MMM d, HH:mm').format(DateTime.parse(flight.arrivalDate.toString()))),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Duration and stops
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text('Duration: ${flight.duration}'), Text('Stops: ${flight.stops}')],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Price
-            Row(
-              children: [
-                const Icon(Icons.attach_money, size: 16),
-                Text(
-                  '${flight.price} ${flight.currency}',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // Tax Information Card
   Widget _buildTaxInfoCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
     final tax = details.taxInformation;
@@ -537,7 +340,12 @@ class ResultsScreen extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 8),
 
-            _buildInfoRow(context, 'Tax Rate', '${tax.taxRate}%', Icons.percent),
+            _buildInfoRow(
+              context,
+              'Tax Rate',
+              NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(tax.taxRate),
+              Icons.percent,
+            ),
 
             _buildInfoRow(
               context,
@@ -744,17 +552,5 @@ class ResultsScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // Helper method to format date range
-  String _formatDateRange(DateTimeRange? dateRange, BuildContext context) {
-    if (dateRange == null) {
-      return 'No dates selected';
-    }
-
-    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
-    final startDate = dateFormat.format(dateRange.start);
-    final endDate = dateFormat.format(dateRange.end);
-    return '$startDate - $endDate';
   }
 }

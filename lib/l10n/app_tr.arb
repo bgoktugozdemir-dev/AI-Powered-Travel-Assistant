@@ -179,5 +179,63 @@
   "planAnotherTrip": "Başka Bir Seyahat Planla",
   "@planAnotherTrip": {
     "description": "Button text to start planning another trip"
+  },
+  "flightDurationFormat": "{hours}s {minutes}d",
+  "@flightDurationFormat": {
+    "description": "Format for displaying flight duration",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "12"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "55"
+      }
+    }
+  },
+  "flightOptionsTitle": "Uçuş Seçenekleri",
+  "@flightOptionsTitle": {
+    "description": "Title for the flight options section"
+  },
+  "cheapestOptionTitle": "En Uygun Seçenek",
+  "@cheapestOptionTitle": {
+    "description": "Title for the cheapest flight option"
+  },
+  "comfortableOptionTitle": "Rahat Seçenek",
+  "@comfortableOptionTitle": {
+    "description": "Title for the comfortable flight option"
+  },
+  "recommendedOptionTitle": "Önerilen Seçenek",
+  "@recommendedOptionTitle": {
+    "description": "Title for the recommended flight option"
+  },
+  "outboundFlightLabel": "Gidiş Uçuşu",
+  "@outboundFlightLabel": {
+    "description": "Label for the outbound/departure flight"
+  },
+  "returnFlightLabel": "Dönüş Uçuşu",
+  "@returnFlightLabel": {
+    "description": "Label for the return flight"
+  },
+  "stopsLabel": "{count} durak",
+  "@stopsLabel": {
+    "description": "Label for the number of stops in a flight",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "stopsCountLabel": "Duraklar: {count}",
+  "@stopsCountLabel": {
+    "description": "Label showing the count of stops",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
   }
 } 

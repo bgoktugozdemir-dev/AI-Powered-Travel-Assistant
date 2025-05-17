@@ -52,15 +52,7 @@ class TimeDetails {
 
 @JsonSerializable(createToJson: false)
 class Weather {
-  const Weather({
-    required this.date,
-    required this.weather,
-    required this.temperature,
-    required this.humidity,
-    required this.windSpeed,
-    required this.windDirection,
-    required this.windGust,
-  });
+  const Weather({required this.date, required this.weather, required this.temperature});
 
   factory Weather.fromJson(Map<String, dynamic> json) => _$WeatherFromJson(json);
 
@@ -72,16 +64,4 @@ class Weather {
 
   @JsonKey(name: 'temperature')
   final double temperature;
-
-  @JsonKey(name: 'humidity')
-  final int humidity;
-
-  @JsonKey(name: 'wind_speed')
-  final double windSpeed;
-
-  @JsonKey(name: 'wind_direction')
-  final String windDirection;
-
-  @JsonKey(name: 'wind_gust')
-  final double windGust;
 }

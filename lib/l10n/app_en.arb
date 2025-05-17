@@ -179,5 +179,63 @@
   "planAnotherTrip": "Plan Another Trip",
   "@planAnotherTrip": {
     "description": "Button text to start planning another trip"
+  },
+  "flightDurationFormat": "{hours}h {minutes}m",
+  "@flightDurationFormat": {
+    "description": "Format for displaying flight duration",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "12"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "55"
+      }
+    }
+  },
+  "flightOptionsTitle": "Flight Options",
+  "@flightOptionsTitle": {
+    "description": "Title for the flight options section"
+  },
+  "cheapestOptionTitle": "Cheapest Option",
+  "@cheapestOptionTitle": {
+    "description": "Title for the cheapest flight option"
+  },
+  "comfortableOptionTitle": "Comfortable Option",
+  "@comfortableOptionTitle": {
+    "description": "Title for the comfortable flight option"
+  },
+  "recommendedOptionTitle": "Recommended Option",
+  "@recommendedOptionTitle": {
+    "description": "Title for the recommended flight option"
+  },
+  "outboundFlightLabel": "Outbound Flight",
+  "@outboundFlightLabel": {
+    "description": "Label for the outbound/departure flight"
+  },
+  "returnFlightLabel": "Return Flight",
+  "@returnFlightLabel": {
+    "description": "Label for the return flight"
+  },
+  "stopsLabel": "{count} stops",
+  "@stopsLabel": {
+    "description": "Label for the number of stops in a flight",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "stopsCountLabel": "Stops: {count}",
+  "@stopsCountLabel": {
+    "description": "Label showing the count of stops",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
   }
 } 

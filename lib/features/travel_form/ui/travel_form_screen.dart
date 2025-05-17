@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import 'package:travel_assistant/common/utils/logger/logger.dart'; // Import appLogger
+import 'package:travel_assistant/features/travel_form/ui/travel_summary_step.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_purpose_step.dart'; // Import the TravelPurposeStep
 import 'package:travel_assistant/features/results/ui/results_screen.dart'; // Import the ResultsScreen
@@ -89,6 +90,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                               if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
                               if (state.currentStep == 3) _buildNationalityStep(context, state, l10n),
                               if (state.currentStep == 4) const TravelPurposeStep(),
+                              if (state.currentStep == 5) const TravelSummaryStep(),
                             ],
                           ),
                         ),

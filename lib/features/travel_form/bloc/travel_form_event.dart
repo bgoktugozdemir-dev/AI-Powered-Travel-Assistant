@@ -113,15 +113,12 @@ class LoadTravelPurposesEvent extends TravelFormEvent {
 class ToggleTravelPurposeEvent extends TravelFormEvent {
   /// The travel purpose being toggled.
   final TravelPurpose purpose;
-  
+
   /// Whether the purpose is being selected (true) or unselected (false).
   final bool isSelected;
 
   /// Creates a [ToggleTravelPurposeEvent] event.
-  const ToggleTravelPurposeEvent({
-    required this.purpose,
-    required this.isSelected,
-  });
+  const ToggleTravelPurposeEvent({required this.purpose, required this.isSelected});
 
   @override
   List<Object?> get props => [purpose, isSelected];
@@ -133,4 +130,4 @@ class SubmitTravelFormEvent extends TravelFormEvent {
   const SubmitTravelFormEvent();
 }
 
-// TODO: Add events for travel purposes, submission, etc. 
+// TODO: Add events for travel purposes, submission, etc.

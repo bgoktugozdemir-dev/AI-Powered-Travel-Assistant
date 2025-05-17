@@ -7,6 +7,7 @@ class Currency {
   const Currency({
     required this.code,
     required this.name,
+    required this.departureCurrencyCode,
     required this.exchangeRate,
     required this.departureAverageLivingCostPerDay,
     required this.arrivalAverageLivingCostPerDay,
@@ -16,6 +17,9 @@ class Currency {
 
   @JsonKey(name: 'code')
   final String code;
+
+  @JsonKey(name: 'departure_currency_code')
+  final String departureCurrencyCode;
 
   @JsonKey(name: 'name')
   final String name;

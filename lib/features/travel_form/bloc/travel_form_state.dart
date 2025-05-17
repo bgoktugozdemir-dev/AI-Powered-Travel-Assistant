@@ -85,7 +85,7 @@ class TravelFormState extends Equatable {
   /// This also serves as the 'initial' state.
   const TravelFormState({
     this.currentStep = 0,
-    this.totalSteps = 5, // Departure, Arrival, Dates, Nationality, Purpose
+    this.totalSteps = 6, // Departure, Arrival, Dates, Nationality, Purpose, Summary
     this.departureAirportSearchTerm = '',
     this.departureAirportSuggestions = const [],
     this.selectedDepartureAirport,
@@ -127,7 +127,7 @@ class TravelFormState extends Equatable {
     List<TravelPurpose>? selectedTravelPurposes,
     bool? isTravelPurposesLoading,
     FormSubmissionStatus? formSubmissionStatus,
-    TravelDetails? travelPlan,
+    ValueGetter<TravelDetails?>? travelPlan,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -151,7 +151,7 @@ class TravelFormState extends Equatable {
       selectedTravelPurposes: selectedTravelPurposes ?? this.selectedTravelPurposes,
       isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
-      travelPlan: travelPlan ?? this.travelPlan,
+      travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }

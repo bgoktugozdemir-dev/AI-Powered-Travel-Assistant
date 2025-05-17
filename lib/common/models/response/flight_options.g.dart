@@ -27,21 +27,21 @@ FlightOption _$FlightOptionFromJson(Map<String, dynamic> json) => FlightOption(
 
 Flight _$FlightFromJson(Map<String, dynamic> json) => Flight(
   airline: json['airline'] as String,
+  departureAirport: json['departure_airport'] as String,
+  arrivalAirport: json['arrival_airport'] as String,
   flightNumber: json['flight_number'] as String,
   departureTime: DateTime.parse(json['departure_time'] as String),
   arrivalTime: DateTime.parse(json['arrival_time'] as String),
-  duration: Duration(microseconds: (json['duration'] as num).toInt()),
+  duration: Flight._durationFromJson((json['duration'] as num).toInt()),
   price: (json['price'] as num).toDouble(),
   currency: json['currency'] as String,
   stops: (json['stops'] as num).toInt(),
-  stopDurations:
-      (json['stop_durations'] as List<dynamic>)
-          .map((e) => (e as num).toInt())
-          .toList(),
+  stopDurations: Flight._durationListFromJson(
+    json['stop_durations'] as List<int>,
+  ),
   layovers: (json['layovers'] as num).toInt(),
-  layoverDurations:
-      (json['layover_durations'] as List<dynamic>)
-          .map((e) => (e as num).toInt())
-          .toList(),
+  layoverDurations: Flight._durationListFromJson(
+    json['layover_durations'] as List<int>,
+  ),
   moreInformation: json['more_information'] as String,
 );

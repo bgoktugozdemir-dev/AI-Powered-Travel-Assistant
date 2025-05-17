@@ -33,7 +33,7 @@ class GeminiRepository {
       final chatSession = await geminiService.chatSession();
       final response = await chatSession.sendMessage(content);
       stopwatch.stop();
-      final responseText = response.text;
+      var responseText = response.text;
 
       if (responseText == null || responseText.isEmpty) {
         final error = Exception('Empty response received from Gemini');
@@ -53,7 +53,7 @@ class GeminiRepository {
 
       // Log the successful response
       LlmLogger.response('Gemini', responseText, durationMs: stopwatch.elapsedMilliseconds);
-
+      responseText = responseText.replaceAll('```json', '').replaceAll('```', '');
       final responseJson = jsonDecode(responseText);
 
       return TravelDetails.fromJson(responseJson);

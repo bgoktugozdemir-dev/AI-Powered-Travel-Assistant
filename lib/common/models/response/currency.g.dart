@@ -9,6 +9,7 @@ part of 'currency.dart';
 Currency _$CurrencyFromJson(Map<String, dynamic> json) => Currency(
   code: json['code'] as String,
   name: json['name'] as String,
+  departureCurrencyCode: json['departure_currency_code'] as String,
   exchangeRate: (json['exchange_rate'] as num).toDouble(),
   departureAverageLivingCostPerDay:
       (json['departure_average_living_cost_per_day'] as num).toDouble(),

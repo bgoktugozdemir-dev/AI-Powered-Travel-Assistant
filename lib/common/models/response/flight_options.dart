@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'flight_options.g.dart';
@@ -35,6 +36,8 @@ class FlightOption {
 class Flight {
   const Flight({
     required this.airline,
+    required this.departureAirport,
+    required this.arrivalAirport,
     required this.flightNumber,
     required this.departureTime,
     required this.arrivalTime,
@@ -53,6 +56,12 @@ class Flight {
   @JsonKey(name: 'airline')
   final String airline;
 
+  @JsonKey(name: 'departure_airport')
+  final String departureAirport;
+
+  @JsonKey(name: 'arrival_airport')
+  final String arrivalAirport;
+
   @JsonKey(name: 'flight_number')
   final String flightNumber;
 
@@ -68,21 +77,26 @@ class Flight {
   @JsonKey(name: 'currency')
   final String currency;
 
-  @JsonKey(name: 'duration')
+  @JsonKey(name: 'duration', fromJson: _durationFromJson)
   final Duration duration;
 
   @JsonKey(name: 'stops')
   final int stops;
 
-  @JsonKey(name: 'stop_durations')
-  final List<int> stopDurations;
+  @JsonKey(name: 'stop_durations', fromJson: _durationListFromJson)
+  final List<Duration>? stopDurations;
 
   @JsonKey(name: 'layovers')
   final int layovers;
 
-  @JsonKey(name: 'layover_durations')
-  final List<int> layoverDurations;
+  @JsonKey(name: 'layover_durations', fromJson: _durationListFromJson)
+  final List<Duration>? layoverDurations;
 
   @JsonKey(name: 'more_information')
   final String moreInformation;
+
+  static Duration _durationFromJson(int duration) => Duration(minutes: duration);
+
+  static List<Duration> _durationListFromJson(List<int> durations) =>
+      durations.map((duration) => _durationFromJson(duration)).toList();
 }
