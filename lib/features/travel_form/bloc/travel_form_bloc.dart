@@ -7,10 +7,12 @@ import 'package:equatable/equatable.dart';// For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
 import 'package:travel_assistant/common/models/country.dart'; // Import Country model
+import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import TravelPurpose model
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
 import 'package:travel_assistant/common/services/airport_api_service.dart'; // Import service for direct instantiation (temp)
 import 'package:travel_assistant/common/services/api_logger_interceptor.dart'; // Import the interceptor
 import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
+import 'package:travel_assistant/common/services/travel_purpose_service.dart'; // Import TravelPurposeService
 import 'package:rxdart/rxdart.dart'; // Added
 
 part 'travel_form_event.dart';
@@ -27,6 +29,7 @@ EventTransformer<E> _debounceRestartable<E>(Duration duration) {
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final AirportRepository _airportRepository;
   final CountryService _countryService;
+  final TravelPurposeService _travelPurposeService;
 
   // TODO: Use proper Dependency Injection for services
   TravelFormBloc()
@@ -36,6 +39,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
             )
           ),
         _countryService = CountryService(),
+        _travelPurposeService = TravelPurposeService(),
         super(const TravelFormState()) {
     // Initialize services
     _initializeServices();
@@ -64,6 +68,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       transformer: _debounceRestartable(const Duration(milliseconds: 500)),
     );
     on<TravelFormNationalitySelected>(_onNationalitySelected);
+    // Travel Purposes
+    on<LoadTravelPurposesEvent>(_onLoadTravelPurposes);
+    on<ToggleTravelPurposeEvent>(_onToggleTravelPurpose);
   }
 
   /// Initialize all required services
@@ -236,6 +243,49 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       selectedNationality: () => event.country,
       nationalitySearchTerm: event.country.name,
       nationalitySuggestions: [],
+    ));
+  }
+
+  // --- Travel Purpose Handlers ---
+  Future<void> _onLoadTravelPurposes(
+    LoadTravelPurposesEvent event,
+    Emitter<TravelFormState> emit,
+  ) async {
+    emit(state.copyWith(isTravelPurposesLoading: true));
+
+    try {
+      final purposes = await _travelPurposeService.getTravelPurposes();
+      emit(state.copyWith(
+        availableTravelPurposes: purposes,
+        isTravelPurposesLoading: false,
+        errorMessage: () => null,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isTravelPurposesLoading: false,
+        errorMessage: () => e.toString(),
+      ));
+    }
+  }
+
+  void _onToggleTravelPurpose(
+    ToggleTravelPurposeEvent event,
+    Emitter<TravelFormState> emit,
+  ) {
+    final currentPurposes = List<TravelPurpose>.from(state.selectedTravelPurposes);
+    
+    if (event.isSelected) {
+      // Add purpose if not already in the list
+      if (!currentPurposes.any((p) => p.id == event.purpose.id)) {
+        currentPurposes.add(event.purpose);
+      }
+    } else {
+      // Remove purpose if it exists in the list
+      currentPurposes.removeWhere((p) => p.id == event.purpose.id);
+    }
+    
+    emit(state.copyWith(
+      selectedTravelPurposes: currentPurposes,
     ));
   }
 } 

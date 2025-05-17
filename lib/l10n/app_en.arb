@@ -74,6 +74,30 @@
       }
     }
   },
+  "travelPurposeStepTitle": "What are your travel purposes?",
+  "@travelPurposeStepTitle": {
+    "description": "Title for the travel purposes selection step"
+  },
+  "selectTravelPurposes": "Select Travel Purposes",
+  "@selectTravelPurposes": {
+    "description": "Title for the travel purposes selection area"
+  },
+  "selectTravelPurposesDescription": "Choose one or more reasons for your trip. This helps us provide better recommendations.",
+  "@selectTravelPurposesDescription": {
+    "description": "Description for the travel purposes selection"
+  },
+  "selectedPurposes": "Selected Purposes",
+  "@selectedPurposes": {
+    "description": "Title for the selected travel purposes section"
+  },
+  "noPurposesAvailable": "No travel purposes available. Please try again later.",
+  "@noPurposesAvailable": {
+    "description": "Message shown when no travel purposes are available"
+  },
+  "validationErrorTravelPurposeMissing": "Please select at least one travel purpose.",
+  "@validationErrorTravelPurposeMissing": {
+    "description": "Validation error if no travel purpose is selected"
+  },
   "validationErrorNationalityMissing": "Please select your nationality.",
   "@validationErrorNationalityMissing": {
     "description": "Validation error if nationality is not selected"

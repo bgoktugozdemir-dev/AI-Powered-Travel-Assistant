@@ -5,6 +5,7 @@ import 'package:travel_assistant/common/models/airport.dart'; // Import the Airp
 import 'package:travel_assistant/common/models/country.dart'; // Import the Country model
 import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
+import 'package:travel_assistant/features/travel_form/ui/travel_purpose_step.dart'; // Import the TravelPurposeStep
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Screen for users to input their travel details using a multi-step form.
@@ -77,6 +78,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                           if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
                           if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
                           if (state.currentStep == 3) _buildNationalityStep(context, state, l10n),
+                          if (state.currentStep == 4) const TravelPurposeStep(),
                         ],
                       ),
                     ),
@@ -378,6 +380,9 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               } else if (state.currentStep == 3 && state.selectedNationality == null) {
                 canProceed = false;
                 validationError = l10n.validationErrorNationalityMissing;
+              } else if (state.currentStep == 4 && state.selectedTravelPurposes.isEmpty) {
+                canProceed = false;
+                validationError = l10n.validationErrorTravelPurposeMissing;
               }
 
               if (canProceed) {

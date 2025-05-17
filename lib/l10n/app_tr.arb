@@ -2,11 +2,11 @@
   "@@locale": "tr",
   "appTitle": "Seyahat Asistanı",
   "@appTitle": {
-    "description": "Uygulamanın başlığı"
+    "description": "The title of the application"
   },
   "travelFormStepTitle": "Adım {stepNumber}",
   "@travelFormStepTitle": {
-    "description": "Seyahat formundaki bir adım için başlık, adım numarasını içerir",
+    "description": "Title for a step in the travel form, includes step number placeholder",
     "placeholders": {
       "stepNumber": {
         "type": "int",
@@ -16,57 +16,57 @@
   },
   "departureAirportStepTitle": "Nereden uçuyorsunuz?",
   "@departureAirportStepTitle": {
-    "description": "Kalkış havaalanı seçim adımı için başlık"
+    "description": "Title for the departure airport selection step"
   },
-  "departureAirportHintText": "Kalkış havaalanı arayın (örn: IST, İstanbul)",
+  "departureAirportHintText": "Kalkış havalimanı ara (ör. IST, İstanbul)",
   "@departureAirportHintText": {
-    "description": "Kalkış havaalanı arama alanı için ipucu metni"
+    "description": "Hint text for the departure airport search field"
   },
   "arrivalAirportStepTitle": "Nereye uçuyorsunuz?",
   "@arrivalAirportStepTitle": {
-    "description": "Varış havaalanı seçim adımı için başlık"
+    "description": "Title for the arrival airport selection step"
   },
-  "arrivalAirportHintText": "Varış havaalanı arayın (örn: JFK, New York)",
+  "arrivalAirportHintText": "Varış havalimanı ara (ör. JFK, New York)",
   "@arrivalAirportHintText": {
-    "description": "Varış havaalanı arama alanı için ipucu metni"
+    "description": "Hint text for the arrival airport search field"
   },
   "travelDatesStepTitle": "Ne zaman seyahat ediyorsunuz?",
   "@travelDatesStepTitle": {
-    "description": "Seyahat tarihleri seçim adımı için başlık"
+    "description": "Title for the travel dates selection step"
   },
-  "selectDatesButtonLabel": "Seyahat Tarihlerini Seçin",
+  "selectDatesButtonLabel": "Seyahat Tarihlerini Seç",
   "@selectDatesButtonLabel": {
-    "description": "Tarih aralığı seçiciyi açmak için düğme etiketi"
+    "description": "Button label to open the date range picker"
   },
   "selectedDatesLabel": "Seçilen: {startDate} - {endDate}",
   "@selectedDatesLabel": {
-    "description": "Seçilen başlangıç ve bitiş tarihlerini gösteren etiket",
+    "description": "Label displaying the selected start and end dates",
     "placeholders": {
       "startDate": {
         "type": "String",
-        "example": "15-07-2024"
+        "example": "15.07.2024"
       },
       "endDate": {
         "type": "String",
-        "example": "20-07-2024"
+        "example": "20.07.2024"
       }
     }
   },
   "noDatesSelected": "Tarih seçilmedi",
   "@noDatesSelected": {
-    "description": "Henüz seyahat tarihi seçilmediğinde gösterilen metin"
+    "description": "Text shown when no travel dates have been selected yet"
   },
   "nationalityStepTitle": "Milliyetiniz nedir?",
   "@nationalityStepTitle": {
-    "description": "Milliyet seçim adımı için başlık"
+    "description": "Title for the nationality selection step"
   },
-  "nationalityHintText": "Milliyetinizi arayın (örn: TR, Türkiye)",
+  "nationalityHintText": "Milliyetinizi arayın (ör. TR, ABD)",
   "@nationalityHintText": {
-    "description": "Milliyet arama alanı için ipucu metni"
+    "description": "Hint text for the nationality search field"
   },
   "selectedNationalityLabel": "Seçilen: {nationalityName}",
   "@selectedNationalityLabel": {
-    "description": "Seçilen milliyeti gösteren etiket",
+    "description": "Label displaying the selected nationality",
     "placeholders": {
       "nationalityName": {
         "type": "String",
@@ -74,29 +74,53 @@
       }
     }
   },
+  "travelPurposeStepTitle": "Seyahat amaçlarınız nelerdir?",
+  "@travelPurposeStepTitle": {
+    "description": "Title for the travel purposes selection step"
+  },
+  "selectTravelPurposes": "Seyahat Amaçlarını Seçin",
+  "@selectTravelPurposes": {
+    "description": "Title for the travel purposes selection area"
+  },
+  "selectTravelPurposesDescription": "Seyahatiniz için bir veya daha fazla amaç seçin. Bu, daha iyi öneriler sunmamıza yardımcı olur.",
+  "@selectTravelPurposesDescription": {
+    "description": "Description for the travel purposes selection"
+  },
+  "selectedPurposes": "Seçilen Amaçlar",
+  "@selectedPurposes": {
+    "description": "Title for the selected travel purposes section"
+  },
+  "noPurposesAvailable": "Seyahat amaçları bulunamadı. Lütfen daha sonra tekrar deneyiniz.",
+  "@noPurposesAvailable": {
+    "description": "Message shown when no travel purposes are available"
+  },
+  "validationErrorTravelPurposeMissing": "Lütfen en az bir seyahat amacı seçin.",
+  "@validationErrorTravelPurposeMissing": {
+    "description": "Validation error if no travel purpose is selected"
+  },
   "validationErrorNationalityMissing": "Lütfen milliyetinizi seçin.",
   "@validationErrorNationalityMissing": {
-    "description": "Milliyet seçilmediyse doğrulama hatası"
+    "description": "Validation error if nationality is not selected"
   },
   "errorInvalidDateRange": "Bitiş tarihi başlangıç tarihinden önce olamaz.",
   "@errorInvalidDateRange": {
-    "description": "Geçersiz tarih aralığı seçimi için hata mesajı"
+    "description": "Error message for invalid date range selection"
   },
-  "validationErrorDepartureAirportMissing": "Lütfen bir kalkış havaalanı seçin.",
+  "validationErrorDepartureAirportMissing": "Lütfen bir kalkış havalimanı seçin.",
   "@validationErrorDepartureAirportMissing": {
-    "description": "Kalkış havaalanı seçilmediyse doğrulama hatası"
+    "description": "Validation error if departure airport is not selected"
   },
-  "validationErrorArrivalAirportMissing": "Lütfen bir varış havaalanı seçin.",
+  "validationErrorArrivalAirportMissing": "Lütfen bir varış havalimanı seçin.",
   "@validationErrorArrivalAirportMissing": {
-    "description": "Varış havaalanı seçilmediyse doğrulama hatası"
+    "description": "Validation error if arrival airport is not selected"
   },
   "validationErrorDateRangeMissing": "Lütfen seyahat tarihlerini seçin.",
   "@validationErrorDateRangeMissing": {
-    "description": "Seyahat tarihleri seçilmediyse doğrulama hatası"
+    "description": "Validation error if travel dates are not selected"
   },
-  "selectedAirportLabel": "Seçildi: {airportName} ({airportCode})",
+  "selectedAirportLabel": "Seçilen: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
-    "description": "Bir havaalanı seçildiğinde görüntülenen etiket, adını ve kodunu gösterir",
+    "description": "Label displayed when an airport is selected, showing its name and code",
     "placeholders": {
       "airportName": {
         "type": "String",
@@ -110,18 +134,18 @@
   },
   "navigationPrevious": "Önceki",
   "@navigationPrevious": {
-    "description": "Önceki adıma gitmek için düğme metni"
+    "description": "Button text to go to the previous step"
   },
   "navigationNext": "Sonraki",
   "@navigationNext": {
-    "description": "Sonraki adıma gitmek için düğme metni"
+    "description": "Button text to go to the next step"
   },
   "navigationSubmit": "Seyahat Planı Al",
   "@navigationSubmit": {
-    "description": "Formu göndermek ve seyahat planını almak için düğme metni"
+    "description": "Button text to submit the form and get travel plan"
   },
   "submittingForm": "Form gönderiliyor...",
   "@submittingForm": {
-    "description": "Form gönderilirken gösterilen mesaj"
+    "description": "Message shown when the form is being submitted"
   }
 } 
