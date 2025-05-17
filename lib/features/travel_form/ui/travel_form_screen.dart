@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // For date formatting
+import 'package:travel_assistant/common/models/airport.dart'; // Import the Airport model
+import 'package:travel_assistant/common/models/country.dart'; // Import the Country model
 import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -74,6 +76,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                           if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
                           if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
                           if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
+                          if (state.currentStep == 3) _buildNationalityStep(context, state, l10n),
                         ],
                       ),
                     ),
@@ -261,6 +264,84 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
     );
   }
 
+  Widget _buildNationalityStep(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(l10n.nationalityStepTitle, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 16),
+        TextField(
+          decoration: InputDecoration(
+            hintText: l10n.nationalityHintText,
+            border: const OutlineInputBorder(),
+            suffixIcon: state.isNationalityLoading ? const CircularProgressIndicator() : null,
+          ),
+          onChanged: (query) {
+            this.context.read<TravelFormBloc>().add(TravelFormNationalitySearchTermChanged(query));
+          },
+        ),
+        if (state.nationalitySuggestions.isNotEmpty)
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: state.nationalitySuggestions.length,
+              itemBuilder: (context, index) {
+                final country = state.nationalitySuggestions[index];
+                return ListTile(
+                  leading: country.flagEmoji != null ? Text(country.flagEmoji!, style: const TextStyle(fontSize: 24)) : null,
+                  title: Text(country.name),
+                  subtitle: country.nationality != null ? Text(country.nationality!) : Text(country.code),
+                  onTap: () {
+                    this.context.read<TravelFormBloc>().add(TravelFormNationalitySelected(country));
+                  },
+                );
+              },
+            ),
+          ),
+        if (state.selectedNationality != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Row(
+              children: [
+                if (state.selectedNationality!.flagEmoji != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(
+                      state.selectedNationality!.flagEmoji!,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.selectedNationalityLabel(state.selectedNationality!.name),
+                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                      if (state.selectedNationality!.nationality != null)
+                        Text(
+                          state.selectedNationality!.nationality!,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (state.errorMessage != null && state.currentStep == 3)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red)),
+          ),
+      ],
+    );
+  }
+
   Widget _buildNavigationButtons(BuildContext context, TravelFormState state, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -294,6 +375,9 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               } else if (state.currentStep == 2 && state.selectedDateRange == null) {
                 canProceed = false;
                 validationError = l10n.validationErrorDateRangeMissing;
+              } else if (state.currentStep == 3 && state.selectedNationality == null) {
+                canProceed = false;
+                validationError = l10n.validationErrorNationalityMissing;
               }
 
               if (canProceed) {

@@ -56,6 +56,28 @@
   "@noDatesSelected": {
     "description": "Text shown when no travel dates have been selected yet"
   },
+  "nationalityStepTitle": "What is your nationality?",
+  "@nationalityStepTitle": {
+    "description": "Title for the nationality selection step"
+  },
+  "nationalityHintText": "Search your nationality (e.g., US, Turkey)",
+  "@nationalityHintText": {
+    "description": "Hint text for the nationality search field"
+  },
+  "selectedNationalityLabel": "Selected: {nationalityName}",
+  "@selectedNationalityLabel": {
+    "description": "Label displaying the selected nationality",
+    "placeholders": {
+      "nationalityName": {
+        "type": "String",
+        "example": "United States"
+      }
+    }
+  },
+  "validationErrorNationalityMissing": "Please select your nationality.",
+  "@validationErrorNationalityMissing": {
+    "description": "Validation error if nationality is not selected"
+  },
   "errorInvalidDateRange": "End date cannot be before start date.",
   "@errorInvalidDateRange": {
     "description": "Error message for invalid date range selection"

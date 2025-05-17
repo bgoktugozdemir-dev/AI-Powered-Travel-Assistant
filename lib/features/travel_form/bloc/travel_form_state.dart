@@ -29,10 +29,19 @@ class TravelFormState extends Equatable {
   /// Travel dates selected by the user.
   final DateTimeRange? selectedDateRange;
 
+  /// Search term entered by the user for nationality.
+  final String nationalitySearchTerm;
+  /// List of country suggestions for nationality selection.
+  final List<Country> nationalitySuggestions;
+  /// The currently selected nationality (country).
+  final Country? selectedNationality;
+  /// Flag indicating if nationality suggestions are being loaded.
+  final bool isNationalityLoading;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
 
-  // TODO: Add fields for dates, nationality, purposes, etc.
+  // TODO: Add fields for travel purposes
 
   /// Creates a [TravelFormState].
   /// This also serves as the 'initial' state.
@@ -48,6 +57,10 @@ class TravelFormState extends Equatable {
     this.selectedArrivalAirport,
     this.isArrivalAirportLoading = false,
     this.selectedDateRange,
+    this.nationalitySearchTerm = '',
+    this.nationalitySuggestions = const [],
+    this.selectedNationality,
+    this.isNationalityLoading = false,
     this.errorMessage,
   });
 
@@ -63,6 +76,10 @@ class TravelFormState extends Equatable {
     ValueGetter<Airport?>? selectedArrivalAirport,
     bool? isArrivalAirportLoading,
     ValueGetter<DateTimeRange?>? selectedDateRange, // Use ValueGetter for explicit null setting
+    String? nationalitySearchTerm,
+    List<Country>? nationalitySuggestions,
+    ValueGetter<Country?>? selectedNationality,
+    bool? isNationalityLoading,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -77,6 +94,10 @@ class TravelFormState extends Equatable {
       selectedArrivalAirport: selectedArrivalAirport != null ? selectedArrivalAirport() : this.selectedArrivalAirport,
       isArrivalAirportLoading: isArrivalAirportLoading ?? this.isArrivalAirportLoading,
       selectedDateRange: selectedDateRange != null ? selectedDateRange() : this.selectedDateRange,
+      nationalitySearchTerm: nationalitySearchTerm ?? this.nationalitySearchTerm,
+      nationalitySuggestions: nationalitySuggestions ?? this.nationalitySuggestions,
+      selectedNationality: selectedNationality != null ? selectedNationality() : this.selectedNationality,
+      isNationalityLoading: isNationalityLoading ?? this.isNationalityLoading,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -94,6 +115,10 @@ class TravelFormState extends Equatable {
         selectedArrivalAirport,
         isArrivalAirportLoading,
         selectedDateRange,
+        nationalitySearchTerm,
+        nationalitySuggestions,
+        selectedNationality,
+        isNationalityLoading,
         errorMessage,
       ];
 } 

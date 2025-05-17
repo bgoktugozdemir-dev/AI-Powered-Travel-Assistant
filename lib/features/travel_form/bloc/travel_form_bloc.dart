@@ -6,9 +6,11 @@ import 'package:dio/dio.dart'; // For Dio and DioError
 import 'package:equatable/equatable.dart';// For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
+import 'package:travel_assistant/common/models/country.dart'; // Import Country model
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
 import 'package:travel_assistant/common/services/airport_api_service.dart'; // Import service for direct instantiation (temp)
 import 'package:travel_assistant/common/services/api_logger_interceptor.dart'; // Import the interceptor
+import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
 import 'package:rxdart/rxdart.dart'; // Added
 
 part 'travel_form_event.dart';
@@ -24,15 +26,21 @@ EventTransformer<E> _debounceRestartable<E>(Duration duration) {
 /// {@endtemplate}
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final AirportRepository _airportRepository;
+  final CountryService _countryService;
 
-  // TODO: Use proper Dependency Injection for AirportRepository and Dio instance
+  // TODO: Use proper Dependency Injection for services
   TravelFormBloc()
       : _airportRepository = AirportRepository(
             apiService: AirportApiService(
               Dio()..interceptors.add(ApiLoggerInterceptor()),
             )
           ),
+        _countryService = CountryService(),
         super(const TravelFormState()) {
+    // Initialize services
+    _initializeServices();
+
+    // Register event handlers
     on<TravelFormStarted>(_onStarted);
     on<TravelFormNextStepRequested>(_onNextStepRequested);
     on<TravelFormPreviousStepRequested>(_onPreviousStepRequested);
@@ -50,6 +58,22 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     on<TravelFormArrivalAirportSelected>(_onArrivalAirportSelected);
     // Travel Dates
     on<TravelFormDateRangeSelected>(_onDateRangeSelected);
+    // Nationality
+    on<TravelFormNationalitySearchTermChanged>(
+      _onNationalitySearchTermChanged,
+      transformer: _debounceRestartable(const Duration(milliseconds: 500)),
+    );
+    on<TravelFormNationalitySelected>(_onNationalitySelected);
+  }
+
+  /// Initialize all required services
+  Future<void> _initializeServices() async {
+    try {
+      await _countryService.initialize();
+    } catch (e) {
+      // Service has fallback mechanism, so we can continue even if initialization fails
+      // But we should log the error
+    }
   }
 
   void _onStarted(
@@ -172,6 +196,46 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     emit(state.copyWith(
       selectedDateRange: () => event.dateRange,
       errorMessage: () => null,
+    ));
+  }
+
+  // --- Nationality Handlers ---
+  Future<void> _onNationalitySearchTermChanged(
+    TravelFormNationalitySearchTermChanged event,
+    Emitter<TravelFormState> emit,
+  ) async {
+    emit(state.copyWith(nationalitySearchTerm: event.searchTerm, selectedNationality: () => null));
+
+    if (event.searchTerm.length < 2) {
+      emit(state.copyWith(nationalitySuggestions: [], isNationalityLoading: false));
+      return;
+    }
+    emit(state.copyWith(isNationalityLoading: true));
+
+    try {
+      final suggestions = await _countryService.searchCountries(event.searchTerm);
+      emit(state.copyWith(
+        nationalitySuggestions: suggestions,
+        isNationalityLoading: false,
+        errorMessage: () => null,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isNationalityLoading: false,
+        nationalitySuggestions: [],
+        errorMessage: () => e.toString(),
+      ));
+    }
+  }
+
+  void _onNationalitySelected(
+    TravelFormNationalitySelected event,
+    Emitter<TravelFormState> emit,
+  ) {
+    emit(state.copyWith(
+      selectedNationality: () => event.country,
+      nationalitySearchTerm: event.country.name,
+      nationalitySuggestions: [],
     ));
   }
 } 

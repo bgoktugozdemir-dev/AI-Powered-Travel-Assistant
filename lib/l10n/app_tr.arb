@@ -56,6 +56,28 @@
   "@noDatesSelected": {
     "description": "Henüz seyahat tarihi seçilmediğinde gösterilen metin"
   },
+  "nationalityStepTitle": "Milliyetiniz nedir?",
+  "@nationalityStepTitle": {
+    "description": "Milliyet seçim adımı için başlık"
+  },
+  "nationalityHintText": "Milliyetinizi arayın (örn: TR, Türkiye)",
+  "@nationalityHintText": {
+    "description": "Milliyet arama alanı için ipucu metni"
+  },
+  "selectedNationalityLabel": "Seçilen: {nationalityName}",
+  "@selectedNationalityLabel": {
+    "description": "Seçilen milliyeti gösteren etiket",
+    "placeholders": {
+      "nationalityName": {
+        "type": "String",
+        "example": "Türkiye"
+      }
+    }
+  },
+  "validationErrorNationalityMissing": "Lütfen milliyetinizi seçin.",
+  "@validationErrorNationalityMissing": {
+    "description": "Milliyet seçilmediyse doğrulama hatası"
+  },
   "errorInvalidDateRange": "Bitiş tarihi başlangıç tarihinden önce olamaz.",
   "@errorInvalidDateRange": {
     "description": "Geçersiz tarih aralığı seçimi için hata mesajı"

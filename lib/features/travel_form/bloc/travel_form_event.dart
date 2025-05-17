@@ -79,4 +79,28 @@ class TravelFormDateRangeSelected extends TravelFormEvent {
   List<Object?> get props => [dateRange];
 }
 
-// TODO: Add events for dates, nationality, purposes, submission, etc. 
+/// Event triggered when the nationality search term changes.
+class TravelFormNationalitySearchTermChanged extends TravelFormEvent {
+  /// The new search term.
+  final String searchTerm;
+
+  /// Creates a [TravelFormNationalitySearchTermChanged] event.
+  const TravelFormNationalitySearchTermChanged(this.searchTerm);
+
+  @override
+  List<Object?> get props => [searchTerm];
+}
+
+/// Event triggered when a nationality (country) is selected from suggestions.
+class TravelFormNationalitySelected extends TravelFormEvent {
+  /// The selected country.
+  final Country country;
+
+  /// Creates a [TravelFormNationalitySelected] event.
+  const TravelFormNationalitySelected(this.country);
+
+  @override
+  List<Object?> get props => [country];
+}
+
+// TODO: Add events for travel purposes, submission, etc. 
