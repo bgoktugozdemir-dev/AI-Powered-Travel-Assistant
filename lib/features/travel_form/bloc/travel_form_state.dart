@@ -17,20 +17,33 @@ class TravelFormState extends Equatable {
   /// Flag indicating if departure airport suggestions are being loaded.
   final bool isDepartureAirportLoading;
 
+  /// Search term entered by the user for arrival airport.
+  final String arrivalAirportSearchTerm;
+  /// List of airport suggestions for the arrival airport.
+  final List<Airport> arrivalAirportSuggestions;
+  /// The currently selected arrival airport.
+  final Airport? selectedArrivalAirport;
+  /// Flag indicating if arrival airport suggestions are being loaded.
+  final bool isArrivalAirportLoading;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
 
-  // TODO: Add fields for arrival airport, dates, nationality, purposes, etc.
+  // TODO: Add fields for dates, nationality, purposes, etc.
 
   /// Creates a [TravelFormState].
   /// This also serves as the 'initial' state.
   const TravelFormState({
     this.currentStep = 0,
-    this.totalSteps = 5, // As per requirements: Departure, Arrival, Dates, Nationality, Purpose
+    this.totalSteps = 5, // Departure, Arrival, Dates, Nationality, Purpose
     this.departureAirportSearchTerm = '',
     this.departureAirportSuggestions = const [],
     this.selectedDepartureAirport,
     this.isDepartureAirportLoading = false,
+    this.arrivalAirportSearchTerm = '',
+    this.arrivalAirportSuggestions = const [],
+    this.selectedArrivalAirport,
+    this.isArrivalAirportLoading = false,
     this.errorMessage,
   });
 
@@ -41,6 +54,10 @@ class TravelFormState extends Equatable {
     List<Airport>? departureAirportSuggestions,
     ValueGetter<Airport?>? selectedDepartureAirport, // Use ValueGetter for explicit null setting
     bool? isDepartureAirportLoading,
+    String? arrivalAirportSearchTerm,
+    List<Airport>? arrivalAirportSuggestions,
+    ValueGetter<Airport?>? selectedArrivalAirport,
+    bool? isArrivalAirportLoading,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -50,6 +67,10 @@ class TravelFormState extends Equatable {
       departureAirportSuggestions: departureAirportSuggestions ?? this.departureAirportSuggestions,
       selectedDepartureAirport: selectedDepartureAirport != null ? selectedDepartureAirport() : this.selectedDepartureAirport,
       isDepartureAirportLoading: isDepartureAirportLoading ?? this.isDepartureAirportLoading,
+      arrivalAirportSearchTerm: arrivalAirportSearchTerm ?? this.arrivalAirportSearchTerm,
+      arrivalAirportSuggestions: arrivalAirportSuggestions ?? this.arrivalAirportSuggestions,
+      selectedArrivalAirport: selectedArrivalAirport != null ? selectedArrivalAirport() : this.selectedArrivalAirport,
+      isArrivalAirportLoading: isArrivalAirportLoading ?? this.isArrivalAirportLoading,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -62,6 +83,10 @@ class TravelFormState extends Equatable {
         departureAirportSuggestions,
         selectedDepartureAirport,
         isDepartureAirportLoading,
+        arrivalAirportSearchTerm,
+        arrivalAirportSuggestions,
+        selectedArrivalAirport,
+        isArrivalAirportLoading,
         errorMessage,
       ];
 } 

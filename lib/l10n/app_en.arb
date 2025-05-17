@@ -22,6 +22,14 @@
   "@departureAirportHintText": {
     "description": "Hint text for the departure airport search field"
   },
+  "arrivalAirportStepTitle": "Where are you flying to?",
+  "@arrivalAirportStepTitle": {
+    "description": "Title for the arrival airport selection step"
+  },
+  "arrivalAirportHintText": "Search arrival airport (e.g., JFK, New York)",
+  "@arrivalAirportHintText": {
+    "description": "Hint text for the arrival airport search field"
+  },
   "selectedAirportLabel": "Selected: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
     "description": "Label displayed when an airport is selected, showing its name and code",

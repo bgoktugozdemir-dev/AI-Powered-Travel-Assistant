@@ -22,6 +22,14 @@
   "@departureAirportHintText": {
     "description": "Kalkış havaalanı arama alanı için ipucu metni"
   },
+  "arrivalAirportStepTitle": "Nereye uçuyorsunuz?",
+  "@arrivalAirportStepTitle": {
+    "description": "Varış havaalanı seçim adımı için başlık"
+  },
+  "arrivalAirportHintText": "Varış havaalanı arayın (örn: JFK, New York)",
+  "@arrivalAirportHintText": {
+    "description": "Varış havaalanı arama alanı için ipucu metni"
+  },
   "selectedAirportLabel": "Seçildi: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
     "description": "Bir havaalanı seçildiğinde görüntülenen etiket, adını ve kodunu gösterir",

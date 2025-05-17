@@ -43,4 +43,28 @@ class TravelFormDepartureAirportSelected extends TravelFormEvent {
   List<Object?> get props => [airport];
 }
 
-// TODO: Add events for arrival airport, dates, nationality, purposes, submission, etc. 
+/// Event triggered when the arrival airport search term changes.
+class TravelFormArrivalAirportSearchTermChanged extends TravelFormEvent {
+  /// The new search term.
+  final String searchTerm;
+
+  /// Creates a [TravelFormArrivalAirportSearchTermChanged] event.
+  const TravelFormArrivalAirportSearchTermChanged(this.searchTerm);
+
+  @override
+  List<Object?> get props => [searchTerm];
+}
+
+/// Event triggered when an arrival airport is selected from suggestions.
+class TravelFormArrivalAirportSelected extends TravelFormEvent {
+  /// The selected airport.
+  final Airport airport;
+
+  /// Creates a [TravelFormArrivalAirportSelected] event.
+  const TravelFormArrivalAirportSelected(this.airport);
+
+  @override
+  List<Object?> get props => [airport];
+}
+
+// TODO: Add events for dates, nationality, purposes, submission, etc. 
