@@ -1,11 +1,14 @@
 import 'dart:async'; // For Future and Timer
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart'; // For Dio and DioError
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/foundation.dart'; // For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
+import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
+import 'package:travel_assistant/common/services/airport_api_service.dart'; // Import service for direct instantiation (temp)
 
 part 'travel_form_event.dart';
 part 'travel_form_state.dart';
@@ -16,10 +19,13 @@ part 'travel_form_state.dart';
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   Timer? _departureAirportDebounce;
   Timer? _arrivalAirportDebounce;
-  // TODO: Inject an AirportRepository or similar service for actual API calls
+  
+  final AirportRepository _airportRepository;
 
-  /// {@macro travel_form_bloc}
-  TravelFormBloc() : super(const TravelFormState()) {
+  // TODO: Use proper Dependency Injection for AirportRepository
+  TravelFormBloc() 
+      : _airportRepository = AirportRepository(apiService: AirportApiService(Dio())), // Direct instantiation (temp)
+        super(const TravelFormState()) {
     on<TravelFormStarted>(_onStarted);
     on<TravelFormNextStepRequested>(_onNextStepRequested);
     on<TravelFormPreviousStepRequested>(_onPreviousStepRequested);
@@ -68,7 +74,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) {
     if (emit.isDone) return;
-    emit(state.copyWith(departureAirportSearchTerm: event.searchTerm));
+    emit(state.copyWith(departureAirportSearchTerm: event.searchTerm, selectedDepartureAirport: () => null)); // Clear selection on new search
 
     if (_departureAirportDebounce?.isActive ?? false) _departureAirportDebounce!.cancel();
     _departureAirportDebounce = Timer(const Duration(milliseconds: 500), () async {
@@ -81,15 +87,22 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       if (emit.isDone) return;
       emit(state.copyWith(isDepartureAirportLoading: true));
       
-      await Future.delayed(const Duration(milliseconds: 750)); // Simulate API call
-      
-      if (emit.isDone) return;
-      final suggestions = _getMockAirportSuggestions(event.searchTerm);
-      if (emit.isDone) return;
-      emit(state.copyWith(
-        departureAirportSuggestions: suggestions,
-        isDepartureAirportLoading: false,
-      ));
+      try {
+        final suggestions = await _airportRepository.searchAirports(event.searchTerm);
+        if (emit.isDone) return;
+        emit(state.copyWith(
+          departureAirportSuggestions: suggestions,
+          isDepartureAirportLoading: false,
+          errorMessage: () => null, // Clear error on success
+        ));
+      } catch (e) {
+        if (emit.isDone) return;
+        emit(state.copyWith(
+          isDepartureAirportLoading: false,
+          departureAirportSuggestions: [], // Clear suggestions on error
+          errorMessage: () => e.toString(), // Show error message
+        ));
+      }
     });
   }
 
@@ -111,7 +124,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) {
     if (emit.isDone) return;
-    emit(state.copyWith(arrivalAirportSearchTerm: event.searchTerm));
+    emit(state.copyWith(arrivalAirportSearchTerm: event.searchTerm, selectedArrivalAirport: () => null)); // Clear selection
 
     if (_arrivalAirportDebounce?.isActive ?? false) _arrivalAirportDebounce!.cancel();
     _arrivalAirportDebounce = Timer(const Duration(milliseconds: 500), () async {
@@ -124,16 +137,22 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       if (emit.isDone) return;
       emit(state.copyWith(isArrivalAirportLoading: true));
       
-      await Future.delayed(const Duration(milliseconds: 750)); // Simulate API call
-      
-      if (emit.isDone) return;
-      final suggestions = _getMockAirportSuggestions(event.searchTerm);
-      final currentState = this.state; 
-      if (emit.isDone) return;
-      emit(currentState.copyWith(
-        arrivalAirportSuggestions: suggestions,
-        isArrivalAirportLoading: false,
-      ));
+      try {
+        final suggestions = await _airportRepository.searchAirports(event.searchTerm);
+        if (emit.isDone) return;
+        emit(state.copyWith(
+          arrivalAirportSuggestions: suggestions,
+          isArrivalAirportLoading: false,
+          errorMessage: () => null, // Clear error on success
+        ));
+      } catch (e) {
+        if (emit.isDone) return;
+        emit(state.copyWith(
+          isArrivalAirportLoading: false,
+          arrivalAirportSuggestions: [], // Clear suggestions on error
+          errorMessage: () => e.toString(), // Show error message
+        ));
+      }
     });
   }
 
@@ -168,27 +187,6 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       selectedDateRange: () => event.dateRange,
       errorMessage: () => null, 
     ));
-  }
-
-  List<Airport> _getMockAirportSuggestions(String query) {
-    final allAirports = [
-      const Airport(iataCode: 'IST', name: 'Istanbul Airport', country: 'Turkey'),
-      const Airport(iataCode: 'SAW', name: 'Sabiha Gokcen Airport', country: 'Turkey'),
-      const Airport(iataCode: 'ESB', name: 'Ankara Esenboga Airport', country: 'Turkey'),
-      const Airport(iataCode: 'JFK', name: 'John F. Kennedy International Airport', country: 'USA'),
-      const Airport(iataCode: 'LAX', name: 'Los Angeles International Airport', country: 'USA'),
-      const Airport(iataCode: 'LHR', name: 'London Heathrow Airport', country: 'UK'),
-      const Airport(iataCode: 'CDG', name: 'Charles de Gaulle Airport', country: 'France'),
-      const Airport(iataCode: 'AMS', name: 'Amsterdam Schiphol', country: 'Netherlands'),
-      const Airport(iataCode: 'FRA', name: 'Frankfurt Airport', country: 'Germany'),
-      const Airport(iataCode: 'BCN', name: 'Barcelona El Prat Airport', country: 'Spain'),
-    ];
-    if (query.isEmpty) return [];
-    return allAirports
-        .where((airport) =>
-            airport.name.toLowerCase().contains(query.toLowerCase()) ||
-            airport.iataCode.toLowerCase().contains(query.toLowerCase()))
-        .toList();
   }
 
   @override
