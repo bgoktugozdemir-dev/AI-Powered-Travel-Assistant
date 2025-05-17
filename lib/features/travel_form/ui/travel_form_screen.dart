@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -31,20 +30,23 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
       if (state.selectedDepartureAirport != null &&
           _departureAirportController.text != state.departureAirportSearchTerm) {
         _departureAirportController.text = state.departureAirportSearchTerm;
-        _departureAirportController.selection = TextSelection.fromPosition(TextPosition(offset: _departureAirportController.text.length));
+        _departureAirportController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _departureAirportController.text.length),
+        );
       }
       // Arrival airport controller update
-      if (state.selectedArrivalAirport != null &&
-          _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
+      if (state.selectedArrivalAirport != null && _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
         _arrivalAirportController.text = state.arrivalAirportSearchTerm;
-        _arrivalAirportController.selection = TextSelection.fromPosition(TextPosition(offset: _arrivalAirportController.text.length));
+        _arrivalAirportController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _arrivalAirportController.text.length),
+        );
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       builder: (context, state) {
@@ -57,19 +59,28 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(l10n.travelFormStepTitle(state.currentStep + 1)),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: <Widget>[
-                if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
-                if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
-                if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
-                const Spacer(), // Pushes navigation to bottom
-                _buildNavigationButtons(context, state, l10n),
-              ],
+          appBar: AppBar(title: Text(l10n.travelFormStepTitle(state.currentStep + 1))),
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
+                          if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
+                          if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildNavigationButtons(context, state, l10n),
+                ],
+              ),
             ),
           ),
         );
@@ -96,15 +107,18 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           },
         ),
         if (state.departureAirportSuggestions.isNotEmpty)
-          SizedBox(
-            height: 200, // Limit suggestion box height
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+            ),
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: state.departureAirportSuggestions.length,
               itemBuilder: (context, index) {
                 final airport = state.departureAirportSuggestions[index];
                 return ListTile(
                   title: Text("${airport.name} (${airport.iataCode})"),
-                  subtitle: Text(airport.country),
+                  subtitle: Text(airport.cityAndCountry),
                   onTap: () {
                     appLogger.i("Departure airport selected: ${airport.name} (${airport.iataCode})");
                     context.read<TravelFormBloc>().add(TravelFormDepartureAirportSelected(airport));
@@ -125,7 +139,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red)),
-          )
+          ),
       ],
     );
   }
@@ -149,15 +163,18 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           },
         ),
         if (state.arrivalAirportSuggestions.isNotEmpty)
-          SizedBox(
-            height: 200,
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.3,
+            ),
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: state.arrivalAirportSuggestions.length,
               itemBuilder: (context, index) {
                 final airport = state.arrivalAirportSuggestions[index];
                 return ListTile(
                   title: Text("${airport.name} (${airport.iataCode})"),
-                  subtitle: Text(airport.country),
+                  subtitle: Text(airport.cityAndCountry),
                   onTap: () {
                     appLogger.i("Arrival airport selected: ${airport.name} (${airport.iataCode})");
                     context.read<TravelFormBloc>().add(TravelFormArrivalAirportSelected(airport));
@@ -178,7 +195,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red)),
-          )
+          ),
       ],
     );
   }
@@ -206,7 +223,8 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
             onPressed: () async {
               appLogger.i("'Select Travel Dates' button pressed.");
-              final initialDateRange = state.selectedDateRange ?? 
+              final initialDateRange =
+                  state.selectedDateRange ??
                   DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 7)));
               final pickedDateRange = await showDateRangePicker(
                 context: context,
@@ -215,9 +233,17 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                 initialDateRange: initialDateRange,
                 // helpText: l10n.selectDatesButtonLabel, // Can customize further
               );
+
+              if (!mounted) {
+                appLogger.w("Widget not mounted after date picker closed");
+                return;
+              }
+
               if (pickedDateRange != null) {
-                appLogger.i("Date range selected: ${DateFormat.yMd().format(pickedDateRange.start)} - ${DateFormat.yMd().format(pickedDateRange.end)}");
-                context.read<TravelFormBloc>().add(TravelFormDateRangeSelected(pickedDateRange));
+                appLogger.i(
+                  "Date range selected: ${DateFormat.yMd().format(pickedDateRange.start)} - ${DateFormat.yMd().format(pickedDateRange.end)}",
+                );
+                this.context.read<TravelFormBloc>().add(TravelFormDateRangeSelected(pickedDateRange));
               } else {
                 appLogger.i("Date range picker cancelled.");
               }
@@ -225,14 +251,12 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        Center(
-          child: Text(selectedDatesText, style: Theme.of(context).textTheme.titleMedium)
-        ),
+        Center(child: Text(selectedDatesText, style: Theme.of(context).textTheme.titleMedium)),
         if (state.errorMessage != null && state.currentStep == 2)
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: Center(child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 16))),
-          )
+          ),
       ],
     );
   }
@@ -244,17 +268,21 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         if (state.currentStep > 0)
           ElevatedButton(
             onPressed: () {
-              appLogger.i("'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep -1}");
+              appLogger.i(
+                "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
+              );
               context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
             },
             child: Text(l10n.navigationPrevious),
           )
         else
-          const SizedBox(), 
+          const SizedBox(),
         if (state.currentStep < state.totalSteps - 1)
           ElevatedButton(
             onPressed: () {
-              appLogger.i("'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}");
+              appLogger.i(
+                "'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}",
+              );
               bool canProceed = true;
               String? validationError;
               if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
@@ -269,13 +297,13 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               }
 
               if (canProceed) {
-                 appLogger.i("Validation passed, moving to next step.");
-                 context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
+                appLogger.i("Validation passed, moving to next step.");
+                context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
               } else if (validationError != null) {
-                 appLogger.w("Validation failed for step ${state.currentStep}: $validationError");
-                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(validationError), backgroundColor: Colors.red)
-                 );
+                appLogger.w("Validation failed for step ${state.currentStep}: $validationError");
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(validationError), backgroundColor: Colors.red));
               }
             },
             child: Text(l10n.navigationNext),
@@ -284,9 +312,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           ElevatedButton(
             onPressed: () {
               appLogger.i("'Get Travel Plan' (Submit) button pressed.");
-              ScaffoldMessenger.of(context).showSnackBar(
-                 SnackBar(content: Text(l10n.submittingForm))
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.submittingForm)));
             },
             child: Text(l10n.navigationSubmit),
           ),
@@ -300,4 +326,4 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
     _arrivalAirportController.dispose();
     super.dispose();
   }
-} 
+}

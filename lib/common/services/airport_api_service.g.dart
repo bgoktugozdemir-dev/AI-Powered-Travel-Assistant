@@ -8,16 +8,20 @@ part of 'airport_api_service.dart';
 
 AirportFields _$AirportFieldsFromJson(Map<String, dynamic> json) =>
     AirportFields(
-      iataCode: json['iata_code'] as String?,
-      name: json['name'] as String?,
-      country: json['country'] as String?,
+      iataCode: json['column_1'] as String,
+      name: json['airport_name'] as String,
+      countryCode: json['country_code'] as String,
+      countryName: json['country_name'] as String,
+      cityName: json['city_name'] as String,
     );
 
 Map<String, dynamic> _$AirportFieldsToJson(AirportFields instance) =>
     <String, dynamic>{
-      'iata_code': instance.iataCode,
-      'name': instance.name,
-      'country': instance.country,
+      'column_1': instance.iataCode,
+      'airport_name': instance.name,
+      'country_code': instance.countryCode,
+      'country_name': instance.countryName,
+      'city_name': instance.cityName,
     };
 
 // **************************************************************************

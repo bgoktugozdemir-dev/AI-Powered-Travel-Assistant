@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Airport {
 
- String get iataCode; String get name; String get country;
+ String get iataCode; String get name; String get countryCode; String get countryName; String get cityName;
 /// Create a copy of Airport
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $AirportCopyWith<Airport> get copyWith => _$AirportCopyWithImpl<Airport>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Airport&&(identical(other.iataCode, iataCode) || other.iataCode == iataCode)&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Airport&&(identical(other.iataCode, iataCode) || other.iataCode == iataCode)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.countryName, countryName) || other.countryName == countryName)&&(identical(other.cityName, cityName) || other.cityName == cityName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,iataCode,name,country);
+int get hashCode => Object.hash(runtimeType,iataCode,name,countryCode,countryName,cityName);
 
 @override
 String toString() {
-  return 'Airport(iataCode: $iataCode, name: $name, country: $country)';
+  return 'Airport(iataCode: $iataCode, name: $name, countryCode: $countryCode, countryName: $countryName, cityName: $cityName)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $AirportCopyWith<$Res>  {
   factory $AirportCopyWith(Airport value, $Res Function(Airport) _then) = _$AirportCopyWithImpl;
 @useResult
 $Res call({
- String iataCode, String name, String country
+ String iataCode, String name, String countryCode, String countryName, String cityName
 });
 
 
@@ -66,11 +66,13 @@ class _$AirportCopyWithImpl<$Res>
 
 /// Create a copy of Airport
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? iataCode = null,Object? name = null,Object? country = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? iataCode = null,Object? name = null,Object? countryCode = null,Object? countryName = null,Object? cityName = null,}) {
   return _then(_self.copyWith(
 iataCode: null == iataCode ? _self.iataCode : iataCode // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String,countryCode: null == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
+as String,countryName: null == countryName ? _self.countryName : countryName // ignore: cast_nullable_to_non_nullable
+as String,cityName: null == cityName ? _self.cityName : cityName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -81,13 +83,15 @@ as String,
 /// @nodoc
 @JsonSerializable()
 
-class _Airport implements Airport {
-  const _Airport({required this.iataCode, required this.name, required this.country});
+class _Airport extends Airport {
+  const _Airport({required this.iataCode, required this.name, required this.countryCode, required this.countryName, required this.cityName}): super._();
   factory _Airport.fromJson(Map<String, dynamic> json) => _$AirportFromJson(json);
 
 @override final  String iataCode;
 @override final  String name;
-@override final  String country;
+@override final  String countryCode;
+@override final  String countryName;
+@override final  String cityName;
 
 /// Create a copy of Airport
 /// with the given fields replaced by the non-null parameter values.
@@ -102,16 +106,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Airport&&(identical(other.iataCode, iataCode) || other.iataCode == iataCode)&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Airport&&(identical(other.iataCode, iataCode) || other.iataCode == iataCode)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.countryName, countryName) || other.countryName == countryName)&&(identical(other.cityName, cityName) || other.cityName == cityName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,iataCode,name,country);
+int get hashCode => Object.hash(runtimeType,iataCode,name,countryCode,countryName,cityName);
 
 @override
 String toString() {
-  return 'Airport(iataCode: $iataCode, name: $name, country: $country)';
+  return 'Airport(iataCode: $iataCode, name: $name, countryCode: $countryCode, countryName: $countryName, cityName: $cityName)';
 }
 
 
@@ -122,7 +126,7 @@ abstract mixin class _$AirportCopyWith<$Res> implements $AirportCopyWith<$Res> {
   factory _$AirportCopyWith(_Airport value, $Res Function(_Airport) _then) = __$AirportCopyWithImpl;
 @override @useResult
 $Res call({
- String iataCode, String name, String country
+ String iataCode, String name, String countryCode, String countryName, String cityName
 });
 
 
@@ -139,11 +143,13 @@ class __$AirportCopyWithImpl<$Res>
 
 /// Create a copy of Airport
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? iataCode = null,Object? name = null,Object? country = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? iataCode = null,Object? name = null,Object? countryCode = null,Object? countryName = null,Object? cityName = null,}) {
   return _then(_Airport(
 iataCode: null == iataCode ? _self.iataCode : iataCode // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String,countryCode: null == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
+as String,countryName: null == countryName ? _self.countryName : countryName // ignore: cast_nullable_to_non_nullable
+as String,cityName: null == cityName ? _self.cityName : cityName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

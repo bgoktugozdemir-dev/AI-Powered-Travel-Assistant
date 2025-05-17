@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:travel_assistant/common/models/airport.dart';
 
 part 'airport_api_service.g.dart';
 
@@ -15,9 +14,8 @@ class AirportApiResponse {
 
   factory AirportApiResponse.fromJson(Map<String, dynamic> json) {
     return AirportApiResponse(
-      records: (json['records'] as List<dynamic>?)
-          ?.map((e) => AirportRecord.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      records:
+          (json['records'] as List<dynamic>?)?.map((e) => AirportRecord.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 }
@@ -30,9 +28,7 @@ class AirportRecord {
 
   factory AirportRecord.fromJson(Map<String, dynamic> json) {
     return AirportRecord(
-      fields: json['fields'] != null
-          ? AirportFields.fromJson(json['fields'] as Map<String, dynamic>)
-          : null,
+      fields: json['fields'] != null ? AirportFields.fromJson(json['fields'] as Map<String, dynamic>) : null,
     );
   }
 }
@@ -42,14 +38,25 @@ class AirportRecord {
 // For now, assuming direct mapping or slight variations.
 @JsonSerializable()
 class AirportFields {
-  @JsonKey(name: 'iata_code') // Assuming API field name is iata_code
-  String? iataCode;
-  String? name; // Assuming API field name is 'name' or similar like 'airport_name'
-  @JsonKey(name: 'country') // Assuming API field name is 'country' or 'country_name'
-  String? country;
+  @JsonKey(name: 'column_1') // Assuming API field name is column_1
+  final String iataCode;
+  @JsonKey(name: 'airport_name') // Assuming API field name is airport_name
+  final String name; // Assuming API field name is 'name' or similar like 'airport_name'
+  @JsonKey(name: 'country_code') // Assuming API field name is 'country_code'
+  final String countryCode;
+  @JsonKey(name: 'country_name') // Assuming API field name is 'country_name'
+  final String countryName;
+  @JsonKey(name: 'city_name') // Assuming API field name is 'city_name'
+  final String cityName;
   // Add other fields if needed, e.g., city, coordinates
 
-  AirportFields({this.iataCode, this.name, this.country});
+  AirportFields({
+    required this.iataCode,
+    required this.name,
+    required this.countryCode,
+    required this.countryName,
+    required this.cityName,
+  });
 
   factory AirportFields.fromJson(Map<String, dynamic> json) => _$AirportFieldsFromJson(json);
   Map<String, dynamic> toJson() => _$AirportFieldsToJson(this);
@@ -62,14 +69,14 @@ abstract class AirportApiService {
   factory AirportApiService(Dio dio, {String baseUrl}) = _AirportApiService;
 
   /// Searches for airports based on a query string.
-  /// 
+  ///
   /// The [query] will be used to search against airport names, IATA codes, etc.
   /// The `dataset` parameter is fixed for this specific airport dataset.
   /// We use a wrapper [AirportApiResponse] to parse the outer structure of the API response.
   @GET("/search/")
   Future<AirportApiResponse> searchAirports(
     @Query("dataset") String datasetId, // Should be 'airports-code@public'
-    @Query("q") String query,
-    {@Query("rows") int rows = 10}
-  );
-} 
+    @Query("q") String query, {
+    @Query("rows") int rows = 10,
+  });
+}

@@ -46,3 +46,12 @@ alwaysApply: true
 - All code and UI must strictly adhere to these rules.
 - If any rule is impossible to implement, clearly state why and suggest a solution.
 - After completing each task, stage all relevant changes and commit with a descriptive message reflecting the task. Do not skip this step.
+- For every file that contains configurable or tunable parameters (such as `maxAttempts`, `minLengthToSearch`, etc.), define an `abstract class _Constants {}` at the top of the file.
+- Add all such parameters as `static const` fields inside this class.
+- Do not hardcode such values elsewhere in the file; always use the constants from `_Constants`.
+- Example:
+  ```dart
+  abstract class _Constants {
+    static const int maxAttempts = 3;
+    static const int minLengthToSearch = 2;
+  }

@@ -9,11 +9,15 @@ part of 'airport.dart';
 _Airport _$AirportFromJson(Map<String, dynamic> json) => _Airport(
   iataCode: json['iataCode'] as String,
   name: json['name'] as String,
-  country: json['country'] as String,
+  countryCode: json['countryCode'] as String,
+  countryName: json['countryName'] as String,
+  cityName: json['cityName'] as String,
 );
 
 Map<String, dynamic> _$AirportToJson(_Airport instance) => <String, dynamic>{
   'iataCode': instance.iataCode,
   'name': instance.name,
-  'country': instance.country,
+  'countryCode': instance.countryCode,
+  'countryName': instance.countryName,
+  'cityName': instance.cityName,
 };
