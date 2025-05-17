@@ -71,6 +71,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     // Travel Purposes
     on<LoadTravelPurposesEvent>(_onLoadTravelPurposes);
     on<ToggleTravelPurposeEvent>(_onToggleTravelPurpose);
+    // Form Submission
+    on<SubmitTravelFormEvent>(_onSubmitTravelForm);
   }
 
   /// Initialize all required services
@@ -287,5 +289,40 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     emit(state.copyWith(
       selectedTravelPurposes: currentPurposes,
     ));
+  }
+
+  // --- Form Submission Handler ---
+  Future<void> _onSubmitTravelForm(
+    SubmitTravelFormEvent event,
+    Emitter<TravelFormState> emit,
+  ) async {
+    // Check if form is valid before submission
+    if (!state.isFormValid) {
+      emit(state.copyWith(
+        formSubmissionStatus: FormSubmissionStatus.failure,
+        errorMessage: () => "Please complete all required fields before submitting."
+      ));
+      return;
+    }
+
+    // Start submission process
+    emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.submitting));
+
+    try {
+      // Simulate API call with delay
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Successful form submission
+      emit(state.copyWith(
+        formSubmissionStatus: FormSubmissionStatus.success,
+        errorMessage: () => null,
+      ));
+    } catch (e) {
+      // Handle submission error
+      emit(state.copyWith(
+        formSubmissionStatus: FormSubmissionStatus.failure,
+        errorMessage: () => e.toString(),
+      ));
+    }
   }
 } 

@@ -6,6 +6,7 @@ import 'package:travel_assistant/common/models/country.dart'; // Import the Coun
 import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_purpose_step.dart'; // Import the TravelPurposeStep
+import 'package:travel_assistant/features/results/ui/results_screen.dart'; // Import the ResultsScreen
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Screen for users to input their travel details using a multi-step form.
@@ -27,7 +28,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
     appLogger.i("TravelFormScreen initialized. Current step: ${context.read<TravelFormBloc>().state.currentStep}");
     // context.read<TravelFormBloc>().add(TravelFormStarted()); // Moved to MyApp
 
-    // Listen to BLoC state changes to update TextEditingControllers if needed
+    // Listen to BLoC state changes to update TextEditingControllers and handle navigation
     context.read<TravelFormBloc>().stream.listen((state) {
       // Departure airport controller update
       if (state.selectedDepartureAirport != null &&
@@ -42,6 +43,16 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         _arrivalAirportController.text = state.arrivalAirportSearchTerm;
         _arrivalAirportController.selection = TextSelection.fromPosition(
           TextPosition(offset: _arrivalAirportController.text.length),
+        );
+      }
+
+      // Navigate to results screen if form submission is successful
+      if (state.formSubmissionStatus == FormSubmissionStatus.success && mounted) {
+        appLogger.i("Form submission successful, navigating to results screen");
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResultsScreen(),
+          ),
         );
       }
     });
@@ -61,32 +72,56 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           // For now, this is a simplified sync.
         }
 
+        // Show loading indicator when submitting
+        final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
+
         return Scaffold(
           appBar: AppBar(title: Text(l10n.travelFormStepTitle(state.currentStep + 1))),
           resizeToAvoidBottomInset: true,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
-                          if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
-                          if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
-                          if (state.currentStep == 3) _buildNationalityStep(context, state, l10n),
-                          if (state.currentStep == 4) const TravelPurposeStep(),
-                        ],
+          body: Stack(
+            children: [
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
+                              if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
+                              if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
+                              if (state.currentStep == 3) _buildNationalityStep(context, state, l10n),
+                              if (state.currentStep == 4) const TravelPurposeStep(),
+                            ],
+                          ),
+                        ),
                       ),
+                      _buildNavigationButtons(context, state, l10n),
+                    ],
+                  ),
+                ),
+              ),
+              if (isSubmitting)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.submittingForm,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
-                  _buildNavigationButtons(context, state, l10n),
-                ],
-              ),
-            ),
+                ),
+            ],
           ),
         );
       },
@@ -345,12 +380,15 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
   }
 
   Widget _buildNavigationButtons(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+    // Disable buttons when submitting
+    final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         if (state.currentStep > 0)
           ElevatedButton(
-            onPressed: () {
+            onPressed: isSubmitting ? null : () {
               appLogger.i(
                 "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
               );
@@ -362,7 +400,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           const SizedBox(),
         if (state.currentStep < state.totalSteps - 1)
           ElevatedButton(
-            onPressed: () {
+            onPressed: isSubmitting ? null : () {
               appLogger.i(
                 "'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}",
               );
@@ -399,9 +437,19 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           )
         else if (state.currentStep == state.totalSteps - 1)
           ElevatedButton(
-            onPressed: () {
+            onPressed: isSubmitting ? null : () {
               appLogger.i("'Get Travel Plan' (Submit) button pressed.");
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.submittingForm)));
+              // Check form validity one more time before submission
+              if (state.isFormValid) {
+                context.read<TravelFormBloc>().add(const SubmitTravelFormEvent());
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.validationErrorTravelPurposeMissing),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: Text(l10n.navigationSubmit),
           ),

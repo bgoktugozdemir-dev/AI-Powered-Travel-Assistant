@@ -147,5 +147,37 @@
   "submittingForm": "Submitting form...",
   "@submittingForm": {
     "description": "Message shown when the form is being submitted"
+  },
+  "yourTravelPlan": "Your Travel Plan",
+  "@yourTravelPlan": {
+    "description": "Title for the travel plan section in the results screen"
+  },
+  "fromLabel": "From",
+  "@fromLabel": {
+    "description": "Label for departure location in results"
+  },
+  "toLabel": "To",
+  "@toLabel": {
+    "description": "Label for arrival location in results"
+  },
+  "datesLabel": "Dates",
+  "@datesLabel": {
+    "description": "Label for travel dates in results"
+  },
+  "nationalityLabel": "Nationality",
+  "@nationalityLabel": {
+    "description": "Label for nationality in results"
+  },
+  "travelPurposesLabel": "Travel Purposes",
+  "@travelPurposesLabel": {
+    "description": "Label for travel purposes in results"
+  },
+  "recommendationsTitle": "Recommendations",
+  "@recommendationsTitle": {
+    "description": "Title for the recommendations section"
+  },
+  "planAnotherTrip": "Plan Another Trip",
+  "@planAnotherTrip": {
+    "description": "Button text to start planning another trip"
   }
 } 

@@ -147,5 +147,37 @@
   "submittingForm": "Form gönderiliyor...",
   "@submittingForm": {
     "description": "Message shown when the form is being submitted"
+  },
+  "yourTravelPlan": "Seyahat Planınız",
+  "@yourTravelPlan": {
+    "description": "Title for the travel plan section in the results screen"
+  },
+  "fromLabel": "Nereden",
+  "@fromLabel": {
+    "description": "Label for departure location in results"
+  },
+  "toLabel": "Nereye",
+  "@toLabel": {
+    "description": "Label for arrival location in results"
+  },
+  "datesLabel": "Tarihler",
+  "@datesLabel": {
+    "description": "Label for travel dates in results"
+  },
+  "nationalityLabel": "Milliyet",
+  "@nationalityLabel": {
+    "description": "Label for nationality in results"
+  },
+  "travelPurposesLabel": "Seyahat Amaçları",
+  "@travelPurposesLabel": {
+    "description": "Label for travel purposes in results"
+  },
+  "recommendationsTitle": "Öneriler",
+  "@recommendationsTitle": {
+    "description": "Title for the recommendations section"
+  },
+  "planAnotherTrip": "Başka Bir Seyahat Planla",
+  "@planAnotherTrip": {
+    "description": "Button text to start planning another trip"
   }
 } 

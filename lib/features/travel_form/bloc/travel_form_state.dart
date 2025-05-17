@@ -1,5 +1,20 @@
 part of 'travel_form_bloc.dart';
 
+/// Status of form submission
+enum FormSubmissionStatus {
+  /// Initial status, form not submitted
+  initial,
+  
+  /// Form submission in progress
+  submitting,
+  
+  /// Form successfully submitted
+  success,
+  
+  /// Form submission failed
+  failure
+}
+
 /// Represents the state of the travel form.
 @immutable
 class TravelFormState extends Equatable {
@@ -45,6 +60,9 @@ class TravelFormState extends Equatable {
   /// Flag indicating if travel purposes are being loaded.
   final bool isTravelPurposesLoading;
 
+  /// The status of form submission.
+  final FormSubmissionStatus formSubmissionStatus;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
 
@@ -69,6 +87,7 @@ class TravelFormState extends Equatable {
     this.availableTravelPurposes = const [],
     this.selectedTravelPurposes = const [],
     this.isTravelPurposesLoading = false,
+    this.formSubmissionStatus = FormSubmissionStatus.initial,
     this.errorMessage,
   });
 
@@ -91,6 +110,7 @@ class TravelFormState extends Equatable {
     List<TravelPurpose>? availableTravelPurposes,
     List<TravelPurpose>? selectedTravelPurposes,
     bool? isTravelPurposesLoading,
+    FormSubmissionStatus? formSubmissionStatus,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -112,9 +132,18 @@ class TravelFormState extends Equatable {
       availableTravelPurposes: availableTravelPurposes ?? this.availableTravelPurposes,
       selectedTravelPurposes: selectedTravelPurposes ?? this.selectedTravelPurposes,
       isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
+      formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
+
+  /// Returns true if the form is valid and can be submitted.
+  bool get isFormValid => 
+    selectedDepartureAirport != null &&
+    selectedArrivalAirport != null &&
+    selectedDateRange != null &&
+    selectedNationality != null &&
+    selectedTravelPurposes.isNotEmpty;
 
   @override
   List<Object?> get props => [
@@ -136,6 +165,7 @@ class TravelFormState extends Equatable {
         availableTravelPurposes,
         selectedTravelPurposes,
         isTravelPurposesLoading,
+        formSubmissionStatus,
         errorMessage,
       ];
 } 

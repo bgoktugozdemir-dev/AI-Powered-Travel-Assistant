@@ -127,4 +127,10 @@ class ToggleTravelPurposeEvent extends TravelFormEvent {
   List<Object?> get props => [purpose, isSelected];
 }
 
+/// Event triggered when the form is submitted to generate a travel plan.
+class SubmitTravelFormEvent extends TravelFormEvent {
+  /// Creates a [SubmitTravelFormEvent] event.
+  const SubmitTravelFormEvent();
+}
+
 // TODO: Add events for travel purposes, submission, etc. 
