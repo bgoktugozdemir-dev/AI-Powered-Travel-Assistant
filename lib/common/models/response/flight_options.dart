@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'flight_options.g.dart';
@@ -97,6 +96,6 @@ class Flight {
 
   static Duration _durationFromJson(int duration) => Duration(minutes: duration);
 
-  static List<Duration>? _durationListFromJson(List<int>? durations) =>
-      durations?.map((duration) => _durationFromJson(duration)).toList();
+  static List<Duration>? _durationListFromJson(List<dynamic>? durations) =>
+      durations?.map((duration) => _durationFromJson(int.parse(duration.toString()))).toList();
 }

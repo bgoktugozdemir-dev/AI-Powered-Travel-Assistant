@@ -237,5 +237,27 @@
         "example": "1"
       }
     }
+  },
+  "cityInformationTitle": "Şehir Bilgisi",
+  "@cityInformationTitle": {
+    "description": "Title for the city information card in results"
+  },
+  "cityCardCrowdLevelLabel": "Kalabalık Seviyesi",
+  "@cityCardCrowdLevelLabel": {
+    "description": "Label for the crowd level in the city card"
+  },
+  "cityCardWeatherForecastTitle": "Hava Durumu Tahmini",
+  "@cityCardWeatherForecastTitle": {
+    "description": "Title for the weather forecast section in the city card"
+  },
+  "photoAttributionFormat": "Fotoğraf: {photographerName} (Unsplash)",
+  "@photoAttributionFormat": {
+    "description": "Format for photo attribution text",
+    "placeholders": {
+      "photographerName": {
+        "type": "String",
+        "example": "John Smith"
+      }
+    }
   }
 } 

@@ -237,5 +237,27 @@
         "example": "1"
       }
     }
+  },
+  "cityInformationTitle": "City Information",
+  "@cityInformationTitle": {
+    "description": "Title for the city information card in results"
+  },
+  "cityCardCrowdLevelLabel": "Crowd Level",
+  "@cityCardCrowdLevelLabel": {
+    "description": "Label for the crowd level in the city card"
+  },
+  "cityCardWeatherForecastTitle": "Weather Forecast",
+  "@cityCardWeatherForecastTitle": {
+    "description": "Title for the weather forecast section in the city card"
+  },
+  "photoAttributionFormat": "Photo by {photographerName} on Unsplash",
+  "@photoAttributionFormat": {
+    "description": "Format for photo attribution text",
+    "placeholders": {
+      "photographerName": {
+        "type": "String",
+        "example": "John Smith"
+      }
+    }
   }
 } 
