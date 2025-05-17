@@ -30,6 +30,48 @@
   "@arrivalAirportHintText": {
     "description": "Varış havaalanı arama alanı için ipucu metni"
   },
+  "travelDatesStepTitle": "Ne zaman seyahat ediyorsunuz?",
+  "@travelDatesStepTitle": {
+    "description": "Seyahat tarihleri seçim adımı için başlık"
+  },
+  "selectDatesButtonLabel": "Seyahat Tarihlerini Seçin",
+  "@selectDatesButtonLabel": {
+    "description": "Tarih aralığı seçiciyi açmak için düğme etiketi"
+  },
+  "selectedDatesLabel": "Seçilen: {startDate} - {endDate}",
+  "@selectedDatesLabel": {
+    "description": "Seçilen başlangıç ve bitiş tarihlerini gösteren etiket",
+    "placeholders": {
+      "startDate": {
+        "type": "String",
+        "example": "15-07-2024"
+      },
+      "endDate": {
+        "type": "String",
+        "example": "20-07-2024"
+      }
+    }
+  },
+  "noDatesSelected": "Tarih seçilmedi",
+  "@noDatesSelected": {
+    "description": "Henüz seyahat tarihi seçilmediğinde gösterilen metin"
+  },
+  "errorInvalidDateRange": "Bitiş tarihi başlangıç tarihinden önce olamaz.",
+  "@errorInvalidDateRange": {
+    "description": "Geçersiz tarih aralığı seçimi için hata mesajı"
+  },
+  "validationErrorDepartureAirportMissing": "Lütfen bir kalkış havaalanı seçin.",
+  "@validationErrorDepartureAirportMissing": {
+    "description": "Kalkış havaalanı seçilmediyse doğrulama hatası"
+  },
+  "validationErrorArrivalAirportMissing": "Lütfen bir varış havaalanı seçin.",
+  "@validationErrorArrivalAirportMissing": {
+    "description": "Varış havaalanı seçilmediyse doğrulama hatası"
+  },
+  "validationErrorDateRangeMissing": "Lütfen seyahat tarihlerini seçin.",
+  "@validationErrorDateRangeMissing": {
+    "description": "Seyahat tarihleri seçilmediyse doğrulama hatası"
+  },
   "selectedAirportLabel": "Seçildi: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
     "description": "Bir havaalanı seçildiğinde görüntülenen etiket, adını ve kodunu gösterir",

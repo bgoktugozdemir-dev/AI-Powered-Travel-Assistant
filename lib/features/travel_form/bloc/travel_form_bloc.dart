@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/foundation.dart'; // For ValueGetter
+import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
 
 part 'travel_form_event.dart';
@@ -28,6 +29,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     // Arrival Airport
     on<TravelFormArrivalAirportSearchTermChanged>(_onArrivalAirportSearchTermChanged);
     on<TravelFormArrivalAirportSelected>(_onArrivalAirportSelected);
+    // Travel Dates
+    on<TravelFormDateRangeSelected>(_onDateRangeSelected);
   }
 
   void _onStarted(
@@ -43,6 +46,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) {
     if (emit.isDone) return;
+    // TODO: Add validation for current step before proceeding
     if (state.currentStep < state.totalSteps - 1) {
       emit(state.copyWith(currentStep: state.currentStep + 1));
     }
@@ -124,8 +128,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       
       if (emit.isDone) return;
       final suggestions = _getMockAirportSuggestions(event.searchTerm);
-      // Ensure not to mix up with departure suggestions if state isn't fresh
-      final currentState = this.state; // capture current state before emit
+      final currentState = this.state; 
       if (emit.isDone) return;
       emit(currentState.copyWith(
         arrivalAirportSuggestions: suggestions,
@@ -143,6 +146,27 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       selectedArrivalAirport: () => event.airport,
       arrivalAirportSearchTerm: event.airport.name,
       arrivalAirportSuggestions: [], 
+    ));
+  }
+
+  // --- Travel Dates Handler ---
+  void _onDateRangeSelected(
+    TravelFormDateRangeSelected event,
+    Emitter<TravelFormState> emit,
+  ) {
+    if (emit.isDone) return;
+    if (event.dateRange.end.isBefore(event.dateRange.start)) {
+      // TODO: This error message is set directly. Consider if it should come from AppLocalizations.
+      // For BLoC-level errors that are not directly tied to a specific UI build context,
+      // it might be acceptable to have the string here, or pass a localized string from UI if preferred.
+      // For now, leaving as is, but it will not be automatically localized based on current AppLocalizations instance.
+      // A better approach might be to emit an error *code* or specific error state, and let UI decide localization.
+      emit(state.copyWith(errorMessage: () => "End date cannot be before start date. See AppLocalizations.errorInvalidDateRange")); // Placeholder for actual localization strategy
+      return;
+    }
+    emit(state.copyWith(
+      selectedDateRange: () => event.dateRange,
+      errorMessage: () => null, 
     ));
   }
 

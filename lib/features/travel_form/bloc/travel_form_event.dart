@@ -67,4 +67,16 @@ class TravelFormArrivalAirportSelected extends TravelFormEvent {
   List<Object?> get props => [airport];
 }
 
+/// Event triggered when a date range is selected.
+class TravelFormDateRangeSelected extends TravelFormEvent {
+  /// The selected date range.
+  final DateTimeRange dateRange;
+
+  /// Creates a [TravelFormDateRangeSelected] event.
+  const TravelFormDateRangeSelected(this.dateRange);
+
+  @override
+  List<Object?> get props => [dateRange];
+}
+
 // TODO: Add events for dates, nationality, purposes, submission, etc. 

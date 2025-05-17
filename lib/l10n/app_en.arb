@@ -30,6 +30,48 @@
   "@arrivalAirportHintText": {
     "description": "Hint text for the arrival airport search field"
   },
+  "travelDatesStepTitle": "When are you travelling?",
+  "@travelDatesStepTitle": {
+    "description": "Title for the travel dates selection step"
+  },
+  "selectDatesButtonLabel": "Select Travel Dates",
+  "@selectDatesButtonLabel": {
+    "description": "Button label to open the date range picker"
+  },
+  "selectedDatesLabel": "Selected: {startDate} - {endDate}",
+  "@selectedDatesLabel": {
+    "description": "Label displaying the selected start and end dates",
+    "placeholders": {
+      "startDate": {
+        "type": "String",
+        "example": "2024-07-15"
+      },
+      "endDate": {
+        "type": "String",
+        "example": "2024-07-20"
+      }
+    }
+  },
+  "noDatesSelected": "No dates selected",
+  "@noDatesSelected": {
+    "description": "Text shown when no travel dates have been selected yet"
+  },
+  "errorInvalidDateRange": "End date cannot be before start date.",
+  "@errorInvalidDateRange": {
+    "description": "Error message for invalid date range selection"
+  },
+  "validationErrorDepartureAirportMissing": "Please select a departure airport.",
+  "@validationErrorDepartureAirportMissing": {
+    "description": "Validation error if departure airport is not selected"
+  },
+  "validationErrorArrivalAirportMissing": "Please select an arrival airport.",
+  "@validationErrorArrivalAirportMissing": {
+    "description": "Validation error if arrival airport is not selected"
+  },
+  "validationErrorDateRangeMissing": "Please select travel dates.",
+  "@validationErrorDateRangeMissing": {
+    "description": "Validation error if travel dates are not selected"
+  },
   "selectedAirportLabel": "Selected: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
     "description": "Label displayed when an airport is selected, showing its name and code",

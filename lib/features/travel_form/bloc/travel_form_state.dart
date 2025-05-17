@@ -26,6 +26,9 @@ class TravelFormState extends Equatable {
   /// Flag indicating if arrival airport suggestions are being loaded.
   final bool isArrivalAirportLoading;
 
+  /// Travel dates selected by the user.
+  final DateTimeRange? selectedDateRange;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
 
@@ -44,6 +47,7 @@ class TravelFormState extends Equatable {
     this.arrivalAirportSuggestions = const [],
     this.selectedArrivalAirport,
     this.isArrivalAirportLoading = false,
+    this.selectedDateRange,
     this.errorMessage,
   });
 
@@ -58,6 +62,7 @@ class TravelFormState extends Equatable {
     List<Airport>? arrivalAirportSuggestions,
     ValueGetter<Airport?>? selectedArrivalAirport,
     bool? isArrivalAirportLoading,
+    ValueGetter<DateTimeRange?>? selectedDateRange, // Use ValueGetter for explicit null setting
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -71,6 +76,7 @@ class TravelFormState extends Equatable {
       arrivalAirportSuggestions: arrivalAirportSuggestions ?? this.arrivalAirportSuggestions,
       selectedArrivalAirport: selectedArrivalAirport != null ? selectedArrivalAirport() : this.selectedArrivalAirport,
       isArrivalAirportLoading: isArrivalAirportLoading ?? this.isArrivalAirportLoading,
+      selectedDateRange: selectedDateRange != null ? selectedDateRange() : this.selectedDateRange,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -87,6 +93,7 @@ class TravelFormState extends Equatable {
         arrivalAirportSuggestions,
         selectedArrivalAirport,
         isArrivalAirportLoading,
+        selectedDateRange,
         errorMessage,
       ];
 } 

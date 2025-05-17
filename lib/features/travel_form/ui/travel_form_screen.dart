@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart'; // For date formatting
 import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -63,7 +64,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               children: <Widget>[
                 if (state.currentStep == 0) _buildDepartureAirportStep(context, state, l10n),
                 if (state.currentStep == 1) _buildArrivalAirportStep(context, state, l10n),
-                // TODO: Add widgets for other steps (2 to 4)
+                if (state.currentStep == 2) _buildTravelDatesStep(context, state, l10n),
                 const Spacer(), // Pushes navigation to bottom
                 _buildNavigationButtons(context, state, l10n),
               ],
@@ -176,6 +177,56 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
     );
   }
 
+  Widget _buildTravelDatesStep(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+    final dateFormat = DateFormat.yMMMd(l10n.localeName); // Use locale for date format
+    String selectedDatesText;
+    if (state.selectedDateRange == null) {
+      selectedDatesText = l10n.noDatesSelected;
+    } else {
+      final startDate = dateFormat.format(state.selectedDateRange!.start);
+      final endDate = dateFormat.format(state.selectedDateRange!.end);
+      selectedDatesText = l10n.selectedDatesLabel(startDate, endDate);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(l10n.travelDatesStepTitle, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 24),
+        Center(
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.calendar_month),
+            label: Text(l10n.selectDatesButtonLabel),
+            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
+            onPressed: () async {
+              final initialDateRange = state.selectedDateRange ?? 
+                  DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 7)));
+              final pickedDateRange = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime.now().subtract(const Duration(days: 30)), // Allow past 30 days for flexibility
+                lastDate: DateTime.now().add(const Duration(days: 365 * 2)), // Allow up to 2 years in future
+                initialDateRange: initialDateRange,
+                // helpText: l10n.selectDatesButtonLabel, // Can customize further
+              );
+              if (pickedDateRange != null) {
+                context.read<TravelFormBloc>().add(TravelFormDateRangeSelected(pickedDateRange));
+              }
+            },
+          ),
+        ),
+        const SizedBox(height: 24),
+        Center(
+          child: Text(selectedDatesText, style: Theme.of(context).textTheme.titleMedium)
+        ),
+        if (state.errorMessage != null && state.currentStep == 2)
+           Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Center(child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 16))),
+          )
+      ],
+    );
+  }
+
   Widget _buildNavigationButtons(BuildContext context, TravelFormState state, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -186,21 +237,41 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
             },
             child: Text(l10n.navigationPrevious),
-          ),
+          )
+        else
+          const SizedBox(), 
         if (state.currentStep < state.totalSteps - 1)
           ElevatedButton(
             onPressed: () {
-              // TODO: Add validation before allowing next step
-              context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
+              bool canProceed = true;
+              String? validationError;
+              if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
+                canProceed = false;
+                validationError = l10n.validationErrorDepartureAirportMissing;
+              } else if (state.currentStep == 1 && state.selectedArrivalAirport == null) {
+                canProceed = false;
+                validationError = l10n.validationErrorArrivalAirportMissing;
+              } else if (state.currentStep == 2 && state.selectedDateRange == null) {
+                canProceed = false;
+                validationError = l10n.validationErrorDateRangeMissing;
+              }
+
+              if (canProceed) {
+                 context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
+              } else if (validationError != null) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(validationError), backgroundColor: Colors.red)
+                 );
+              }
             },
             child: Text(l10n.navigationNext),
           )
         else if (state.currentStep == state.totalSteps - 1)
           ElevatedButton(
             onPressed: () {
-              // TODO: Add validation and then submit form / call AI
+              // TODO: Add final validation and then submit form / call AI
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.submittingForm))
+                 SnackBar(content: Text(l10n.submittingForm))
               );
             },
             child: Text(l10n.navigationSubmit),
