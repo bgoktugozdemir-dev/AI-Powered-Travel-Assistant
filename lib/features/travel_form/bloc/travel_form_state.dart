@@ -75,6 +75,9 @@ class TravelFormState extends Equatable {
   /// The status of form submission.
   final FormSubmissionStatus formSubmissionStatus;
 
+  /// The generated travel plan.
+  final TravelDetails? travelPlan;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
 
@@ -100,6 +103,7 @@ class TravelFormState extends Equatable {
     this.selectedTravelPurposes = const [],
     this.isTravelPurposesLoading = false,
     this.formSubmissionStatus = FormSubmissionStatus.initial,
+    this.travelPlan,
     this.errorMessage,
   });
 
@@ -123,6 +127,7 @@ class TravelFormState extends Equatable {
     List<TravelPurpose>? selectedTravelPurposes,
     bool? isTravelPurposesLoading,
     FormSubmissionStatus? formSubmissionStatus,
+    TravelDetails? travelPlan,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -146,6 +151,7 @@ class TravelFormState extends Equatable {
       selectedTravelPurposes: selectedTravelPurposes ?? this.selectedTravelPurposes,
       isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
+      travelPlan: travelPlan ?? this.travelPlan,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -179,6 +185,7 @@ class TravelFormState extends Equatable {
     selectedTravelPurposes,
     isTravelPurposesLoading,
     formSubmissionStatus,
+    travelPlan,
     errorMessage,
   ];
 }

@@ -1,0 +1,88 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'flight_options.g.dart';
+
+@JsonSerializable(createToJson: false)
+class FlightOptions {
+  const FlightOptions({required this.cheapest, required this.comfortable, required this.recommended});
+
+  factory FlightOptions.fromJson(Map<String, dynamic> json) => _$FlightOptionsFromJson(json);
+
+  @JsonKey(name: 'cheapest')
+  final FlightOption cheapest;
+
+  @JsonKey(name: 'comfortable')
+  final FlightOption comfortable;
+
+  @JsonKey(name: 'recommended')
+  final FlightOption? recommended;
+}
+
+@JsonSerializable(createToJson: false)
+class FlightOption {
+  const FlightOption({required this.departure, required this.arrival});
+
+  factory FlightOption.fromJson(Map<String, dynamic> json) => _$FlightOptionFromJson(json);
+
+  @JsonKey(name: 'departure')
+  final Flight departure;
+
+  @JsonKey(name: 'arrival')
+  final Flight arrival;
+}
+
+@JsonSerializable(createToJson: false)
+class Flight {
+  const Flight({
+    required this.airline,
+    required this.flightNumber,
+    required this.departureTime,
+    required this.arrivalTime,
+    required this.duration,
+    required this.price,
+    required this.currency,
+    required this.stops,
+    required this.stopDurations,
+    required this.layovers,
+    required this.layoverDurations,
+    required this.moreInformation,
+  });
+
+  factory Flight.fromJson(Map<String, dynamic> json) => _$FlightFromJson(json);
+
+  @JsonKey(name: 'airline')
+  final String airline;
+
+  @JsonKey(name: 'flight_number')
+  final String flightNumber;
+
+  @JsonKey(name: 'departure_time')
+  final DateTime departureTime;
+
+  @JsonKey(name: 'arrival_time')
+  final DateTime arrivalTime;
+
+  @JsonKey(name: 'price')
+  final double price;
+
+  @JsonKey(name: 'currency')
+  final String currency;
+
+  @JsonKey(name: 'duration')
+  final Duration duration;
+
+  @JsonKey(name: 'stops')
+  final int stops;
+
+  @JsonKey(name: 'stop_durations')
+  final List<int> stopDurations;
+
+  @JsonKey(name: 'layovers')
+  final int layovers;
+
+  @JsonKey(name: 'layover_durations')
+  final List<int> layoverDurations;
+
+  @JsonKey(name: 'more_information')
+  final String moreInformation;
+}

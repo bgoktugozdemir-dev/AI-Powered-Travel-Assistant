@@ -8,22 +8,15 @@ class LlmLogger {
   static void prompt(String modelName, String prompt) {
     if (!kDebugMode) return;
 
-    // Only log first 100 chars of prompt for brevity
-    final shortenedPrompt = prompt.length > 100 ? '${prompt.substring(0, 100)}...(${prompt.length} chars)' : prompt;
-
-    developer.log('➡️ [$modelName] $shortenedPrompt', name: 'llm');
+    developer.log('➡️ [$modelName] $prompt', name: 'llm');
   }
 
   /// Log a response received from an LLM
   static void response(String modelName, String response, {int? durationMs}) {
     if (!kDebugMode) return;
 
-    // Only log first 100 chars of response for brevity
-    final shortenedResponse =
-        response.length > 100 ? '${response.substring(0, 100)}...(${response.length} chars)' : response;
-
     final timing = durationMs != null ? ' [${durationMs}ms]' : '';
-    developer.log('⬅️ [$modelName]$timing $shortenedResponse', name: 'llm');
+    developer.log('⬅️ [$modelName]$timing $response', name: 'llm');
   }
 
   /// Log an error that occurred during LLM communication

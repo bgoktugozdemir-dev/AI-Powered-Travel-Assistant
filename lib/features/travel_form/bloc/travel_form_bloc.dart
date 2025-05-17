@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart'; // For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
 import 'package:travel_assistant/common/models/country.dart'; // Import Country model
+import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import TravelPurpose model
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
@@ -292,10 +293,16 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         travelPurposes: state.selectedTravelPurposes,
       );
       // Simulate API call with delay
-      await _geminiRepository.generateTravelPlan(travelInformation);
+      final travelPlan = await _geminiRepository.generateTravelPlan(travelInformation);
 
       // Successful form submission
-      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.success, errorMessage: () => null));
+      emit(
+        state.copyWith(
+          formSubmissionStatus: FormSubmissionStatus.success,
+          travelPlan: travelPlan,
+          errorMessage: () => null,
+        ),
+      );
     } catch (e) {
       // Handle submission error
       emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.failure, errorMessage: () => e.toString()));

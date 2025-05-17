@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/services/gemini_service.dart';
 import 'package:travel_assistant/common/utils/logger/error_logger.dart';
@@ -20,7 +21,7 @@ class GeminiRepository {
   ///
   /// Returns the generated text response.
   /// Throws an exception if text generation fails.
-  Future<String> generateTravelPlan(TravelInformation travelInformation) async {
+  Future<TravelDetails> generateTravelPlan(TravelInformation travelInformation) async {
     final prompt = jsonEncode(travelInformation.toJson());
     final content = Content.text(prompt);
     final stopwatch = Stopwatch()..start();
@@ -29,7 +30,8 @@ class GeminiRepository {
     LlmLogger.prompt('Gemini', prompt);
 
     try {
-      final response = await geminiService.chatSession.sendMessage(content);
+      final chatSession = await geminiService.chatSession();
+      final response = await chatSession.sendMessage(content);
       stopwatch.stop();
       final responseText = response.text;
 
@@ -52,7 +54,9 @@ class GeminiRepository {
       // Log the successful response
       LlmLogger.response('Gemini', responseText, durationMs: stopwatch.elapsedMilliseconds);
 
-      return responseText;
+      final responseJson = jsonDecode(responseText);
+
+      return TravelDetails.fromJson(responseJson);
     } catch (e, stackTrace) {
       stopwatch.stop();
 

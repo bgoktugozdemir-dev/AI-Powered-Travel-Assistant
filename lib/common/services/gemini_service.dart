@@ -17,8 +17,6 @@ class GeminiService {
 
   final FirebaseVertexAI _vertexAI;
 
-  late final ChatSession _session;
-
   /// Returns the generative model for the Gemini model.
   Future<GenerativeModel> getModel() async {
     final systemPrompt = await getSystemPrompt();
@@ -27,7 +25,11 @@ class GeminiService {
   }
 
   /// Returns the chat session for the Gemini model.
-  ChatSession get chatSession => _session;
+  Future<ChatSession> chatSession() async {
+    final model = await getModel();
+
+    return model.startChat();
+  }
 
   Future<String> getSystemPrompt() => rootBundle.loadString(_Constants.systemPromptPath);
 }
