@@ -38,10 +38,15 @@ class TravelFormState extends Equatable {
   /// Flag indicating if nationality suggestions are being loaded.
   final bool isNationalityLoading;
 
+  /// List of available travel purposes.
+  final List<TravelPurpose> availableTravelPurposes;
+  /// List of selected travel purposes.
+  final List<TravelPurpose> selectedTravelPurposes;
+  /// Flag indicating if travel purposes are being loaded.
+  final bool isTravelPurposesLoading;
+
   /// An optional error message if something went wrong.
   final String? errorMessage;
-
-  // TODO: Add fields for travel purposes
 
   /// Creates a [TravelFormState].
   /// This also serves as the 'initial' state.
@@ -61,6 +66,9 @@ class TravelFormState extends Equatable {
     this.nationalitySuggestions = const [],
     this.selectedNationality,
     this.isNationalityLoading = false,
+    this.availableTravelPurposes = const [],
+    this.selectedTravelPurposes = const [],
+    this.isTravelPurposesLoading = false,
     this.errorMessage,
   });
 
@@ -80,6 +88,9 @@ class TravelFormState extends Equatable {
     List<Country>? nationalitySuggestions,
     ValueGetter<Country?>? selectedNationality,
     bool? isNationalityLoading,
+    List<TravelPurpose>? availableTravelPurposes,
+    List<TravelPurpose>? selectedTravelPurposes,
+    bool? isTravelPurposesLoading,
     ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -98,6 +109,9 @@ class TravelFormState extends Equatable {
       nationalitySuggestions: nationalitySuggestions ?? this.nationalitySuggestions,
       selectedNationality: selectedNationality != null ? selectedNationality() : this.selectedNationality,
       isNationalityLoading: isNationalityLoading ?? this.isNationalityLoading,
+      availableTravelPurposes: availableTravelPurposes ?? this.availableTravelPurposes,
+      selectedTravelPurposes: selectedTravelPurposes ?? this.selectedTravelPurposes,
+      isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -119,6 +133,9 @@ class TravelFormState extends Equatable {
         nationalitySuggestions,
         selectedNationality,
         isNationalityLoading,
+        availableTravelPurposes,
+        selectedTravelPurposes,
+        isTravelPurposesLoading,
         errorMessage,
       ];
 } 
