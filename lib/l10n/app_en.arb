@@ -1,0 +1,55 @@
+{
+  "@@locale": "en",
+  "appTitle": "Travel Assistant",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "travelFormStepTitle": "Step {stepNumber}",
+  "@travelFormStepTitle": {
+    "description": "Title for a step in the travel form, includes step number placeholder",
+    "placeholders": {
+      "stepNumber": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "departureAirportStepTitle": "Where are you flying from?",
+  "@departureAirportStepTitle": {
+    "description": "Title for the departure airport selection step"
+  },
+  "departureAirportHintText": "Search departure airport (e.g., IST, Istanbul)",
+  "@departureAirportHintText": {
+    "description": "Hint text for the departure airport search field"
+  },
+  "selectedAirportLabel": "Selected: {airportName} ({airportCode})",
+  "@selectedAirportLabel": {
+    "description": "Label displayed when an airport is selected, showing its name and code",
+    "placeholders": {
+      "airportName": {
+        "type": "String",
+        "example": "Istanbul Airport"
+      },
+      "airportCode": {
+        "type": "String",
+        "example": "IST"
+      }
+    }
+  },
+  "navigationPrevious": "Previous",
+  "@navigationPrevious": {
+    "description": "Button text to go to the previous step"
+  },
+  "navigationNext": "Next",
+  "@navigationNext": {
+    "description": "Button text to go to the next step"
+  },
+  "navigationSubmit": "Get Travel Plan",
+  "@navigationSubmit": {
+    "description": "Button text to submit the form and get travel plan"
+  },
+  "submittingForm": "Submitting form...",
+  "@submittingForm": {
+    "description": "Message shown when the form is being submitted"
+  }
+} 

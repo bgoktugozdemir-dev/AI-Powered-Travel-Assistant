@@ -1,0 +1,24 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Git workflow rules for travel_assistant project
+globs: "**/*"
+alwaysApply: true
+---
+
+- Use Git for all version control operations.
+- Each completed task or meaningful work unit must be committed separately.
+- Write clear and descriptive commit messages that explain the change.
+- Use present tense and imperative mood for commit messages (e.g., "Add airport search field", "Fix localization bug").
+- Do not combine unrelated changes in a single commit.
+- Commit all related code, assets, and tests for a task together.
+- Push commits to the remote repository regularly.
+- Resolve all merge conflicts before committing and pushing.
+- Do not commit code that breaks the build or fails analysis/tests.
+- Reference issue or task numbers in the commit message if available (e.g., "Add currency converter [#42]").
+- Before starting a new task, pull the latest changes from the main branch.
+- Do not commit sensitive information (API keys, passwords, credentials, etc.).
+- All team members must follow these git rules consistently.

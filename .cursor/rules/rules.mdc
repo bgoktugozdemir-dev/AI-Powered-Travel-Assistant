@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Rules for the travel_assistant Flutter project
+globs: "**/*"
+alwaysApply: true
+---
+
+- The project name must be `travel_assistant`.
+- No hardcoded (static) user-facing text is allowed in the app.
+- All user-facing strings must be defined in localization files.
+- The app must support both English and Turkish languages.
+- All feature, widget, and screen names must be in English.
+- Business logic and UI must be separated and modular.
+- All public functions, classes, and files must have brief documentation.
+- Use a feature-first folder structure.
+- Each screen and feature must have its own directory under `/features`.
+- Shared widgets and utilities must be placed in `/common`.
+- Use `flutter_bloc` for all state management.
+- Each screen and feature must have its own bloc and state files.
+- Bloc, event, and state files must be in their relevant feature directory.
+- Use `retrofit` and `dio` for all network requests and API clients.
+- All API models must be serializable, preferably using `json_serializable` and `freezed`.
+- Handle network errors gracefully and show error states in the UI.
+- Do not use any HTTP/networking package other than `dio` and `retrofit` unless explicitly required.
+- Integrate VertexAI via `firebase_core` and `firebase_vertexai` packages.
+- Use dependency injection for AI and backend services if possible.
+- All user-facing strings must be stored in localization files (e.g., `l10n/app_en.arb`, `l10n/app_tr.arb`).
+- No literal or hardcoded strings should be used in widgets, blocs, or anywhere in the UI/logic layer.
+- Every new string must be available in both English and Turkish.
+- Use Flutter's built-in `intl`/`flutter_localizations` package.
+- Provide a `l10n` directory at the root of the project.
+- All UI must be modern, responsive, and accessible on web, mobile, and tablet.
+- Use card-based, modular, airline/travel-themed design.
+- Prefer Material widgets, but use Cupertino where it enhances platform consistency.
+- Loading, error, and empty states must be handled with dedicated widgets.
+- Animations (e.g., loading airplane) should use Lottie where possible.
+- All components must be reusable and responsive.
+- All files and classes must follow Dart and Flutter naming conventions (snake_case for files, UpperCamelCase for classes).
+- Run `flutter analyze` and `dart format` before every commit.
+- Write clear, maintainable, and well-documented code.
+- Unit and widget tests must be included for all major features.
+- All code and UI must strictly adhere to these rules.
+- If any rule is impossible to implement, clearly state why and suggest a solution.
+- After completing each task, stage all relevant changes and commit with a descriptive message reflecting the task. Do not skip this step.

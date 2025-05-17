@@ -1,0 +1,55 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Seyahat Asistanı",
+  "@appTitle": {
+    "description": "Uygulamanın başlığı"
+  },
+  "travelFormStepTitle": "Adım {stepNumber}",
+  "@travelFormStepTitle": {
+    "description": "Seyahat formundaki bir adım için başlık, adım numarasını içerir",
+    "placeholders": {
+      "stepNumber": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "departureAirportStepTitle": "Nereden uçuyorsunuz?",
+  "@departureAirportStepTitle": {
+    "description": "Kalkış havaalanı seçim adımı için başlık"
+  },
+  "departureAirportHintText": "Kalkış havaalanı arayın (örn: IST, İstanbul)",
+  "@departureAirportHintText": {
+    "description": "Kalkış havaalanı arama alanı için ipucu metni"
+  },
+  "selectedAirportLabel": "Seçildi: {airportName} ({airportCode})",
+  "@selectedAirportLabel": {
+    "description": "Bir havaalanı seçildiğinde görüntülenen etiket, adını ve kodunu gösterir",
+    "placeholders": {
+      "airportName": {
+        "type": "String",
+        "example": "İstanbul Havalimanı"
+      },
+      "airportCode": {
+        "type": "String",
+        "example": "IST"
+      }
+    }
+  },
+  "navigationPrevious": "Önceki",
+  "@navigationPrevious": {
+    "description": "Önceki adıma gitmek için düğme metni"
+  },
+  "navigationNext": "Sonraki",
+  "@navigationNext": {
+    "description": "Sonraki adıma gitmek için düğme metni"
+  },
+  "navigationSubmit": "Seyahat Planı Al",
+  "@navigationSubmit": {
+    "description": "Formu göndermek ve seyahat planını almak için düğme metni"
+  },
+  "submittingForm": "Form gönderiliyor...",
+  "@submittingForm": {
+    "description": "Form gönderilirken gösterilen mesaj"
+  }
+} 
