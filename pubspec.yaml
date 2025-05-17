@@ -37,6 +37,7 @@ dependencies:
   # State Management
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
+  bloc_concurrency: ^0.3.0
 
   # Networking
   dio: ^5.8.0+1
@@ -49,6 +50,12 @@ dependencies:
   # Firebase & AI
   firebase_core: ^3.13.0
   firebase_vertexai: ^1.6.0
+
+  # Logging
+  logger: ^2.5.0
+
+  # RxDart for stream manipulation
+  rxdart: ^0.28.0
 
   # UI & Utilities (can add more later, e.g., for searchable dropdowns, date pickers, Lottie)
   # google_fonts: ^6.2.1

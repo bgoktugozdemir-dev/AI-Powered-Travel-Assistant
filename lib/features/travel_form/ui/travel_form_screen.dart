@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import 'package:travel_assistant/common/models/airport.dart';
+import 'package:travel_assistant/common/utils/logger.dart'; // Import appLogger
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,6 +22,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
   @override
   void initState() {
     super.initState();
+    appLogger.i("TravelFormScreen initialized. Current step: ${context.read<TravelFormBloc>().state.currentStep}");
     // context.read<TravelFormBloc>().add(TravelFormStarted()); // Moved to MyApp
 
     // Listen to BLoC state changes to update TextEditingControllers if needed
@@ -89,6 +91,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
             suffixIcon: state.isDepartureAirportLoading ? const CircularProgressIndicator() : null,
           ),
           onChanged: (query) {
+            appLogger.d("Departure airport search changed: $query");
             context.read<TravelFormBloc>().add(TravelFormDepartureAirportSearchTermChanged(query));
           },
         ),
@@ -103,6 +106,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                   title: Text("${airport.name} (${airport.iataCode})"),
                   subtitle: Text(airport.country),
                   onTap: () {
+                    appLogger.i("Departure airport selected: ${airport.name} (${airport.iataCode})");
                     context.read<TravelFormBloc>().add(TravelFormDepartureAirportSelected(airport));
                   },
                 );
@@ -140,6 +144,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
             suffixIcon: state.isArrivalAirportLoading ? const CircularProgressIndicator() : null,
           ),
           onChanged: (query) {
+            appLogger.d("Arrival airport search changed: $query");
             context.read<TravelFormBloc>().add(TravelFormArrivalAirportSearchTermChanged(query));
           },
         ),
@@ -154,6 +159,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                   title: Text("${airport.name} (${airport.iataCode})"),
                   subtitle: Text(airport.country),
                   onTap: () {
+                    appLogger.i("Arrival airport selected: ${airport.name} (${airport.iataCode})");
                     context.read<TravelFormBloc>().add(TravelFormArrivalAirportSelected(airport));
                   },
                 );
@@ -199,6 +205,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
             label: Text(l10n.selectDatesButtonLabel),
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
             onPressed: () async {
+              appLogger.i("'Select Travel Dates' button pressed.");
               final initialDateRange = state.selectedDateRange ?? 
                   DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 7)));
               final pickedDateRange = await showDateRangePicker(
@@ -209,7 +216,10 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
                 // helpText: l10n.selectDatesButtonLabel, // Can customize further
               );
               if (pickedDateRange != null) {
+                appLogger.i("Date range selected: ${DateFormat.yMd().format(pickedDateRange.start)} - ${DateFormat.yMd().format(pickedDateRange.end)}");
                 context.read<TravelFormBloc>().add(TravelFormDateRangeSelected(pickedDateRange));
+              } else {
+                appLogger.i("Date range picker cancelled.");
               }
             },
           ),
@@ -234,6 +244,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         if (state.currentStep > 0)
           ElevatedButton(
             onPressed: () {
+              appLogger.i("'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep -1}");
               context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
             },
             child: Text(l10n.navigationPrevious),
@@ -243,6 +254,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         if (state.currentStep < state.totalSteps - 1)
           ElevatedButton(
             onPressed: () {
+              appLogger.i("'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}");
               bool canProceed = true;
               String? validationError;
               if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
@@ -257,8 +269,10 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
               }
 
               if (canProceed) {
+                 appLogger.i("Validation passed, moving to next step.");
                  context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
               } else if (validationError != null) {
+                 appLogger.w("Validation failed for step ${state.currentStep}: $validationError");
                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(validationError), backgroundColor: Colors.red)
                  );
@@ -269,7 +283,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
         else if (state.currentStep == state.totalSteps - 1)
           ElevatedButton(
             onPressed: () {
-              // TODO: Add final validation and then submit form / call AI
+              appLogger.i("'Get Travel Plan' (Submit) button pressed.");
               ScaffoldMessenger.of(context).showSnackBar(
                  SnackBar(content: Text(l10n.submittingForm))
               );
