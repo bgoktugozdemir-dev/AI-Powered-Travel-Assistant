@@ -15,7 +15,7 @@ alwaysApply: true
 - Use present tense and imperative mood for commit messages (e.g., "Add airport search field", "Fix localization bug").
 - Do not combine unrelated changes in a single commit.
 - Commit all related code, assets, and tests for a task together.
-- Push commits to the remote repository regularly.
+- Do not push the commit.
 - Resolve all merge conflicts before committing and pushing.
 - Do not commit code that breaks the build or fails analysis/tests.
 - Reference issue or task numbers in the commit message if available (e.g., "Add currency converter [#42]").
