@@ -89,7 +89,7 @@ class TravelSummaryStep extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, size: 20, color: iconColor ?? Theme.of(context).primaryColor),
           const SizedBox(width: 8),
