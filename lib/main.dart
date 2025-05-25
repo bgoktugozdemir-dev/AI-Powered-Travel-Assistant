@@ -58,7 +58,12 @@ void main() async {
           create: (context) {
             final geminiRepository = context.read<GeminiRepository>();
             final airportRepository = context.read<AirportRepository>();
-            return TravelFormBloc(geminiRepository: geminiRepository, airportRepository: airportRepository)
+            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            return TravelFormBloc(
+              geminiRepository: geminiRepository,
+              airportRepository: airportRepository,
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+            )
               ..add(TravelFormStarted());
           },
         ),

@@ -14,6 +14,14 @@
       }
     }
   },
+  "ok": "Tamam",
+  "@ok": {
+    "description": "OK button text"
+  },
+  "cancel": "İptal",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
   "departureAirportStepTitle": "Nereden uçuyorsunuz?",
   "@departureAirportStepTitle": {
     "description": "Title for the departure airport selection step"
@@ -94,9 +102,37 @@
   "@noPurposesAvailable": {
     "description": "Message shown when no travel purposes are available"
   },
-  "validationErrorTravelPurposeMissing": "Lütfen en az bir seyahat amacı seçin.",
+  "travelFormErrorTitle": "Hata Oluştu",
+  "@travelFormErrorTitle": {
+    "description": "Title for error dialog in the travel form"
+  },
+  "validationErrorTravelPurposeMissing": "{minimumTravelPurposes, plural, =1{Lütfen en az 1 seyahat amacı seçin. {selectedTravelPurposes} adet seçtiniz.} other{Lütfen en az {minimumTravelPurposes} seyahat amacı seçin. {selectedTravelPurposes} adet seçtiniz.}}",
   "@validationErrorTravelPurposeMissing": {
-    "description": "Validation error if no travel purpose is selected"
+    "description": "Validation error if not enough travel purposes are selected.",
+    "placeholders": {
+      "selectedTravelPurposes": {
+        "type": "int",
+        "example": "0"
+      },
+      "minimumTravelPurposes": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "validationErrorTravelPurposeTooMany": "{maximumTravelPurposes, plural, =1{Lütfen en fazla 1 seyahat amacı seçin. {selectedTravelPurposes} adet seçtiniz.} other{Lütfen en fazla {maximumTravelPurposes} seyahat amacı seçin. {selectedTravelPurposes} adet seçtiniz.}}",
+  "@validationErrorTravelPurposeTooMany": {
+    "description": "Validation error if too many travel purposes are selected.",
+    "placeholders": {
+      "selectedTravelPurposes": {
+        "type": "int",
+        "example": "4"
+      },
+      "maximumTravelPurposes": {
+        "type": "int",
+        "example": "3"
+      }
+    }
   },
   "validationErrorNationalityMissing": "Lütfen milliyetinizi seçin.",
   "@validationErrorNationalityMissing": {
@@ -117,6 +153,10 @@
   "validationErrorDateRangeMissing": "Lütfen seyahat tarihlerini seçin.",
   "@validationErrorDateRangeMissing": {
     "description": "Validation error if travel dates are not selected"
+  },
+  "errorGeneralTravelForm": "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.",
+  "@errorGeneralTravelForm": {
+    "description": "Seyahat formu hataları için genel hata mesajı"
   },
   "selectedAirportLabel": "Seçilen: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
@@ -259,5 +299,21 @@
         "example": "John Smith"
       }
     }
+  },
+  "disclaimerAIMistakesTitle": "Önemli Uyarı",
+  "@disclaimerAIMistakesTitle": {
+    "description": "Title for the AI mistakes disclaimer"
+  },
+  "disclaimerAIMistakesContent": "Sağlanan seyahat bilgileri yapay zeka tarafından üretilmiştir ve yanlışlıklar veya eksiklikler içerebilir. Herhangi bir seyahat planı yapmadan önce vize gereksinimleri, uçuş programları ve güvenlik uyarıları gibi kritik bilgileri her zaman resmi kaynaklardan doğrulayın.",
+  "@disclaimerAIMistakesContent": {
+    "description": "Content for the AI mistakes disclaimer, advising users to verify information"
+  },
+  "disclaimerLegalTitle": "Yasal Uyarı",
+  "@disclaimerLegalTitle": {
+    "description": "Title for the legal notice"
+  },
+  "disclaimerLegalContent": "Bu uygulama yalnızca genel rehberlik amacıyla seyahat yardımı ve bilgileri sağlar. Bu bilgilerin kullanımından kaynaklanan herhangi bir hata, eksiklik veya sorundan sorumlu değiliz. Kullanıcılar seyahat kararlarından ve tüm bilgileri resmi ve güvenilir kaynaklardan doğrulamaktan yalnızca kendileri sorumludur.",
+  "@disclaimerLegalContent": {
+    "description": "Content for the general legal notice"
   }
-} 
+}

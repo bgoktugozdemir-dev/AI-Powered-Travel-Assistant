@@ -47,7 +47,7 @@ class ResultsScreen extends StatelessWidget {
                     _buildCurrencyCard(context, travelDetails, l10n),
 
                     // Flight Options Card
-                    FlightOptionsCard(flightOptions: travelDetails.flightOptions),
+                    // FlightOptionsCard(flightOptions: travelDetails.flightOptions), // TODO: Get flight options from the API
 
                     // Tax Information Card
                     _buildTaxInfoCard(context, travelDetails, l10n),
@@ -90,6 +90,14 @@ class ResultsScreen extends StatelessWidget {
   // Currency Information Card
   Widget _buildCurrencyCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
     final currency = details.currency;
+    final departureCurrencyFormatter = NumberFormat.currency(symbol: currency.departureCurrencyCode, decimalDigits: 2);
+    final departureCurrencyValue = departureCurrencyFormatter.format(1);
+    final arrivalCurrencyFormatter = NumberFormat.currency(symbol: currency.code, decimalDigits: 2);
+    final arrivalCurrencyValue = arrivalCurrencyFormatter.format(currency.exchangeRate);
+    final arrivalAverageLivingCostPerDay = arrivalCurrencyFormatter.format(currency.arrivalAverageLivingCostPerDay);
+    final arrivalAverageLivingCostPerDayInDepartureCurrency = departureCurrencyFormatter.format(
+      currency.arrivalAverageLivingCostPerDayInDepartureCurrency,
+    );
 
     return Card(
       elevation: 4,
@@ -111,13 +119,17 @@ class ResultsScreen extends StatelessWidget {
 
             _buildInfoRow(context, 'Currency', '${currency.name} (${currency.code})', Icons.money),
 
-            if (currency.exchangeRate != null)
-              _buildInfoRow(context, 'Exchange Rate', '1 Unit = ${currency.exchangeRate}', Icons.swap_horiz),
+            _buildInfoRow(
+              context,
+              'Exchange Rate',
+              '$departureCurrencyValue = $arrivalCurrencyValue',
+              Icons.swap_horiz,
+            ),
 
             _buildInfoRow(
               context,
               'Average Daily Cost',
-              '${currency.arrivalAverageLivingCostPerDay}',
+              '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
               Icons.price_change,
             ),
           ],
@@ -151,7 +163,7 @@ class ResultsScreen extends StatelessWidget {
             _buildInfoRow(
               context,
               'Tax Rate',
-              NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(tax.taxRate),
+              NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(tax.taxRate / 100),
               Icons.percent,
             ),
 

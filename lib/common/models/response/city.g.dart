@@ -9,7 +9,6 @@ part of 'city.dart';
 City _$CityFromJson(Map<String, dynamic> json) => City(
   name: json['name'] as String,
   country: json['country'] as String,
-  imageUrl: json['image_url'] as String,
   crowdLevel: (json['crowd_level'] as num).toInt(),
   time:
       json['time'] == null

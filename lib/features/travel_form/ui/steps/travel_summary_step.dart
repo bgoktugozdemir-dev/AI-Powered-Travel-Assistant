@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
+import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 
 class TravelSummaryStep extends StatelessWidget {
   /// Creates a [TravelSummaryStep].
@@ -14,14 +15,25 @@ class TravelSummaryStep extends StatelessWidget {
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       builder: (context, state) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildTravelSummaryCard(context, state, l10n),
-              // TODO: Add disclaimer
-            ],
-          ),
+        return TravelFormStepLayout(
+          children: [
+            _buildTravelSummaryCard(context, state, l10n),
+            const SizedBox(height: 24),
+            _buildDisclaimerCard(
+              context,
+              title: l10n.disclaimerAIMistakesTitle,
+              content: l10n.disclaimerAIMistakesContent,
+              icon: Icons.warning_amber_rounded,
+              iconColor: Colors.orangeAccent,
+            ),
+            const SizedBox(height: 16),
+            _buildDisclaimerCard(
+              context,
+              title: l10n.disclaimerLegalTitle,
+              content: l10n.disclaimerLegalContent,
+              icon: Icons.gavel_rounded,
+            ),
+          ],
         );
       },
     );
@@ -114,5 +126,49 @@ class TravelSummaryStep extends StatelessWidget {
     final startDate = dateFormat.format(dateRange.start);
     final endDate = dateFormat.format(dateRange.end);
     return '$startDate - $endDate';
+  }
+
+  Widget _buildDisclaimerCard(
+    BuildContext context,
+    {
+      required String title,
+      required String content,
+      required IconData icon,
+      Color? iconColor,
+    }
+  ) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Theme.of(context).dividerColor, width: 0.5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, size: 24, color: iconColor ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

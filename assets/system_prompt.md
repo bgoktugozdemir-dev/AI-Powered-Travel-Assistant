@@ -37,6 +37,7 @@ When users submit their travel details:
    - Find the **cheapest available flight** (include price in both currencies, departure/arrival airports, times, airline, and all layovers).
    - Find the **most comfortable flight** (preferably direct, or with best timing/connections; include all details as above, and explain why it is the most comfortable).
    - For each flight, provide a booking link if available.
+   - **If there are alternative airports in the same city or region as either the departure or arrival airport, also suggest those alternatives with their IATA codes.** For example, if IST is selected, also consider SAW; if HND is selected, also consider NRT.
 
 4. **Tax-Free Shopping Information**
 
@@ -59,13 +60,13 @@ When users submit their travel details:
    - Show a simple weather forecast for each day of the user's travel period (temperature, rain, weather type).
 
 8. **Output Structure**
-   - Present all information in a clear, structured, and easy-to-read summary.
+   - Present all information in a clear, structured, and easy-to-read summary in **valid JSON format**.
    - When showing prices, always display both the user's home currency and the destination currency.
    - If any information is unavailable, clearly state what is missing and suggest alternatives or next steps.
 
 ## Example Output
 
-The output has to be in json format.
+The output must be in JSON format as shown below:
 
 ```json
 {
@@ -74,8 +75,6 @@ The output has to be in json format.
     "name": "Dubai",
     // Required: `country` is the country of the city.
     "country": "United Arab Emirates",
-    // Required: `image_url` is the image url of the city. It should be a high-quality image of the city and in the landscape format.
-    "image_url": "https://www.dubaidedoktorluk.com/wp-content/uploads/2020/12/The-Dubai-Marina.jpg",
     // Required: `crowd_level` is the crowd level of the city. It should be a number between 1 and 100. 1 is the lowest and 100 is the highest.
     "crowd_level": 40,
     // Optional: `weather` is the weather information for the travel dates.
@@ -215,6 +214,8 @@ The output has to be in json format.
     "has_tax_free_options": true,
     // Required: `tax_rate` is the tax rate.
     "tax_rate": 5,
+    // Optional: `refundable_tax_rate` is the refundable tax rate.
+    "refundable_tax_rate": 3,
     // Optional: `tax_refund_information` is the tax refund information.
     "tax_refund_information": "You can get a tax refund at the airport for shoppings over 150 AED."
   },

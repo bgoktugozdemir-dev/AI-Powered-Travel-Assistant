@@ -4,8 +4,6 @@
         "name": "Dubai",
         // Required: `country` is the country of the city.
         "country": "United Arab Emirates",
-        // Required: `image_url` is the image url of the city. It should be a high-quality image of the city and in the landscape format.
-        "image_url": "https://www.dubaidedoktorluk.com/wp-content/uploads/2020/12/The-Dubai-Marina.jpg",
         // Required: `crowd_level` is the crowd level of the city. It should be a number between 1 and 100. 1 is the lowest and 100 is the highest.
         "crowd_level": 40,
         // Optional: `weather` is the weather information for the travel dates.
@@ -153,6 +151,8 @@
         "has_tax_free_options": true,
         // Required: `tax_rate` is the tax rate.
         "tax_rate": 5,
+        // Optional: `refundable_tax_rate` is the refundable tax rate.
+        "refundable_tax_rate": 3,
         // Optional: `tax_refund_information` is the tax refund information.
         "tax_refund_information": "You can get a tax refund at the airport for shoppings over 150 AED."
     },

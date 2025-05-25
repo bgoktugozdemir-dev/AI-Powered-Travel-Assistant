@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
+import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 
 class TravelFormArrivalAirportStep extends StatelessWidget {
   const TravelFormArrivalAirportStep({super.key, required this.arrivalAirportController});
@@ -13,8 +14,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return TravelFormStepLayout(
       children: <Widget>[
         Text(l10n.arrivalAirportStepTitle, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 16),
@@ -27,9 +27,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
                 hintText: l10n.arrivalAirportHintText,
                 border: const OutlineInputBorder(),
                 suffixIcon:
-                    state.isArrivalAirportLoading
-                        ? const CircularProgressIndicator(padding: EdgeInsets.all(8))
-                        : null,
+                    state.isArrivalAirportLoading ? const CircularProgressIndicator(padding: EdgeInsets.all(8)) : null,
               ),
               onChanged: (query) {
                 appLogger.d("Arrival airport search changed: $query");
@@ -41,25 +39,26 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
         BlocBuilder<TravelFormBloc, TravelFormState>(
           buildWhen: (previous, current) => previous.arrivalAirportSuggestions != current.arrivalAirportSuggestions,
           builder: (context, state) {
-            return Visibility(
-              visible: state.arrivalAirportSuggestions.isNotEmpty,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.arrivalAirportSuggestions.length,
-                  itemBuilder: (context, index) {
-                    final airport = state.arrivalAirportSuggestions[index];
-                    return ListTile(
-                      title: Text("${airport.name} (${airport.iataCode})"),
-                      subtitle: Text(airport.cityAndCountry),
-                      onTap: () {
-                        appLogger.i("Arrival airport selected: ${airport.name} (${airport.iataCode})");
-                        context.read<TravelFormBloc>().add(TravelFormArrivalAirportSelected(airport));
-                      },
-                    );
-                  },
-                ),
+            if (state.arrivalAirportSuggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: state.arrivalAirportSuggestions.length,
+                itemBuilder: (context, index) {
+                  final airport = state.arrivalAirportSuggestions[index];
+                  return ListTile(
+                    title: Text("${airport.name} (${airport.iataCode})"),
+                    subtitle: Text(airport.cityAndCountry),
+                    onTap: () {
+                      appLogger.i("Arrival airport selected: ${airport.name} (${airport.iataCode})");
+                      context.read<TravelFormBloc>().add(TravelFormArrivalAirportSelected(airport));
+                    },
+                  );
+                },
               ),
             );
           },
@@ -67,29 +66,15 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
         BlocBuilder<TravelFormBloc, TravelFormState>(
           buildWhen: (previous, current) => previous.selectedArrivalAirport != current.selectedArrivalAirport,
           builder: (context, state) {
-            return Visibility(
-              visible: state.selectedArrivalAirport != null,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  l10n.selectedAirportLabel(
-                    state.selectedArrivalAirport!.name,
-                    state.selectedArrivalAirport!.iataCode,
-                  ),
-                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-              ),
-            );
-          },
-        ),
-        BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.errorMessage != current.errorMessage,
-          builder: (context, state) {
-            return Visibility(
-              visible: state.errorMessage != null && state.currentStep == 1,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(state.errorMessage!, style: const TextStyle(color: Colors.red)),
+            if (state.selectedArrivalAirport == null) {
+              return const SizedBox.shrink();
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                l10n.selectedAirportLabel(state.selectedArrivalAirport!.name, state.selectedArrivalAirport!.iataCode),
+                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             );
           },

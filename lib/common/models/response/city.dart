@@ -7,7 +7,6 @@ class City {
   const City({
     required this.name,
     required this.country,
-    required this.imageUrl,
     required this.crowdLevel,
     required this.time,
     required this.weather,
@@ -20,9 +19,6 @@ class City {
 
   @JsonKey(name: 'country')
   final String country;
-
-  @JsonKey(name: 'image_url')
-  final String imageUrl;
 
   @JsonKey(name: 'crowd_level')
   final int crowdLevel;

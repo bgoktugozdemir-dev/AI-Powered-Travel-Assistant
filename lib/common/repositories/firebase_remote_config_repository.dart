@@ -15,16 +15,28 @@ abstract class _Constants {
   static const Duration minimumFetchIntervalForDevelopment = Duration.zero;
 
   /// Defaults for the config.
-  static final Map<String, dynamic> defaults = {FirebaseRemoteConfigKeys.unsplashClientId.key: ''};
+  static final Map<String, dynamic> defaults = {
+    RemoteConfigs.unsplashClientId.key: '',
+    RemoteConfigs.minimumTravelPurposes.key: 1,
+    RemoteConfigs.maximumTravelPurposes.key: 3,
+  };
 
   /// Key for the Unsplash Client ID.
   static const String unsplashClientIdKey = 'unsplash_client_id';
+
+  /// Minimum number of travel purposes.
+  static const String minimumTravelPurposesKey = 'minimum_travel_purposes';
+
+  /// Maximum number of travel purposes.
+  static const String maximumTravelPurposesKey = 'maximum_travel_purposes';
 }
 
-enum FirebaseRemoteConfigKeys {
-  unsplashClientId(key: _Constants.unsplashClientIdKey);
+enum RemoteConfigs {
+  unsplashClientId(key: _Constants.unsplashClientIdKey),
+  minimumTravelPurposes(key: _Constants.minimumTravelPurposesKey),
+  maximumTravelPurposes(key: _Constants.maximumTravelPurposesKey);
 
-  const FirebaseRemoteConfigKeys({required this.key});
+  const RemoteConfigs({required this.key});
 
   final String key;
 }
@@ -71,5 +83,15 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the Unsplash Client ID from Firebase Remote Config.
   ///
   /// Returns the client ID string if available, otherwise an empty string.
-  String get unsplashClientId => _firebaseRemoteConfig.getString(FirebaseRemoteConfigKeys.unsplashClientId.key);
+  String get unsplashClientId => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
+
+  /// Fetches the minimum number of travel purposes from Firebase Remote Config.
+  ///
+  /// Returns the minimum number of travel purposes if available, otherwise 1.
+  int get minimumTravelPurposes => _firebaseRemoteConfig.getInt(RemoteConfigs.minimumTravelPurposes.key);
+
+  /// Fetches the maximum number of travel purposes from Firebase Remote Config.
+  ///
+  /// Returns the maximum number of travel purposes if available, otherwise 3.
+  int get maximumTravelPurposes => _firebaseRemoteConfig.getInt(RemoteConfigs.maximumTravelPurposes.key);
 }

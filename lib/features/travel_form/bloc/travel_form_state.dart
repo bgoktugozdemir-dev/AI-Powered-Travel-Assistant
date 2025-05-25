@@ -78,8 +78,8 @@ class TravelFormState extends Equatable {
   /// The generated travel plan.
   final TravelDetails? travelPlan;
 
-  /// An optional error message if something went wrong.
-  final String? errorMessage;
+  /// An optional error  if something went wrong.
+  final TravelFormError? error;
 
   /// Creates a [TravelFormState].
   /// This also serves as the 'initial' state.
@@ -104,7 +104,7 @@ class TravelFormState extends Equatable {
     this.isTravelPurposesLoading = false,
     this.formSubmissionStatus = FormSubmissionStatus.initial,
     this.travelPlan,
-    this.errorMessage,
+    this.error,
   });
 
   /// Creates a copy of the current state with updated values.
@@ -128,7 +128,7 @@ class TravelFormState extends Equatable {
     bool? isTravelPurposesLoading,
     FormSubmissionStatus? formSubmissionStatus,
     ValueGetter<TravelDetails?>? travelPlan,
-    ValueGetter<String?>? errorMessage, // Use ValueGetter for explicit null setting
+    ValueGetter<TravelFormError?>? error, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
       currentStep: currentStep ?? this.currentStep,
@@ -152,7 +152,7 @@ class TravelFormState extends Equatable {
       isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
       travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
-      errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
+      error: error != null ? error() : this.error,
     );
   }
 
@@ -186,6 +186,6 @@ class TravelFormState extends Equatable {
     isTravelPurposesLoading,
     formSubmissionStatus,
     travelPlan,
-    errorMessage,
+    error,
   ];
 }

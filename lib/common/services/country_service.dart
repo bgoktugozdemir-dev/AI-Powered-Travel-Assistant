@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:travel_assistant/common/models/country.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
@@ -22,7 +24,7 @@ class CountryService {
 
     try {
       final response = await _dio.get(_countryApiUrl);
-      final List<dynamic> jsonData = response.data;
+      final List<dynamic> jsonData = jsonDecode(response.data);
 
       _countries =
           jsonData

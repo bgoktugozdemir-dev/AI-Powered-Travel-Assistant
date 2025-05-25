@@ -11,12 +11,15 @@ import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import TravelPurpose model
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
+import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/gemini_repository.dart';
 // Import service for direct instantiation (temp)
 // Import the interceptor
 import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
 import 'package:travel_assistant/common/services/travel_purpose_service.dart'; // Import TravelPurposeService
-import 'package:rxdart/rxdart.dart'; // Added
+import 'package:rxdart/rxdart.dart';
+import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart'; // Added
 
 part 'travel_form_event.dart';
 part 'travel_form_state.dart';
@@ -32,16 +35,21 @@ EventTransformer<E> _debounceRestartable<E>(Duration duration) {
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final CountryService _countryService;
   final TravelPurposeService _travelPurposeService;
+  final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
   final GeminiRepository _geminiRepository;
   final AirportRepository _airportRepository;
 
   // TODO: Use proper Dependency Injection for services
-  TravelFormBloc({required GeminiRepository geminiRepository, required AirportRepository airportRepository})
-    : _geminiRepository = geminiRepository,
-      _airportRepository = airportRepository,
-      _countryService = CountryService(),
-      _travelPurposeService = TravelPurposeService(),
-      super(const TravelFormState()) {
+  TravelFormBloc({
+    required GeminiRepository geminiRepository,
+    required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+    required AirportRepository airportRepository,
+  }) : _geminiRepository = geminiRepository,
+       _airportRepository = airportRepository,
+       _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
+       _countryService = CountryService(),
+       _travelPurposeService = TravelPurposeService(),
+       super(const TravelFormState()) {
     // Initialize services
     _initializeServices();
 
@@ -91,15 +99,40 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   }
 
   void _onNextStepRequested(TravelFormNextStepRequested event, Emitter<TravelFormState> emit) {
-    // TODO: Add validation for current step before proceeding
+    if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
+      emit(state.copyWith(error: () => DepartureAirportMissingError()));
+      return;
+    } else if (state.currentStep == 1 && state.selectedArrivalAirport == null) {
+      emit(state.copyWith(error: () => ArrivalAirportMissingError()));
+      return;
+    } else if (state.currentStep == 2 && state.selectedDateRange == null) {
+      emit(state.copyWith(error: () => DateRangeMissingError()));
+      return;
+    } else if (state.currentStep == 3 && state.selectedNationality == null) {
+      emit(state.copyWith(error: () => NationalityMissingError()));
+      return;
+    } else if (state.currentStep == 4) {
+      final selectedTravelPurposes = state.selectedTravelPurposes.length;
+      final minimumTravelPurposes = _firebaseRemoteConfigRepository.minimumTravelPurposes;
+      final maximumTravelPurposes = _firebaseRemoteConfigRepository.maximumTravelPurposes;
+      if (selectedTravelPurposes < minimumTravelPurposes) {
+        emit(state.copyWith(error: () => TravelPurposeMissingError(selectedTravelPurposes, minimumTravelPurposes)));
+        return;
+      } else if (selectedTravelPurposes > maximumTravelPurposes) {
+        emit(state.copyWith(error: () => TravelPurposeTooManyError(selectedTravelPurposes, maximumTravelPurposes)));
+        return;
+      }
+    }
+
     if (state.currentStep < state.totalSteps - 1) {
-      emit(state.copyWith(currentStep: state.currentStep + 1));
+      appLogger.i("Validation passed, moving to next step.");
+      emit(state.copyWith(currentStep: state.currentStep + 1, error: () => null));
     }
   }
 
   void _onPreviousStepRequested(TravelFormPreviousStepRequested event, Emitter<TravelFormState> emit) {
     if (state.currentStep > 0) {
-      emit(state.copyWith(currentStep: state.currentStep - 1));
+      emit(state.copyWith(currentStep: state.currentStep - 1, error: () => null));
     }
   }
 
@@ -121,18 +154,14 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     try {
       final suggestions = await _airportRepository.searchAirports(event.searchTerm);
       emit(
-        state.copyWith(
-          departureAirportSuggestions: suggestions,
-          isDepartureAirportLoading: false,
-          errorMessage: () => null,
-        ),
+        state.copyWith(departureAirportSuggestions: suggestions, isDepartureAirportLoading: false, error: () => null),
       );
     } catch (e) {
       emit(
         state.copyWith(
           isDepartureAirportLoading: false,
           departureAirportSuggestions: [],
-          errorMessage: () => e.toString(),
+          error: () => GeneralTravelFormError(e.toString()),
         ),
       );
     }
@@ -165,16 +194,14 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _airportRepository.searchAirports(event.searchTerm);
-      emit(
-        state.copyWith(
-          arrivalAirportSuggestions: suggestions,
-          isArrivalAirportLoading: false,
-          errorMessage: () => null,
-        ),
-      );
+      emit(state.copyWith(arrivalAirportSuggestions: suggestions, isArrivalAirportLoading: false, error: () => null));
     } catch (e) {
       emit(
-        state.copyWith(isArrivalAirportLoading: false, arrivalAirportSuggestions: [], errorMessage: () => e.toString()),
+        state.copyWith(
+          isArrivalAirportLoading: false,
+          arrivalAirportSuggestions: [],
+          error: () => GeneralTravelFormError(e.toString()),
+        ),
       );
     }
   }
@@ -192,14 +219,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   // --- Travel Dates Handler ---
   void _onDateRangeSelected(TravelFormDateRangeSelected event, Emitter<TravelFormState> emit) {
     if (event.dateRange.end.isBefore(event.dateRange.start)) {
-      emit(
-        state.copyWith(
-          errorMessage: () => "End date cannot be before start date. See AppLocalizations.errorInvalidDateRange",
-        ),
-      );
+      emit(state.copyWith(error: () => DateRangeInvalidError()));
       return;
     }
-    emit(state.copyWith(selectedDateRange: () => event.dateRange, errorMessage: () => null));
+    emit(state.copyWith(selectedDateRange: () => event.dateRange, error: () => null));
   }
 
   // --- Nationality Handlers ---
@@ -217,9 +240,15 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _countryService.searchCountries(event.searchTerm);
-      emit(state.copyWith(nationalitySuggestions: suggestions, isNationalityLoading: false, errorMessage: () => null));
+      emit(state.copyWith(nationalitySuggestions: suggestions, isNationalityLoading: false, error: () => null));
     } catch (e) {
-      emit(state.copyWith(isNationalityLoading: false, nationalitySuggestions: [], errorMessage: () => e.toString()));
+      emit(
+        state.copyWith(
+          isNationalityLoading: false,
+          nationalitySuggestions: [],
+          error: () => GeneralTravelFormError(e.toString()),
+        ),
+      );
     }
   }
 
@@ -239,9 +268,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final purposes = await _travelPurposeService.getTravelPurposes();
-      emit(state.copyWith(availableTravelPurposes: purposes, isTravelPurposesLoading: false, errorMessage: () => null));
+      emit(state.copyWith(availableTravelPurposes: purposes, isTravelPurposesLoading: false, error: () => null));
     } catch (e) {
-      emit(state.copyWith(isTravelPurposesLoading: false, errorMessage: () => e.toString()));
+      emit(state.copyWith(isTravelPurposesLoading: false, error: () => GeneralTravelFormError(e.toString())));
     }
   }
 
@@ -268,7 +297,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          errorMessage: () => "Please complete all required fields before submitting.",
+          error: () => GeneralTravelFormError("Please complete all required fields before submitting."),
         ),
       );
       return;
@@ -300,12 +329,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.success,
           travelPlan: () => travelPlan,
-          errorMessage: () => null,
+          error: () => null,
         ),
       );
     } catch (e) {
       // Handle submission error
-      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.failure, errorMessage: () => e.toString()));
+      emit(
+        state.copyWith(
+          formSubmissionStatus: FormSubmissionStatus.failure,
+          error: () => GeneralTravelFormError(e.toString()),
+        ),
+      );
     }
   }
 }
