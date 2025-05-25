@@ -67,6 +67,7 @@ dependencies:
   markdown: ^7.3.0
   cached_network_image: ^3.4.1
   gpt_markdown: ^1.0.19
+  firebase_remote_config: ^5.4.4
 
 dev_dependencies:
   flutter_test:
