@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
+import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
@@ -16,6 +17,7 @@ class ResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       builder: (context, state) {
@@ -36,28 +38,49 @@ class ResultsScreen extends StatelessWidget {
                   // If we have travel details, show the sections
                   if (travelDetails != null) ...[
                     // City Information Card
-                    CityCard(city: travelDetails.city),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showCityCard,
+                      child: CityCard(city: travelDetails.city),
+                    ),
 
                     // Required Documents Card
-                    RequiredDocumentsCard(requiredDocument: travelDetails.requiredDocuments),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showRequiredDocumentsCard,
+                      child: RequiredDocumentsCard(requiredDocument: travelDetails.requiredDocuments),
+                    ),
 
                     // Currency Information Card
-                    _buildCurrencyCard(context, travelDetails, l10n),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showCurrencyCard,
+                      child: _buildCurrencyCard(context, travelDetails, l10n),
+                    ),
 
                     // Flight Options Card
                     // FlightOptionsCard(flightOptions: travelDetails.flightOptions), // TODO: Get flight options from the API
 
                     // Tax Information Card
-                    _buildTaxInfoCard(context, travelDetails, l10n),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showTaxInfoCard,
+                      child: _buildTaxInfoCard(context, travelDetails, l10n),
+                    ),
 
                     // Top Spots Card
-                    _buildSpotsCard(context, travelDetails, l10n),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showTopSpotsCard,
+                      child: _buildSpotsCard(context, travelDetails, l10n),
+                    ),
 
                     // Travel Plan Card
-                    _buildItineraryCard(context, travelDetails, l10n),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showTravelPlanCard,
+                      child: _buildItineraryCard(context, travelDetails, l10n),
+                    ),
 
                     // Recommendations Card
-                    _buildRecommendationsCard(context, travelDetails, l10n),
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showRecommendationsCard,
+                      child: _buildRecommendationsCard(context, travelDetails, l10n),
+                    ),
                   ],
 
                   // Plan Another Trip Button

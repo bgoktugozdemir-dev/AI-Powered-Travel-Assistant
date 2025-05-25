@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
+import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
@@ -19,11 +20,12 @@ class CityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
 
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: _buildCityImage(context),
+      header: firebaseRemoteConfigRepository.showCityView ? _buildCityImage(context) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

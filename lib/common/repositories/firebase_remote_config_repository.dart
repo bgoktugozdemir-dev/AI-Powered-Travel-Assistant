@@ -15,30 +15,52 @@ abstract class _Constants {
   static const Duration minimumFetchIntervalForDevelopment = Duration.zero;
 
   /// Defaults for the config.
-  static final Map<String, dynamic> defaults = {
-    RemoteConfigs.unsplashClientId.key: '',
-    RemoteConfigs.minimumTravelPurposes.key: 1,
-    RemoteConfigs.maximumTravelPurposes.key: 3,
-  };
-
-  /// Key for the Unsplash Client ID.
-  static const String unsplashClientIdKey = 'unsplash_client_id';
-
-  /// Minimum number of travel purposes.
-  static const String minimumTravelPurposesKey = 'minimum_travel_purposes';
-
-  /// Maximum number of travel purposes.
-  static const String maximumTravelPurposesKey = 'maximum_travel_purposes';
+  static final Map<String, dynamic> defaults = Map.fromEntries(
+    RemoteConfigs.values.map((e) => MapEntry(e.key, e.defaultValue)),
+  );
 }
 
 enum RemoteConfigs {
-  unsplashClientId(key: _Constants.unsplashClientIdKey),
-  minimumTravelPurposes(key: _Constants.minimumTravelPurposesKey),
-  maximumTravelPurposes(key: _Constants.maximumTravelPurposesKey);
+  /// Key for the Unsplash Client ID.
+  unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
-  const RemoteConfigs({required this.key});
+  /// Minimum number of travel purposes.
+  minimumTravelPurposes(key: 'minimum_travel_purposes', defaultValue: 1),
+
+  /// Maximum number of travel purposes.
+  maximumTravelPurposes(key: 'maximum_travel_purposes', defaultValue: 3),
+
+  /// Show city view.
+  showCityView(key: 'show_city_view', defaultValue: false),
+
+  /// Show city card.
+  showCityCard(key: 'show_city_card', defaultValue: true),
+
+  /// Show required documents card.
+  showRequiredDocumentsCard(key: 'show_required_documents_card', defaultValue: true),
+
+  /// Show currency card.
+  showCurrencyCard(key: 'show_currency_card', defaultValue: true),
+
+  /// Show flight options card.
+  showFlightOptionsCard(key: 'show_flight_options_card', defaultValue: false),
+
+  /// Show tax information card.
+  showTaxInfoCard(key: 'show_tax_info_card', defaultValue: true),
+
+  /// Show top spots card.
+  showTopSpotsCard(key: 'show_top_spots_card', defaultValue: true),
+
+  /// Show travel plan card.
+  showTravelPlanCard(key: 'show_travel_plan_card', defaultValue: true),
+
+  /// Show recommendations card.
+  showRecommendationsCard(key: 'show_recommendations_card', defaultValue: true);
+
+  const RemoteConfigs({required this.key, required this.defaultValue});
 
   final String key;
+  final dynamic defaultValue;
 }
 
 /// Repository for accessing Firebase Remote Config values.
@@ -94,4 +116,49 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns the maximum number of travel purposes if available, otherwise 3.
   int get maximumTravelPurposes => _firebaseRemoteConfig.getInt(RemoteConfigs.maximumTravelPurposes.key);
+
+  /// Fetches the show city view from Firebase Remote Config.
+  ///
+  /// Returns true if the city view should be shown, otherwise false.
+  bool get showCityView => _firebaseRemoteConfig.getBool(RemoteConfigs.showCityView.key);
+
+  /// Fetches the show city card from Firebase Remote Config.
+  ///
+  /// Returns true if the city card should be shown, otherwise true.
+  bool get showCityCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showCityCard.key);
+
+  /// Fetches the show required documents card from Firebase Remote Config.
+  ///
+  /// Returns true if the required documents card should be shown, otherwise true.
+  bool get showRequiredDocumentsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showRequiredDocumentsCard.key);
+
+  /// Fetches the show currency card from Firebase Remote Config.
+  ///
+  /// Returns true if the currency card should be shown, otherwise true.
+  bool get showCurrencyCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showCurrencyCard.key);
+
+  /// Fetches the show flight options card from Firebase Remote Config.
+  ///
+  /// Returns true if the flight options card should be shown, otherwise false.
+  bool get showFlightOptionsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showFlightOptionsCard.key);
+
+  /// Fetches the show tax information card from Firebase Remote Config.
+  ///
+  /// Returns true if the tax information card should be shown, otherwise true.
+  bool get showTaxInfoCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showTaxInfoCard.key);
+
+  /// Fetches the show top spots card from Firebase Remote Config.
+  ///
+  /// Returns true if the top spots card should be shown, otherwise true.
+  bool get showTopSpotsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showTopSpotsCard.key);
+
+  /// Fetches the show travel plan card from Firebase Remote Config.
+  ///
+  /// Returns true if the travel plan card should be shown, otherwise true.
+  bool get showTravelPlanCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showTravelPlanCard.key);
+
+  /// Fetches the show recommendations card from Firebase Remote Config.
+  ///
+  /// Returns true if the recommendations card should be shown, otherwise true.
+  bool get showRecommendationsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
 }
