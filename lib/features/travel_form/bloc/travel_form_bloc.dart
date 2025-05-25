@@ -95,7 +95,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   }
 
   void _onStarted(TravelFormStarted event, Emitter<TravelFormState> emit) {
-    emit(state.copyWith());
+    emit(const TravelFormState());
   }
 
   void _onNextStepRequested(TravelFormNextStepRequested event, Emitter<TravelFormState> emit) {
