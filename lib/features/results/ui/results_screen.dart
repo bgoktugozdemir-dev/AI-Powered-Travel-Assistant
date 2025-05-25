@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:travel_assistant/common/models/response/required_documents.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
-import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

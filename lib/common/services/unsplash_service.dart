@@ -13,9 +13,6 @@ abstract class _Constants {
 
   /// Default photo orientation
   static const String defaultOrientation = 'landscape';
-
-  /// Default image quality
-  static const String defaultQuality = 'regular';
 }
 
 /// Service for interacting with the Unsplash API to fetch images

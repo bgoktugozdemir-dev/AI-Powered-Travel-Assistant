@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/constants/app_assets.dart';
+import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 import 'package:travel_assistant/features/travel_form/ui/steps/steps.dart';
@@ -22,7 +24,7 @@ class TravelFormScreen extends StatefulWidget {
   State<TravelFormScreen> createState() => _TravelFormScreenState();
 }
 
-class _TravelFormScreenState extends State<TravelFormScreen> {
+class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlayHelper {
   final _departureAirportController = TextEditingController();
   final _arrivalAirportController = TextEditingController();
   final _pageController = PageController();
@@ -89,148 +91,158 @@ class _TravelFormScreenState extends State<TravelFormScreen> {
           curve: _Constants.pageTransitionCurve,
         );
       },
-      child: BlocConsumer<TravelFormBloc, TravelFormState>(
-        listenWhen: (previous, current) => previous.error != current.error,
+      child: BlocListener<TravelFormBloc, TravelFormState>(
+        listenWhen: (previous, current) => previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
-          if (state.error != null) {
-            appLogger.w("Validation failed for step ${state.currentStep}: ${state.error}");
-
-            showGeneralDialog(
-              context: context,
-              pageBuilder: (context, animation, secondaryAnimation) {
-                return TravelFormErrorDialog(error: state.error!);
-              },
-            );
+          if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
+            showLoadingOverlay(context, loadingAsset: AppAssets.flightSearchIndicatorLottie);
+          } else {
+            hideLoadingOverlay();
           }
         },
-        buildWhen: (previous, current) => previous.currentStep != current.currentStep,
-        builder: (context, state) {
-          // Update text controller if search term changed from outside (e.g. after selection)
-          // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
-          if (_departureAirportController.text != state.departureAirportSearchTerm && state.currentStep == 0) {
-            // To avoid listener loop if typing, only update if it's different and relevant
-            // A more robust way might be to only set this when an item is *selected*.
-            // For now, this is a simplified sync.
-          }
+        child: BlocConsumer<TravelFormBloc, TravelFormState>(
+          listenWhen: (previous, current) => previous.error != current.error,
+          listener: (context, state) {
+            if (state.error != null) {
+              appLogger.w("Validation failed for step ${state.currentStep}: ${state.error}");
 
-          // Show loading indicator when submitting
-          final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
-          return Scaffold(
-            appBar: AppBar(
-              leading:
-                  state.currentStep > 0
-                      ? IconButton(
-                        tooltip: l10n.navigationPrevious,
-                        onPressed:
-                            isSubmitting
-                                ? null
-                                : () {
-                                  appLogger.i(
-                                    "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
-                                  );
-                                  context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
-                                },
-                        icon: const Icon(Icons.arrow_back),
-                      )
-                      : null,
-              title: Text(l10n.travelFormStepTitle(state.currentStep + 1)),
-              actions: [
-                if (state.currentStep < state.totalSteps - 1)
-                  IconButton(
-                    tooltip: l10n.navigationNext,
-                    onPressed: _onNextButtonPressed(context, state, l10n),
-                    icon: const Icon(Icons.arrow_forward),
-                  )
-                else if (state.currentStep == state.totalSteps - 1)
-                  IconButton(
-                    tooltip: l10n.navigationSubmit,
-                    onPressed:
-                        isSubmitting
-                            ? null
-                            : () {
-                              appLogger.i("'Get Travel Plan' (Submit) button pressed.");
-                              // Check form validity one more time before submission
-                              if (state.isFormValid) {
-                                context.read<TravelFormBloc>().add(const SubmitTravelFormEvent());
-                              } else {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text("TODO"), backgroundColor: Colors.red));
-                              }
-                            },
-                    icon: const Icon(Icons.search),
+              showGeneralDialog(
+                context: context,
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return TravelFormErrorDialog(error: state.error!);
+                },
+              );
+            }
+          },
+          buildWhen: (previous, current) => previous.currentStep != current.currentStep,
+          builder: (context, state) {
+            // Update text controller if search term changed from outside (e.g. after selection)
+            // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
+            if (_departureAirportController.text != state.departureAirportSearchTerm && state.currentStep == 0) {
+              // To avoid listener loop if typing, only update if it's different and relevant
+              // A more robust way might be to only set this when an item is *selected*.
+              // For now, this is a simplified sync.
+            }
+
+            // Show loading indicator when submitting
+            final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
+            return Scaffold(
+              appBar: AppBar(
+                leading:
+                    state.currentStep > 0
+                        ? IconButton(
+                          tooltip: l10n.navigationPrevious,
+                          onPressed:
+                              isSubmitting
+                                  ? null
+                                  : () {
+                                    appLogger.i(
+                                      "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
+                                    );
+                                    context.read<TravelFormBloc>().add(TravelFormPreviousStepRequested());
+                                  },
+                          icon: const Icon(Icons.arrow_back),
+                        )
+                        : null,
+                title: Text(l10n.travelFormStepTitle(state.currentStep + 1)),
+                actions: [
+                  if (state.currentStep < state.totalSteps - 1)
+                    IconButton(
+                      tooltip: l10n.navigationNext,
+                      onPressed: _onNextButtonPressed(context, state, l10n),
+                      icon: const Icon(Icons.arrow_forward),
+                    )
+                  else if (state.currentStep == state.totalSteps - 1)
+                    IconButton(
+                      tooltip: l10n.navigationSubmit,
+                      onPressed:
+                          isSubmitting
+                              ? null
+                              : () {
+                                appLogger.i("'Get Travel Plan' (Submit) button pressed.");
+                                // Check form validity one more time before submission
+                                if (state.isFormValid) {
+                                  context.read<TravelFormBloc>().add(const SubmitTravelFormEvent());
+                                } else {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text("TODO"), backgroundColor: Colors.red));
+                                }
+                              },
+                      icon: const Icon(Icons.search),
+                    ),
+                ],
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(_Constants.progressIndicatorHeight),
+                  child: LinearProgressIndicator(
+                    value: state.currentStep / state.totalSteps,
+                    minHeight: _Constants.progressIndicatorHeight,
                   ),
-              ],
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(_Constants.progressIndicatorHeight),
-                child: LinearProgressIndicator(
-                  value: state.currentStep / state.totalSteps,
-                  minHeight: _Constants.progressIndicatorHeight,
                 ),
               ),
-            ),
-            resizeToAvoidBottomInset: true,
-            body: PageView(
-              controller: _pageController,
-              pageSnapping: false,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
-                appLogger.i("Page changed to $index");
-              },
-              children: _travelFormSteps,
-            ),
-            /*
-                  Stack(
-                    children: [
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                child: SingleChildScrollView(
+              resizeToAvoidBottomInset: true,
+              body: PageView(
+                controller: _pageController,
+                pageSnapping: false,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  appLogger.i("Page changed to $index");
+                },
+                children: _travelFormSteps,
+              ),
+              /*
+                        Stack(
+                          children: [
+                            SafeArea(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            if (state.currentStep == 0)
+                                              TravelFormDepartureAirportStep(departureAirportController: _departureAirportController),
+                                            if (state.currentStep == 1)
+                                              TravelFormArrivalAirportStep(arrivalAirportController: _arrivalAirportController),
+                                            if (state.currentStep == 2) const TravelFormTravelDatesStep(),
+                                            if (state.currentStep == 3) const TravelFormNationalityStep(),
+                                            if (state.currentStep == 4) const TravelPurposeStep(),
+                                            if (state.currentStep == 5) const TravelSummaryStep(),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    _buildNavigationButtons(context, state, l10n),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (isSubmitting)
+                              Container(
+                                color: Colors.black.withOpacity(0.3),
+                                child: Center(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      if (state.currentStep == 0)
-                                        TravelFormDepartureAirportStep(departureAirportController: _departureAirportController),
-                                      if (state.currentStep == 1)
-                                        TravelFormArrivalAirportStep(arrivalAirportController: _arrivalAirportController),
-                                      if (state.currentStep == 2) const TravelFormTravelDatesStep(),
-                                      if (state.currentStep == 3) const TravelFormNationalityStep(),
-                                      if (state.currentStep == 4) const TravelPurposeStep(),
-                                      if (state.currentStep == 5) const TravelSummaryStep(),
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const CircularProgressIndicator(),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        l10n.submittingForm,
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
-                              _buildNavigationButtons(context, state, l10n),
-                            ],
-                          ),
+                          ],
                         ),
-                      ),
-                      if (isSubmitting)
-                        Container(
-                          color: Colors.black.withOpacity(0.3),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const CircularProgressIndicator(),
-                                const SizedBox(height: 16),
-                                Text(
-                                  l10n.submittingForm,
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  */
-          );
-        },
+                        */
+            );
+          },
+        ),
       ),
     );
   }

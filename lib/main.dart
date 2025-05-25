@@ -17,6 +17,8 @@ import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
 import 'package:travel_assistant/firebase_options.dart';
+import 'package:travel_assistant/common/theme/app_colors.dart';
+import 'package:travel_assistant/common/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,7 +84,7 @@ class MyApp extends StatelessWidget {
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
+      theme: AppTheme.lightTheme,
       home: const TravelFormScreen(),
       routes: {'/results': (context) => const ResultsScreen()},
     );
