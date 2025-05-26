@@ -237,4 +237,85 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get disclaimerLegalContent =>
       'Bu uygulama yalnızca genel rehberlik amacıyla seyahat yardımı ve bilgileri sağlar. Bu bilgilerin kullanımından kaynaklanan herhangi bir hata, eksiklik veya sorundan sorumlu değiliz. Kullanıcılar seyahat kararlarından ve tüm bilgileri resmi ve güvenilir kaynaklardan doğrulamaktan yalnızca kendileri sorumludur.';
+
+  @override
+  String get stepTitleWelcome => 'Bir sonraki maceranızı planlayalım!';
+
+  @override
+  String get stepTitleArrival => 'Maceranız sizi nereye götürecek?';
+
+  @override
+  String get stepTitleDates => 'Sihir ne zaman gerçekleşecek?';
+
+  @override
+  String get stepTitleNationality => 'Bize kendinizden bahsedin!';
+
+  @override
+  String get stepTitlePurpose => 'Sizi keşfe çağıran nedir?';
+
+  @override
+  String get stepTitleReview => 'Neredeyse bitti!';
+
+  @override
+  String get stepDescriptionDeparture =>
+      'Yolculuğunuz nerede başlayacak? Başlamak için kalkış havalimanınızı girin.';
+
+  @override
+  String get stepDescriptionArrival =>
+      'Nereye gidiyorsunuz? Havalimanı önerilerimizden varış hedefinizi seçin.';
+
+  @override
+  String get stepDescriptionDates =>
+      'Ne zaman seyahat etmek istiyorsunuz? Gidiş ve dönüş tarihlerinizi seçin.';
+
+  @override
+  String get stepDescriptionNationality =>
+      'Milliyetiniz nedir? Bu, doğru vize ve seyahat gereksinimlerini sağlamamıza yardımcı olur.';
+
+  @override
+  String get stepDescriptionPurpose =>
+      'Seyahatinizin amacı nedir? Kişiselleştirilmiş öneriler almak için uygun olanların tümünü seçin.';
+
+  @override
+  String get stepDescriptionReview =>
+      'Aşağıdaki seyahat detaylarınızı gözden geçirin ve AI tarafından oluşturulan seyahat planınızı alın!';
+
+  @override
+  String get currencyInformationTitle => 'Para Birimi Bilgisi';
+
+  @override
+  String get currencyLabel => 'Para Birimi';
+
+  @override
+  String get exchangeRateLabel => 'Döviz Kuru';
+
+  @override
+  String get averageDailyCostLabel => 'Ortalama Günlük Maliyet';
+
+  @override
+  String get taxInformationTitle => 'Vergi Bilgisi';
+
+  @override
+  String get taxRateLabel => 'Vergi Oranı';
+
+  @override
+  String get taxFreeShoppingLabel => 'Vergisiz Alışveriş';
+
+  @override
+  String get availableLabel => 'Mevcut';
+
+  @override
+  String get notAvailableLabel => 'Mevcut Değil';
+
+  @override
+  String get placesToVisitTitle => 'Gezilecek Yerler';
+
+  @override
+  String get requirementsLabel => 'Gereksinimler:';
+
+  @override
+  String get closeLabel => 'Kapat';
+
+  @override
+  String get travelItineraryTitle => 'Seyahat Programı';
 }

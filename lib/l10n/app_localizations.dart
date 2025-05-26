@@ -457,6 +457,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This application provides travel assistance and information for general guidance only. We are not responsible for any errors, omissions, or issues arising from the use of this information. Users are solely responsible for their travel decisions and for verifying all information with official and reliable sources.'**
   String get disclaimerLegalContent;
+
+  /// Title for the welcome/departure airport step
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s plan your next adventure!'**
+  String get stepTitleWelcome;
+
+  /// Title for the arrival airport step
+  ///
+  /// In en, this message translates to:
+  /// **'Where will your adventure take you?'**
+  String get stepTitleArrival;
+
+  /// Title for the travel dates step
+  ///
+  /// In en, this message translates to:
+  /// **'When does the magic happen?'**
+  String get stepTitleDates;
+
+  /// Title for the nationality step
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about yourself!'**
+  String get stepTitleNationality;
+
+  /// Title for the travel purpose step
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s calling you to explore?'**
+  String get stepTitlePurpose;
+
+  /// Title for the review step
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there!'**
+  String get stepTitleReview;
+
+  /// Description for the departure airport step
+  ///
+  /// In en, this message translates to:
+  /// **'Where will your journey begin? Enter your departure airport to get started.'**
+  String get stepDescriptionDeparture;
+
+  /// Description for the arrival airport step
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you headed? Choose your arrival destination from our airport suggestions.'**
+  String get stepDescriptionArrival;
+
+  /// Description for the travel dates step
+  ///
+  /// In en, this message translates to:
+  /// **'When would you like to travel? Select your departure and return dates for the trip.'**
+  String get stepDescriptionDates;
+
+  /// Description for the nationality step
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your nationality? This helps us provide accurate visa and travel requirements.'**
+  String get stepDescriptionNationality;
+
+  /// Description for the travel purpose step
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s the purpose of your trip? Select all that apply to get personalized recommendations.'**
+  String get stepDescriptionPurpose;
+
+  /// Description for the review step
+  ///
+  /// In en, this message translates to:
+  /// **'Review your travel details below and get your AI-generated travel plan!'**
+  String get stepDescriptionReview;
+
+  /// Title for the currency information card
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Information'**
+  String get currencyInformationTitle;
+
+  /// Label for currency field
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
+
+  /// Label for exchange rate field
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rate'**
+  String get exchangeRateLabel;
+
+  /// Label for average daily cost field
+  ///
+  /// In en, this message translates to:
+  /// **'Average Daily Cost'**
+  String get averageDailyCostLabel;
+
+  /// Title for the tax information card
+  ///
+  /// In en, this message translates to:
+  /// **'Tax Information'**
+  String get taxInformationTitle;
+
+  /// Label for tax rate field
+  ///
+  /// In en, this message translates to:
+  /// **'Tax Rate'**
+  String get taxRateLabel;
+
+  /// Label for tax-free shopping availability
+  ///
+  /// In en, this message translates to:
+  /// **'Tax-Free Shopping'**
+  String get taxFreeShoppingLabel;
+
+  /// Text for when something is available
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableLabel;
+
+  /// Text for when something is not available
+  ///
+  /// In en, this message translates to:
+  /// **'Not Available'**
+  String get notAvailableLabel;
+
+  /// Title for the places to visit card
+  ///
+  /// In en, this message translates to:
+  /// **'Places to Visit'**
+  String get placesToVisitTitle;
+
+  /// Label for requirements section
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements:'**
+  String get requirementsLabel;
+
+  /// Close button text
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeLabel;
+
+  /// Title for the travel itinerary card
+  ///
+  /// In en, this message translates to:
+  /// **'Travel Itinerary'**
+  String get travelItineraryTitle;
 }
 
 class _AppLocalizationsDelegate

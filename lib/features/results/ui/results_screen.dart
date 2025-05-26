@@ -132,24 +132,24 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.currency_exchange, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text('Currency Information', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.currencyInformationTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),
             const SizedBox(height: 8),
 
-            _buildInfoRow(context, 'Currency', '${currency.name} (${currency.code})', Icons.money),
+            _buildInfoRow(context, l10n.currencyLabel, '${currency.name} (${currency.code})', Icons.money),
 
             _buildInfoRow(
               context,
-              'Exchange Rate',
+              l10n.exchangeRateLabel,
               '$departureCurrencyValue = $arrivalCurrencyValue',
               Icons.swap_horiz,
             ),
 
             _buildInfoRow(
               context,
-              'Average Daily Cost',
+              l10n.averageDailyCostLabel,
               '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
               Icons.price_change,
             ),
@@ -175,7 +175,7 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.receipt_long, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text('Tax Information', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.taxInformationTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),
@@ -183,15 +183,15 @@ class ResultsScreen extends StatelessWidget {
 
             _buildInfoRow(
               context,
-              'Tax Rate',
+              l10n.taxRateLabel,
               NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(tax.taxRate / 100),
               Icons.percent,
             ),
 
             _buildInfoRow(
               context,
-              'Tax-Free Shopping',
-              tax.hasTaxFreeOptions ? 'Available' : 'Not Available',
+              l10n.taxFreeShoppingLabel,
+              tax.hasTaxFreeOptions ? l10n.availableLabel : l10n.notAvailableLabel,
               Icons.shopping_bag,
               iconColor: tax.hasTaxFreeOptions ? Colors.green : Colors.red,
             ),
@@ -218,7 +218,7 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.place, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text('Places to Visit', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.placesToVisitTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),
@@ -252,7 +252,7 @@ class ResultsScreen extends StatelessWidget {
                                     Text(spot.description),
                                     if (spot.requirements != null) ...[
                                       const SizedBox(height: 16),
-                                      Text('Requirements:', style: Theme.of(context).textTheme.titleSmall),
+                                      Text(l10n.requirementsLabel, style: Theme.of(context).textTheme.titleSmall),
                                       const SizedBox(height: 4),
                                       Text(spot.requirements!),
                                     ],
@@ -260,7 +260,7 @@ class ResultsScreen extends StatelessWidget {
                                 ),
                               ),
                               actions: [
-                                TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close')),
+                                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.closeLabel)),
                               ],
                             ),
                       );
@@ -293,7 +293,7 @@ class ResultsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.event, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text('Travel Itinerary', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.travelItineraryTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),

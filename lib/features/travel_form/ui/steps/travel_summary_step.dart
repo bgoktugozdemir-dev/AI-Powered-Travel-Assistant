@@ -149,7 +149,11 @@ class TravelSummaryStep extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, size: 24, color: iconColor ?? Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
+                Icon(
+                  icon,
+                  size: 24,
+                  color: iconColor ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -164,7 +168,7 @@ class TravelSummaryStep extends StatelessWidget {
               content,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
             ),
           ],
         ),

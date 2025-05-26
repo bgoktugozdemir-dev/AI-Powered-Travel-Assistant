@@ -237,4 +237,85 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get disclaimerLegalContent =>
       'This application provides travel assistance and information for general guidance only. We are not responsible for any errors, omissions, or issues arising from the use of this information. Users are solely responsible for their travel decisions and for verifying all information with official and reliable sources.';
+
+  @override
+  String get stepTitleWelcome => 'Let\'s plan your next adventure!';
+
+  @override
+  String get stepTitleArrival => 'Where will your adventure take you?';
+
+  @override
+  String get stepTitleDates => 'When does the magic happen?';
+
+  @override
+  String get stepTitleNationality => 'Tell us about yourself!';
+
+  @override
+  String get stepTitlePurpose => 'What\'s calling you to explore?';
+
+  @override
+  String get stepTitleReview => 'Almost there!';
+
+  @override
+  String get stepDescriptionDeparture =>
+      'Where will your journey begin? Enter your departure airport to get started.';
+
+  @override
+  String get stepDescriptionArrival =>
+      'Where are you headed? Choose your arrival destination from our airport suggestions.';
+
+  @override
+  String get stepDescriptionDates =>
+      'When would you like to travel? Select your departure and return dates for the trip.';
+
+  @override
+  String get stepDescriptionNationality =>
+      'What\'s your nationality? This helps us provide accurate visa and travel requirements.';
+
+  @override
+  String get stepDescriptionPurpose =>
+      'What\'s the purpose of your trip? Select all that apply to get personalized recommendations.';
+
+  @override
+  String get stepDescriptionReview =>
+      'Review your travel details below and get your AI-generated travel plan!';
+
+  @override
+  String get currencyInformationTitle => 'Currency Information';
+
+  @override
+  String get currencyLabel => 'Currency';
+
+  @override
+  String get exchangeRateLabel => 'Exchange Rate';
+
+  @override
+  String get averageDailyCostLabel => 'Average Daily Cost';
+
+  @override
+  String get taxInformationTitle => 'Tax Information';
+
+  @override
+  String get taxRateLabel => 'Tax Rate';
+
+  @override
+  String get taxFreeShoppingLabel => 'Tax-Free Shopping';
+
+  @override
+  String get availableLabel => 'Available';
+
+  @override
+  String get notAvailableLabel => 'Not Available';
+
+  @override
+  String get placesToVisitTitle => 'Places to Visit';
+
+  @override
+  String get requirementsLabel => 'Requirements:';
+
+  @override
+  String get closeLabel => 'Close';
+
+  @override
+  String get travelItineraryTitle => 'Travel Itinerary';
 }

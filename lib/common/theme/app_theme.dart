@@ -9,21 +9,16 @@ abstract class AppTheme {
         seedColor: AppColors.primaryBlue,
         primary: AppColors.primaryBlue,
         secondary: AppColors.accentTeal,
-        surface: AppColors.neutralLightGrey,
-        background: AppColors.neutralWhite,
+        surface: AppColors.neutralWhite,
         error: AppColors.semanticError,
         onPrimary: AppColors.neutralWhite,
         onSecondary: AppColors.neutralWhite,
         onSurface: AppColors.neutralBlack,
-        onBackground: AppColors.neutralBlack,
         onError: AppColors.neutralWhite,
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: AppColors.neutralWhite,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.neutralWhite,
-      ),
+      appBarTheme: const AppBarTheme(backgroundColor: AppColors.primaryBlue, foregroundColor: AppColors.neutralWhite),
       cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -31,7 +26,7 @@ abstract class AppTheme {
         surfaceTintColor: AppColors.neutralWhite,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.primaryLightBlue.withOpacity(0.2),
+        backgroundColor: AppColors.primaryLightBlue.withValues(alpha: 0.2),
         selectedColor: AppColors.primaryBlue,
         secondarySelectedColor: AppColors.accentTeal,
         labelStyle: const TextStyle(color: AppColors.neutralBlack),
@@ -46,18 +41,11 @@ abstract class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryBlue,
-        ),
-      ),
+      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: AppColors.primaryBlue)),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.neutralLightGrey.withOpacity(0.5),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide.none,
-        ),
+        fillColor: AppColors.neutralLightGrey.withValues(alpha: 0.5),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
@@ -75,4 +63,4 @@ abstract class AppTheme {
 
   // TODO: Define a darkTheme if needed in the future
   // static ThemeData get darkTheme { ... }
-} 
+}

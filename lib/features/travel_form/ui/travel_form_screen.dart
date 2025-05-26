@@ -172,13 +172,6 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                       icon: const Icon(Icons.search),
                     ),
                 ],
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(_Constants.progressIndicatorHeight),
-                  child: LinearProgressIndicator(
-                    value: state.currentStep / state.totalSteps,
-                    minHeight: _Constants.progressIndicatorHeight,
-                  ),
-                ),
               ),
               resizeToAvoidBottomInset: true,
               body: PageView(

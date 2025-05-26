@@ -315,5 +315,105 @@
   "disclaimerLegalContent": "This application provides travel assistance and information for general guidance only. We are not responsible for any errors, omissions, or issues arising from the use of this information. Users are solely responsible for their travel decisions and for verifying all information with official and reliable sources.",
   "@disclaimerLegalContent": {
     "description": "Content for the general legal notice"
+  },
+  "stepTitleWelcome": "Let's plan your next adventure!",
+  "@stepTitleWelcome": {
+    "description": "Title for the welcome/departure airport step"
+  },
+  "stepTitleArrival": "Where will your adventure take you?",
+  "@stepTitleArrival": {
+    "description": "Title for the arrival airport step"
+  },
+  "stepTitleDates": "When does the magic happen?",
+  "@stepTitleDates": {
+    "description": "Title for the travel dates step"
+  },
+  "stepTitleNationality": "Tell us about yourself!",
+  "@stepTitleNationality": {
+    "description": "Title for the nationality step"
+  },
+  "stepTitlePurpose": "What's calling you to explore?",
+  "@stepTitlePurpose": {
+    "description": "Title for the travel purpose step"
+  },
+  "stepTitleReview": "Almost there!",
+  "@stepTitleReview": {
+    "description": "Title for the review step"
+  },
+  "stepDescriptionDeparture": "Where will your journey begin? Enter your departure airport to get started.",
+  "@stepDescriptionDeparture": {
+    "description": "Description for the departure airport step"
+  },
+  "stepDescriptionArrival": "Where are you headed? Choose your arrival destination from our airport suggestions.",
+  "@stepDescriptionArrival": {
+    "description": "Description for the arrival airport step"
+  },
+  "stepDescriptionDates": "When would you like to travel? Select your departure and return dates for the trip.",
+  "@stepDescriptionDates": {
+    "description": "Description for the travel dates step"
+  },
+  "stepDescriptionNationality": "What's your nationality? This helps us provide accurate visa and travel requirements.",
+  "@stepDescriptionNationality": {
+    "description": "Description for the nationality step"
+  },
+  "stepDescriptionPurpose": "What's the purpose of your trip? Select all that apply to get personalized recommendations.",
+  "@stepDescriptionPurpose": {
+    "description": "Description for the travel purpose step"
+  },
+  "stepDescriptionReview": "Review your travel details below and get your AI-generated travel plan!",
+  "@stepDescriptionReview": {
+    "description": "Description for the review step"
+  },
+  "currencyInformationTitle": "Currency Information",
+  "@currencyInformationTitle": {
+    "description": "Title for the currency information card"
+  },
+  "currencyLabel": "Currency",
+  "@currencyLabel": {
+    "description": "Label for currency field"
+  },
+  "exchangeRateLabel": "Exchange Rate",
+  "@exchangeRateLabel": {
+    "description": "Label for exchange rate field"
+  },
+  "averageDailyCostLabel": "Average Daily Cost",
+  "@averageDailyCostLabel": {
+    "description": "Label for average daily cost field"
+  },
+  "taxInformationTitle": "Tax Information",
+  "@taxInformationTitle": {
+    "description": "Title for the tax information card"
+  },
+  "taxRateLabel": "Tax Rate",
+  "@taxRateLabel": {
+    "description": "Label for tax rate field"
+  },
+  "taxFreeShoppingLabel": "Tax-Free Shopping",
+  "@taxFreeShoppingLabel": {
+    "description": "Label for tax-free shopping availability"
+  },
+  "availableLabel": "Available",
+  "@availableLabel": {
+    "description": "Text for when something is available"
+  },
+  "notAvailableLabel": "Not Available",
+  "@notAvailableLabel": {
+    "description": "Text for when something is not available"
+  },
+  "placesToVisitTitle": "Places to Visit",
+  "@placesToVisitTitle": {
+    "description": "Title for the places to visit card"
+  },
+  "requirementsLabel": "Requirements:",
+  "@requirementsLabel": {
+    "description": "Label for requirements section"
+  },
+  "closeLabel": "Close",
+  "@closeLabel": {
+    "description": "Close button text"
+  },
+  "travelItineraryTitle": "Travel Itinerary",
+  "@travelItineraryTitle": {
+    "description": "Title for the travel itinerary card"
   }
 }

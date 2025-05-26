@@ -315,5 +315,105 @@
   "disclaimerLegalContent": "Bu uygulama yalnızca genel rehberlik amacıyla seyahat yardımı ve bilgileri sağlar. Bu bilgilerin kullanımından kaynaklanan herhangi bir hata, eksiklik veya sorundan sorumlu değiliz. Kullanıcılar seyahat kararlarından ve tüm bilgileri resmi ve güvenilir kaynaklardan doğrulamaktan yalnızca kendileri sorumludur.",
   "@disclaimerLegalContent": {
     "description": "Content for the general legal notice"
+  },
+  "stepTitleWelcome": "Bir sonraki maceranızı planlayalım!",
+  "@stepTitleWelcome": {
+    "description": "Title for the welcome/departure airport step"
+  },
+  "stepTitleArrival": "Maceranız sizi nereye götürecek?",
+  "@stepTitleArrival": {
+    "description": "Title for the arrival airport step"
+  },
+  "stepTitleDates": "Sihir ne zaman gerçekleşecek?",
+  "@stepTitleDates": {
+    "description": "Title for the travel dates step"
+  },
+  "stepTitleNationality": "Bize kendinizden bahsedin!",
+  "@stepTitleNationality": {
+    "description": "Title for the nationality step"
+  },
+  "stepTitlePurpose": "Sizi keşfe çağıran nedir?",
+  "@stepTitlePurpose": {
+    "description": "Title for the travel purpose step"
+  },
+  "stepTitleReview": "Neredeyse bitti!",
+  "@stepTitleReview": {
+    "description": "Title for the review step"
+  },
+  "stepDescriptionDeparture": "Yolculuğunuz nerede başlayacak? Başlamak için kalkış havalimanınızı girin.",
+  "@stepDescriptionDeparture": {
+    "description": "Description for the departure airport step"
+  },
+  "stepDescriptionArrival": "Nereye gidiyorsunuz? Havalimanı önerilerimizden varış hedefinizi seçin.",
+  "@stepDescriptionArrival": {
+    "description": "Description for the arrival airport step"
+  },
+  "stepDescriptionDates": "Ne zaman seyahat etmek istiyorsunuz? Gidiş ve dönüş tarihlerinizi seçin.",
+  "@stepDescriptionDates": {
+    "description": "Description for the travel dates step"
+  },
+  "stepDescriptionNationality": "Milliyetiniz nedir? Bu, doğru vize ve seyahat gereksinimlerini sağlamamıza yardımcı olur.",
+  "@stepDescriptionNationality": {
+    "description": "Description for the nationality step"
+  },
+  "stepDescriptionPurpose": "Seyahatinizin amacı nedir? Kişiselleştirilmiş öneriler almak için uygun olanların tümünü seçin.",
+  "@stepDescriptionPurpose": {
+    "description": "Description for the travel purpose step"
+  },
+  "stepDescriptionReview": "Aşağıdaki seyahat detaylarınızı gözden geçirin ve AI tarafından oluşturulan seyahat planınızı alın!",
+  "@stepDescriptionReview": {
+    "description": "Description for the review step"
+  },
+  "currencyInformationTitle": "Para Birimi Bilgisi",
+  "@currencyInformationTitle": {
+    "description": "Title for the currency information card"
+  },
+  "currencyLabel": "Para Birimi",
+  "@currencyLabel": {
+    "description": "Label for currency field"
+  },
+  "exchangeRateLabel": "Döviz Kuru",
+  "@exchangeRateLabel": {
+    "description": "Label for exchange rate field"
+  },
+  "averageDailyCostLabel": "Ortalama Günlük Maliyet",
+  "@averageDailyCostLabel": {
+    "description": "Label for average daily cost field"
+  },
+  "taxInformationTitle": "Vergi Bilgisi",
+  "@taxInformationTitle": {
+    "description": "Title for the tax information card"
+  },
+  "taxRateLabel": "Vergi Oranı",
+  "@taxRateLabel": {
+    "description": "Label for tax rate field"
+  },
+  "taxFreeShoppingLabel": "Vergisiz Alışveriş",
+  "@taxFreeShoppingLabel": {
+    "description": "Label for tax-free shopping availability"
+  },
+  "availableLabel": "Mevcut",
+  "@availableLabel": {
+    "description": "Text for when something is available"
+  },
+  "notAvailableLabel": "Mevcut Değil",
+  "@notAvailableLabel": {
+    "description": "Text for when something is not available"
+  },
+  "placesToVisitTitle": "Gezilecek Yerler",
+  "@placesToVisitTitle": {
+    "description": "Title for the places to visit card"
+  },
+  "requirementsLabel": "Gereksinimler:",
+  "@requirementsLabel": {
+    "description": "Label for requirements section"
+  },
+  "closeLabel": "Kapat",
+  "@closeLabel": {
+    "description": "Close button text"
+  },
+  "travelItineraryTitle": "Seyahat Programı",
+  "@travelItineraryTitle": {
+    "description": "Title for the travel itinerary card"
   }
 }
