@@ -95,7 +95,11 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
         listenWhen: (previous, current) => previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
           if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
-            showLoadingOverlay(context, loadingAsset: AppAssets.flightSearchIndicatorLottie);
+            showLoadingOverlay(
+              context,
+              loadingAsset: AppAssets.flightSearchIndicatorLottie,
+              label: l10n.submittingForm,
+            );
           } else {
             hideLoadingOverlay();
           }

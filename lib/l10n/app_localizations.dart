@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// Message shown when the form is being submitted
   ///
   /// In en, this message translates to:
-  /// **'Submitting form...'**
+  /// **'✈️ Crafting your perfect adventure...'**
   String get submittingForm;
 
   /// Title for the travel plan section in the results screen

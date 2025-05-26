@@ -6,9 +6,10 @@ mixin LoadingOverlayHelper {
 
   void showLoadingOverlay(
     BuildContext context, {
-    bool isDismissible = false,
+    String? label,
     VoidCallback? onDismiss,
     String? loadingAsset,
+    bool isDismissible = false,
   }) {
     if (_overlayEntry != null) {
       return;
@@ -17,6 +18,7 @@ mixin LoadingOverlayHelper {
     _overlayEntry = OverlayEntry(
       builder:
           (context) => LoadingOverlay(
+            label: label,
             isDismissible: isDismissible,
             onDismiss: onDismiss,
             loadingAsset: loadingAsset,

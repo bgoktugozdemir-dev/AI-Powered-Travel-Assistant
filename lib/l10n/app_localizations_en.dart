@@ -154,7 +154,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navigationSubmit => 'Get Travel Plan';
 
   @override
-  String get submittingForm => 'Submitting form...';
+  String get submittingForm => '✈️ Crafting your perfect adventure...';
 
   @override
   String get yourTravelPlan => 'Your Travel Plan';

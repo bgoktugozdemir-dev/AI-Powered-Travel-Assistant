@@ -188,7 +188,7 @@
   "@navigationSubmit": {
     "description": "Button text to submit the form and get travel plan"
   },
-  "submittingForm": "Submitting form...",
+  "submittingForm": "Crafting your perfect adventure...",
   "@submittingForm": {
     "description": "Message shown when the form is being submitted"
   },
