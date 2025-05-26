@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/services/gemini_service.dart';
@@ -71,7 +72,11 @@ class GeminiRepository {
         context: {'prompt': prompt},
       );
 
-      throw Exception('Failed to generate text: $e');
+      if (e is ServerException) {
+        throw FirebaseAppCheckError();
+      } else {
+        throw Exception('Failed to generate text: $e');
+      }
     }
   }
 }

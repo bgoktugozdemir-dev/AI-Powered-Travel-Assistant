@@ -278,6 +278,12 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred. Please try again.'**
   String get errorGeneralTravelForm;
 
+  /// Error message for server errors
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred. Please try again later.'**
+  String get errorServer;
+
   /// Label displayed when an airport is selected, showing its name and code
   ///
   /// In en, this message translates to:

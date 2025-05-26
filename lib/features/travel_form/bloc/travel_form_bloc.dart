@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // For Dio and DioError
 import 'package:equatable/equatable.dart'; // For ValueGetter
 import 'package:flutter/material.dart'; // For DateTimeRange
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
 import 'package:travel_assistant/common/models/country.dart'; // Import Country model
 import 'package:travel_assistant/common/models/response/travel_details.dart';
@@ -162,7 +163,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         state.copyWith(
           isDepartureAirportLoading: false,
           departureAirportSuggestions: [],
-          error: () => GeneralTravelFormError(e.toString()),
+          error: () => GeneralTravelFormError(),
         ),
       );
     }
@@ -205,7 +206,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         state.copyWith(
           isArrivalAirportLoading: false,
           arrivalAirportSuggestions: [],
-          error: () => GeneralTravelFormError(e.toString()),
+          error: () => GeneralTravelFormError(),
         ),
       );
     }
@@ -256,11 +257,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(state.copyWith(nationalitySuggestions: suggestions, isNationalityLoading: false, error: () => null));
     } catch (e) {
       emit(
-        state.copyWith(
-          isNationalityLoading: false,
-          nationalitySuggestions: [],
-          error: () => GeneralTravelFormError(e.toString()),
-        ),
+        state.copyWith(isNationalityLoading: false, nationalitySuggestions: [], error: () => GeneralTravelFormError()),
       );
     }
   }
@@ -287,7 +284,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       final purposes = await _travelPurposeService.getTravelPurposes();
       emit(state.copyWith(availableTravelPurposes: purposes, isTravelPurposesLoading: false, error: () => null));
     } catch (e) {
-      emit(state.copyWith(isTravelPurposesLoading: false, error: () => GeneralTravelFormError(e.toString())));
+      emit(state.copyWith(isTravelPurposesLoading: false, error: () => GeneralTravelFormError()));
     }
   }
 
@@ -311,12 +308,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   Future<void> _onSubmitTravelForm(SubmitTravelFormEvent event, Emitter<TravelFormState> emit) async {
     // Check if form is valid before submission
     if (!state.isFormValid) {
-      emit(
-        state.copyWith(
-          formSubmissionStatus: FormSubmissionStatus.failure,
-          error: () => GeneralTravelFormError("Please complete all required fields before submitting."),
-        ),
-      );
+      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.failure, error: () => GeneralTravelFormError()));
       return;
     }
 
@@ -354,7 +346,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error: () => GeneralTravelFormError(e.toString()),
+          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
         ),
       );
     }

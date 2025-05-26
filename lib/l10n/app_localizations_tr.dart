@@ -137,6 +137,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.';
 
   @override
+  String get errorServer =>
+      'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+
+  @override
   String selectedAirportLabel(String airportName, String airportCode) {
     return 'Seçilen: $airportName ($airportCode)';
   }

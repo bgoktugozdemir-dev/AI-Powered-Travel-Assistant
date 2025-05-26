@@ -3,9 +3,7 @@ sealed class TravelFormError {
 }
 
 class GeneralTravelFormError extends TravelFormError {
-  const GeneralTravelFormError(this.message);
-
-  final String message;
+  const GeneralTravelFormError();
 }
 
 class DepartureAirportMissingError extends TravelFormError {
@@ -40,4 +38,8 @@ class TravelPurposeTooManyError extends TravelFormError {
 
   final int selectedTravelPurposes;
   final int maximumTravelPurposes;
+}
+
+class ServerError extends TravelFormError {
+  const ServerError();
 }

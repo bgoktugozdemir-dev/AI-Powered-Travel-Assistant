@@ -137,6 +137,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred. Please try again.';
 
   @override
+  String get errorServer => 'Server error occurred. Please try again later.';
+
+  @override
   String selectedAirportLabel(String airportName, String airportCode) {
     return 'Selected: $airportName ($airportCode)';
   }

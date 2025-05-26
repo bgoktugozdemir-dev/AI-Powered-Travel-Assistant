@@ -158,6 +158,10 @@
   "@errorGeneralTravelForm": {
     "description": "Seyahat formu hataları için genel hata mesajı"
   },
+  "errorServer": "Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.",
+  "@errorServer": {
+    "description": "Error message for server errors"
+  },
   "selectedAirportLabel": "Seçilen: {airportName} ({airportCode})",
   "@selectedAirportLabel": {
     "description": "Label displayed when an airport is selected, showing its name and code",
