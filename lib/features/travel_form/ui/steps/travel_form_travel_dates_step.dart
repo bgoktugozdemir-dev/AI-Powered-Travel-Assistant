@@ -33,6 +33,7 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                   appLogger.i("'Select Travel Dates' button pressed.");
                   final pickedDateRange = await showDateRangePicker(
                     context: context,
+                    locale: Locale(l10n.localeName),
                     firstDate: today,
                     lastDate: today.add(const Duration(days: 365 * 2)),
                     initialDateRange: state.selectedDateRange,
