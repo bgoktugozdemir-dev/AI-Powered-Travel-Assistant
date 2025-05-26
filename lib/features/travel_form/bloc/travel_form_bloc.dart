@@ -153,6 +153,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     try {
       final suggestions = await _airportRepository.searchAirports(event.searchTerm);
+
       emit(
         state.copyWith(departureAirportSuggestions: suggestions, isDepartureAirportLoading: false, error: () => null),
       );
@@ -175,6 +176,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         departureAirportSuggestions: [],
       ),
     );
+
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+      add(TravelFormNextStepRequested());
+    }
   }
 
   // --- Arrival Airport Handlers ---
@@ -214,6 +219,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         arrivalAirportSuggestions: [],
       ),
     );
+
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+      add(TravelFormNextStepRequested());
+    }
   }
 
   // --- Travel Dates Handler ---
@@ -223,6 +232,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       return;
     }
     emit(state.copyWith(selectedDateRange: () => event.dateRange, error: () => null));
+
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+      add(TravelFormNextStepRequested());
+    }
   }
 
   // --- Nationality Handlers ---
@@ -260,6 +273,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         nationalitySuggestions: [],
       ),
     );
+
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+      add(TravelFormNextStepRequested());
+    }
   }
 
   // --- Travel Purpose Handlers ---

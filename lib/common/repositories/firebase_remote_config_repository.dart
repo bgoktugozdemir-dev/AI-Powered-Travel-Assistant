@@ -24,6 +24,12 @@ enum RemoteConfigs {
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
+  /// Navigate to next step after selecting travel purpose.
+  navigateToNextStepAfterSelectingTravelPurpose(
+    key: 'navigate_to_next_step_after_selecting_travel_purpose',
+    defaultValue: false,
+  ),
+
   /// Minimum number of travel purposes.
   minimumTravelPurposes(key: 'minimum_travel_purposes', defaultValue: 1),
 
@@ -161,4 +167,10 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns true if the recommendations card should be shown, otherwise true.
   bool get showRecommendationsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
+
+  /// Fetches the navigate to next step after selecting travel purpose from Firebase Remote Config.
+  ///
+  /// Returns true if the navigate to next step after selecting travel purpose should be shown, otherwise false.
+  bool get navigateToNextStepAfterSelectingTravelPurpose =>
+      _firebaseRemoteConfig.getBool(RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key);
 }
