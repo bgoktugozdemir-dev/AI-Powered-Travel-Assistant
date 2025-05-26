@@ -1,4 +1,4 @@
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/services.dart';
 
 /// Constants for the Gemini service.
@@ -13,9 +13,9 @@ abstract class _Constants {
 /// Service class for interacting with the Gemini AI model through Firebase VertexAI.
 class GeminiService {
   /// Creates a [GeminiService] with the given configuration.
-  GeminiService({required FirebaseVertexAI vertexAI}) : _vertexAI = vertexAI;
+  GeminiService({required FirebaseAI vertexAI}) : _vertexAI = vertexAI;
 
-  final FirebaseVertexAI _vertexAI;
+  final FirebaseAI _vertexAI;
 
   /// Returns the generative model for the Gemini model.
   Future<GenerativeModel> getModel() async {

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
@@ -35,7 +35,7 @@ void main() async {
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
         RepositoryProvider(
           create: (_) {
-            final geminiService = GeminiService(vertexAI: FirebaseVertexAI.instance);
+            final geminiService = GeminiService(vertexAI: FirebaseAI.vertexAI());
             return GeminiRepository(geminiService: geminiService);
           },
         ),
@@ -64,8 +64,7 @@ void main() async {
               geminiRepository: geminiRepository,
               airportRepository: airportRepository,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-            )
-              ..add(TravelFormStarted());
+            )..add(TravelFormStarted());
           },
         ),
       ],
