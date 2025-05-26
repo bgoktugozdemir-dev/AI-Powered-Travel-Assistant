@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # State Management
   flutter_bloc: ^9.1.1
@@ -48,8 +48,8 @@ dependencies:
   freezed_annotation: ^3.0.0
 
   # Firebase & AI
-  firebase_core: ^3.13.0
-  firebase_vertexai: ^1.6.0
+  firebase_core: ^3.13.1
+  firebase_vertexai: ^1.7.0
 
   # Logging
   logger: ^2.5.0
@@ -59,7 +59,7 @@ dependencies:
 
   # UI & Utilities (can add more later, e.g., for searchable dropdowns, date pickers, Lottie)
   # google_fonts: ^6.2.1
-  lottie: ^3.1.2
+  lottie: ^3.3.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
