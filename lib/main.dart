@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
@@ -28,6 +30,11 @@ void main() async {
     firebaseRemoteConfig: FirebaseRemoteConfig.instance,
   );
   await firebaseRemoteConfigRepository.initialize();
+  await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaV3Provider(firebaseRemoteConfigRepository.recaptchaSiteKey),
+    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
+  );
 
   runApp(
     MultiBlocProvider(

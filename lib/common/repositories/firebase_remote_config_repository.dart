@@ -27,6 +27,9 @@ enum RemoteConfigs {
   /// Key for the AI system prompt.
   aiSystemPrompt(key: 'ai_system_prompt', defaultValue: ''),
 
+  /// Key for the Recaptcha site key.
+  recaptchaSiteKey(key: 'recaptcha_site_key', defaultValue: ''),
+
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
@@ -123,6 +126,11 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns the AI system prompt string if available, otherwise an empty string.
   String get aiSystemPrompt => _firebaseRemoteConfig.getString(RemoteConfigs.aiSystemPrompt.key);
+
+  /// Fetches the Recaptcha site key from Firebase Remote Config.
+  ///
+  /// Returns the Recaptcha site key string if available, otherwise an empty string.
+  String get recaptchaSiteKey => _firebaseRemoteConfig.getString(RemoteConfigs.recaptchaSiteKey.key);
 
   /// Fetches the Unsplash Client ID from Firebase Remote Config.
   ///
