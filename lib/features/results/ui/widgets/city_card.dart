@@ -73,7 +73,6 @@ class CityCard extends StatelessWidget {
           );
         }
         if (snapshot.hasData) {
-          print(snapshot.data!.urls.regular);
           return CachedNetworkImage(
             imageUrl: snapshot.data!.urls.regular,
             height: 180,

@@ -30,7 +30,7 @@ class GeminiRepository {
     LlmLogger.prompt('Gemini', prompt);
 
     try {
-      final chatSession = await geminiService.chatSession();
+      final chatSession = geminiService.chatSession();
       final response = await chatSession.sendMessage(content);
       stopwatch.stop();
       var responseText = response.text;

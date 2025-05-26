@@ -21,6 +21,12 @@ abstract class _Constants {
 }
 
 enum RemoteConfigs {
+  /// Key for the AI model.
+  aiModel(key: 'ai_model', defaultValue: 'gemini-2.0-flash'),
+
+  /// Key for the AI system prompt.
+  aiSystemPrompt(key: 'ai_system_prompt', defaultValue: ''),
+
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
@@ -107,6 +113,16 @@ class FirebaseRemoteConfigRepository {
   Future<void> _fetchAndActivate() async {
     await _firebaseRemoteConfig.fetchAndActivate();
   }
+
+  /// Fetches the AI model from Firebase Remote Config.
+  ///
+  /// Returns the AI model string if available, otherwise the default model.
+  String get aiModel => _firebaseRemoteConfig.getString(RemoteConfigs.aiModel.key);
+
+  /// Fetches the AI system prompt from Firebase Remote Config.
+  ///
+  /// Returns the AI system prompt string if available, otherwise an empty string.
+  String get aiSystemPrompt => _firebaseRemoteConfig.getString(RemoteConfigs.aiSystemPrompt.key);
 
   /// Fetches the Unsplash Client ID from Firebase Remote Config.
   ///

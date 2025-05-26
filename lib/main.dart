@@ -35,7 +35,10 @@ void main() async {
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
         RepositoryProvider(
           create: (_) {
-            final geminiService = GeminiService(vertexAI: FirebaseAI.vertexAI());
+            final geminiService = GeminiService(
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              vertexAI: FirebaseAI.vertexAI(),
+            );
             return GeminiRepository(geminiService: geminiService);
           },
         ),

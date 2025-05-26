@@ -1,35 +1,29 @@
 import 'package:firebase_ai/firebase_ai.dart';
-import 'package:flutter/services.dart';
-
-/// Constants for the Gemini service.
-abstract class _Constants {
-  /// The name of the Gemini model to use.
-  static const String defaultModel = 'gemini-2.0-flash';
-
-  /// The path to the system prompt file.
-  static const String systemPromptPath = 'assets/system_prompt.md';
-}
+import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 
 /// Service class for interacting with the Gemini AI model through Firebase VertexAI.
 class GeminiService {
   /// Creates a [GeminiService] with the given configuration.
-  GeminiService({required FirebaseAI vertexAI}) : _vertexAI = vertexAI;
+  GeminiService({required FirebaseAI vertexAI, required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository})
+    : _vertexAI = vertexAI,
+      _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository;
 
   final FirebaseAI _vertexAI;
+  final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
 
   /// Returns the generative model for the Gemini model.
-  Future<GenerativeModel> getModel() async {
-    final systemPrompt = await getSystemPrompt();
-
-    return _vertexAI.generativeModel(model: _Constants.defaultModel, systemInstruction: Content.system(systemPrompt));
+  GenerativeModel getModel() {
+    return _vertexAI.generativeModel(model: _model, systemInstruction: Content.system(_systemPrompt));
   }
 
   /// Returns the chat session for the Gemini model.
-  Future<ChatSession> chatSession() async {
-    final model = await getModel();
+  ChatSession chatSession() {
+    final model = getModel();
 
     return model.startChat();
   }
 
-  Future<String> getSystemPrompt() => rootBundle.loadString(_Constants.systemPromptPath);
+  String get _model => _firebaseRemoteConfigRepository.aiModel;
+
+  String get _systemPrompt => _firebaseRemoteConfigRepository.aiSystemPrompt;
 }
