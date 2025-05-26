@@ -64,6 +64,7 @@ firebase.json
 api_keys.dart
 secrets.dart
 keys.dart
+assets/system_prompt.md
 **/constants/api_keys.dart
 **/constants/secrets.dart
 
