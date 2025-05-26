@@ -24,7 +24,7 @@ abstract class AppTheme {
         backgroundColor: AppColors.primaryBlue,
         foregroundColor: AppColors.neutralWhite,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         color: AppColors.neutralWhite,

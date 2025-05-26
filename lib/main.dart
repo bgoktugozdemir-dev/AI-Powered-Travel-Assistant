@@ -4,7 +4,6 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/gemini_repository.dart';
@@ -17,8 +16,8 @@ import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
 import 'package:travel_assistant/firebase_options.dart';
-import 'package:travel_assistant/common/theme/app_colors.dart';
 import 'package:travel_assistant/common/theme/app_theme.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

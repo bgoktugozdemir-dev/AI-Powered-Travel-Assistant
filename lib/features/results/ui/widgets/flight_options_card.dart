@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/flight_options.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class FlightOptionsCard extends StatelessWidget {
   const FlightOptionsCard({required this.flightOptions, super.key});

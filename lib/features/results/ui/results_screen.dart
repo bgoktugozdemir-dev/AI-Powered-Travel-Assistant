@@ -7,7 +7,7 @@ import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 /// Screen to display the generated travel plan results after form submission.
 class ResultsScreen extends StatelessWidget {
@@ -196,10 +196,8 @@ class ResultsScreen extends StatelessWidget {
               iconColor: tax.hasTaxFreeOptions ? Colors.green : Colors.red,
             ),
 
-            if (tax.taxRefundInformation != null) ...[
-              const SizedBox(height: 8),
-              Text(tax.taxRefundInformation!, style: Theme.of(context).textTheme.bodyMedium),
-            ],
+            const SizedBox(height: 8),
+            Text(tax.taxRefundInformation, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),

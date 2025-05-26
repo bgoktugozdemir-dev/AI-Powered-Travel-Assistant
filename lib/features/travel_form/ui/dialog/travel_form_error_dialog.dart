@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class TravelFormErrorDialog extends StatelessWidget {
   const TravelFormErrorDialog({required this.error, super.key});

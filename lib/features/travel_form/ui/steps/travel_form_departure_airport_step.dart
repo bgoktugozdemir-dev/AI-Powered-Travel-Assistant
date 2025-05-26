@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class TravelFormDepartureAirportStep extends StatelessWidget {
   const TravelFormDepartureAirportStep({super.key, required this.departureAirportController});

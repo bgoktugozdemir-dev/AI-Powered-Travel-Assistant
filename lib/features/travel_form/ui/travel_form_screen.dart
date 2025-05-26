@@ -7,7 +7,7 @@ import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_erro
 import 'package:travel_assistant/features/travel_form/ui/steps/steps.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 abstract class _Constants {
   static const pageTransitionDuration = Duration(milliseconds: 300);

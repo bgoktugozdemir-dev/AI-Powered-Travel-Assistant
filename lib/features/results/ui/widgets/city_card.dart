@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 /// A widget that displays information about a city.
 class CityCard extends StatelessWidget {

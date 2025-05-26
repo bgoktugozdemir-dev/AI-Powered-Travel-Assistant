@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class TravelSummaryStep extends StatelessWidget {
   /// Creates a [TravelSummaryStep].
@@ -129,14 +129,12 @@ class TravelSummaryStep extends StatelessWidget {
   }
 
   Widget _buildDisclaimerCard(
-    BuildContext context,
-    {
-      required String title,
-      required String content,
-      required IconData icon,
-      Color? iconColor,
-    }
-  ) {
+    BuildContext context, {
+    required String title,
+    required String content,
+    required IconData icon,
+    Color? iconColor,
+  }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -164,7 +162,9 @@ class TravelSummaryStep extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               content,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
             ),
           ],
         ),
