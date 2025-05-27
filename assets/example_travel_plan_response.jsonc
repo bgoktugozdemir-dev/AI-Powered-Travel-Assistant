@@ -112,7 +112,7 @@
                 "more_information": "You can find more information on the official website of the Pegasus Airlines: [https://www.pegasus.com.tr/](https://www.pegasus.com.tr/)"
             }
         },
-        // Optional: `comfortable` is the comfortable flight option. It has to be direct flight and the airline to be comfortable. For example, Ryanair is not a comfortable airline.
+        // Optional: `comfortable` is the comfortable flight option. This should be a direct flight if possible. If there is no direct flight option, then it has to have fewer stops and layovers, better aircraft and airline quality, and knee room. The airline should be comfortable. For example, Ryanair is not a comfortable airline.
         "comfortable": {
             "departure": {
                 "airline": "Turkish Airlines",
