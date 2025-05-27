@@ -77,19 +77,21 @@ class TravelSummaryStep extends StatelessWidget {
               Icons.flag,
             ),
             const SizedBox(height: 16),
-            Text(l10n.travelPurposesLabel, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children:
-                  state.selectedTravelPurposes.map((purpose) {
-                    return Chip(
-                      label: Text(purpose.name),
-                      avatar: const Icon(Icons.check_circle, size: 18, color: Colors.green),
-                    );
-                  }).toList(),
-            ),
+            if (state.selectedTravelPurposes.isNotEmpty) ...[
+              Text(l10n.travelPurposesLabel, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children:
+                    state.selectedTravelPurposes.map((purpose) {
+                      return Chip(
+                        label: Text(purpose.name),
+                        avatar: const Icon(Icons.check_circle, size: 18, color: Colors.green),
+                      );
+                    }).toList(),
+              ),
+            ],
           ],
         ),
       ),
