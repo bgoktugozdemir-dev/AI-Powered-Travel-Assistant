@@ -9,6 +9,15 @@ import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  static const double weatherCardHeight = 120.0;
+  static const double weatherCardMaxHeight = 140.0;
+  static const double weatherCardMinHeight = 100.0;
+  static const double cityImageHeight = 180.0;
+  static const double smallScreenWidth = 600.0;
+  static const double mediumScreenWidth = 1200.0;
+}
+
 /// A widget that displays information about a city.
 class CityCard extends StatelessWidget {
   /// Creates a [CityCard].
@@ -59,14 +68,14 @@ class CityCard extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(
-            height: 180,
+            height: _Constants.cityImageHeight,
             width: double.infinity,
             color: Colors.grey[300],
             child: Center(child: Text(snapshot.error.toString())),
           );
         } else if (snapshot.connectionState == ConnectionState.active) {
           return Container(
-            height: 180,
+            height: _Constants.cityImageHeight,
             width: double.infinity,
             color: Colors.grey[300],
             child: const Center(child: CircularProgressIndicator()),
@@ -75,7 +84,7 @@ class CityCard extends StatelessWidget {
         if (snapshot.hasData) {
           return CachedNetworkImage(
             imageUrl: snapshot.data!.urls.regular,
-            height: 180,
+            height: _Constants.cityImageHeight,
             width: double.infinity,
             fit: BoxFit.cover,
           );
@@ -162,15 +171,25 @@ class _WeatherCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.width / 3;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final height =
+            screenWidth < _Constants.smallScreenWidth
+                ? _Constants.weatherCardHeight
+                : (screenWidth < _Constants.mediumScreenWidth
+                    ? _Constants.weatherCardMaxHeight
+                    : _Constants.weatherCardMinHeight);
 
-    return SizedBox(
-      height: height,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: weathers.length,
-        itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
-      ),
+        return SizedBox(
+          height: height,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: weathers.length,
+            itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
+          ),
+        );
+      },
     );
   }
 }
