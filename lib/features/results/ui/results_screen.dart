@@ -5,6 +5,7 @@ import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
+import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -56,7 +57,10 @@ class ResultsScreen extends StatelessWidget {
                     ),
 
                     // Flight Options Card
-                    // FlightOptionsCard(flightOptions: travelDetails.flightOptions), // TODO: Get flight options from the API
+                    Visibility(
+                      visible: firebaseRemoteConfigRepository.showFlightOptionsCard,
+                      child: FlightOptionsCard(flightOptions: travelDetails.flightOptions),
+                    ),
 
                     // Tax Information Card
                     Visibility(
