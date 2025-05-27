@@ -84,32 +84,69 @@ class _FlightCard extends StatelessWidget {
         Icon(icon, color: Theme.of(context).primaryColor, size: 18),
         const SizedBox(width: 8),
         Text(text, style: Theme.of(context).textTheme.titleSmall),
-        const Spacer(),
-        Text(
-          '${flight.airline} - ${flight.flightNumber}',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+        Expanded(
+          child: Text(
+            flight.airline,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildFlightBody(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primaryColor = colorScheme.primary;
+    final captionColor = colorScheme.onSurface.withValues(alpha: 0.6);
+    final textTheme = theme.textTheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_formatFlightTime(flight.departureTime)),
+        _buildFlightTimeAndAirport(context, flight.departureTime, flight.departureAirport),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 4,
           children: [
-            Icon(Icons.flight),
+            if (flight.stops > 0)
+              Text(
+                l10n.stopsLabel(flight.stops),
+                style: textTheme.bodyMedium?.copyWith(color: captionColor),
+              ),
+            Icon(
+              Icons.flight,
+              color: primaryColor,
+            ),
             Text(
               _formatFlightDuration(context, flight.duration, l10n),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary),
+              style: textTheme.bodySmall?.copyWith(color: captionColor),
             ),
           ],
         ),
-        Text(_formatFlightTime(flight.arrivalTime)),
+        _buildFlightTimeAndAirport(context, flight.arrivalTime, flight.arrivalAirport, false),
+      ],
+    );
+  }
+
+  Widget _buildFlightTimeAndAirport(BuildContext context, DateTime time, String airport, [bool isDeparture = true]) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme.bodyMedium;
+
+    return Column(
+      crossAxisAlignment: isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      children: [
+        Text(
+          _formatFlightTime(time),
+          style: textTheme,
+        ),
+        Text(
+          airport,
+          style: textTheme?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
@@ -124,21 +161,26 @@ class _FlightCard extends StatelessWidget {
   }
 
   Widget _buildFlightFooter(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      spacing: 8,
       children: [
-        Visibility(visible: flight.stops > 0, child: Text(l10n.stopsLabel(flight.stops))),
+        Expanded(
+          child: Text(
+            flight.flightNumber,
+            style: textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
+          ),
+        ),
         Text(
           _formatMoney(flight.price, flight.currency, l10n),
           textAlign: TextAlign.end,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  String _formatMoney(double price, String currency, AppLocalizations l10n) {
-    final format = NumberFormat.currency(locale: l10n.localeName, symbol: currency);
-    return format.format(price);
-  }
+  String _formatMoney(double price, String currency, AppLocalizations l10n) =>
+      NumberFormat.currency(locale: l10n.localeName, symbol: currency).format(price);
 }
