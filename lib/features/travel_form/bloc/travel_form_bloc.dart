@@ -14,11 +14,13 @@ import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import T
 import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/gemini_repository.dart';
+import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 // Import service for direct instantiation (temp)
 // Import the interceptor
 import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
 import 'package:travel_assistant/common/services/travel_purpose_service.dart'; // Import TravelPurposeService
 import 'package:rxdart/rxdart.dart';
+import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart'; // Added
 
@@ -39,15 +41,18 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
   final GeminiRepository _geminiRepository;
   final AirportRepository _airportRepository;
+  final UnsplashRepository _unsplashRepository;
 
   // TODO: Use proper Dependency Injection for services
   TravelFormBloc({
     required GeminiRepository geminiRepository,
     required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
     required AirportRepository airportRepository,
+    required UnsplashRepository unsplashRepository,
   }) : _geminiRepository = geminiRepository,
-       _airportRepository = airportRepository,
        _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
+       _airportRepository = airportRepository,
+       _unsplashRepository = unsplashRepository,
        _countryService = CountryService(),
        _travelPurposeService = TravelPurposeService(),
        super(const TravelFormState()) {
@@ -330,14 +335,24 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         nationality: state.selectedNationality!,
         travelPurposes: state.selectedTravelPurposes,
       );
+
       // Simulate API call with delay
       final travelPlan = await _geminiRepository.generateTravelPlan(travelInformation);
+
+      // Get city image from Unsplash
+      final cityImage = await _unsplashRepository.getCityView(
+        cityName: travelPlan.city.name,
+        countryName: travelPlan.city.country,
+      );
+
+      // TODO: Download the image add pass to state as Bytes
 
       // Successful form submission
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.success,
           travelPlan: () => travelPlan,
+          cityImage: () => cityImage,
           error: () => null,
         ),
       );

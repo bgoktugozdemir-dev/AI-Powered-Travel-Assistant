@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -13,7 +12,6 @@ abstract class _Constants {
   static const double weatherCardHeight = 120.0;
   static const double weatherCardMaxHeight = 140.0;
   static const double weatherCardMinHeight = 100.0;
-  static const double cityImageHeight = 180.0;
   static const double smallScreenWidth = 600.0;
   static const double mediumScreenWidth = 1200.0;
 }
@@ -21,10 +19,17 @@ abstract class _Constants {
 /// A widget that displays information about a city.
 class CityCard extends StatelessWidget {
   /// Creates a [CityCard].
-  const CityCard({required this.city, super.key});
+  const CityCard({
+    required this.city,
+    required this.cityImage,
+    super.key,
+  });
 
   /// The city to display information for.
   final City city;
+
+  /// The city image.
+  final UnsplashPhoto? cityImage;
 
   @override
   Widget build(BuildContext context) {
@@ -34,22 +39,16 @@ class CityCard extends StatelessWidget {
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: firebaseRemoteConfigRepository.showCityView ? _buildCityImage(context) : null,
+      header: firebaseRemoteConfigRepository.showCityView && cityImage != null ? _buildCityImage(context) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // City Name and Time
-          _buildCityNameAndTime(context),
-
-          const SizedBox(height: 8),
-
-          // Crowd Level
-          _buildCrowdLevel(context, l10n),
-
+          if (!firebaseRemoteConfigRepository.showCityView && cityImage != null) ...[
+            _buildCityNameAndTime(context),
+          ],
           // Weather information if available
           if (city.weather.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            const Divider(),
             const SizedBox(height: 8),
             Text(l10n.cityCardWeatherForecastTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -61,36 +60,72 @@ class CityCard extends StatelessWidget {
   }
 
   Widget _buildCityImage(BuildContext context) {
-    // Use Unsplash image if available, otherwise use the original image URL
-
-    return FutureBuilder<UnsplashPhoto>(
-      future: context.read<UnsplashRepository>().getCityView(cityName: city.name, countryName: city.country),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Container(
-            height: _Constants.cityImageHeight,
-            width: double.infinity,
-            color: Colors.grey[300],
-            child: Center(child: Text(snapshot.error.toString())),
-          );
-        } else if (snapshot.connectionState == ConnectionState.active) {
-          return Container(
-            height: _Constants.cityImageHeight,
-            width: double.infinity,
-            color: Colors.grey[300],
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (snapshot.hasData) {
-          return CachedNetworkImage(
-            imageUrl: snapshot.data!.urls.regular,
-            height: _Constants.cityImageHeight,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          );
-        }
-        return const SizedBox.shrink();
+    return CachedNetworkImage(
+      imageUrl: cityImage!.urls.raw,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      imageBuilder: (context, imageProvider) {
+        return Tooltip(
+          showDuration: const Duration(seconds: 2),
+          triggerMode: TooltipTriggerMode.tap,
+          message: "Crowd level of ${city.name} is ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
+          child: Stack(
+            children: [
+              Image(
+                image: imageProvider,
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
+              // Black gradient overlay for better text visibility
+              Positioned.fill(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.center,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black87,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: LinearProgressIndicator(
+                  value: city.crowdLevel / 100,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    city.crowdLevel < 30
+                        ? Colors.green
+                        : city.crowdLevel < 70
+                        ? Colors.orange
+                        : Colors.red,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 8,
+                bottom: 8,
+                child: _buildCityNameOnImage(context),
+              ),
+            ],
+          ),
+        );
       },
+    );
+  }
+
+  Widget _buildCityNameOnImage(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(city.country, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
+        Text(city.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
+      ],
     );
   }
 
@@ -135,31 +170,6 @@ class CityCard extends StatelessWidget {
         ),
         avatar: Icon(Icons.access_time, size: 16),
       ),
-    );
-  }
-
-  Widget _buildCrowdLevel(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        const Icon(Icons.people, size: 18),
-        const SizedBox(width: 8),
-        Text('${l10n.cityCardCrowdLevelLabel}: ', style: Theme.of(context).textTheme.bodyMedium),
-        Expanded(
-          child: LinearProgressIndicator(
-            value: city.crowdLevel / 100,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              city.crowdLevel < 30
-                  ? Colors.green
-                  : city.crowdLevel < 70
-                  ? Colors.orange
-                  : Colors.red,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text('${city.crowdLevel}%'),
-      ],
     );
   }
 }

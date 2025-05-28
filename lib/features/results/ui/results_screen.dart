@@ -41,7 +41,7 @@ class ResultsScreen extends StatelessWidget {
                     // City Information Card
                     Visibility(
                       visible: firebaseRemoteConfigRepository.showCityCard,
-                      child: CityCard(city: travelDetails.city),
+                      child: CityCard(city: travelDetails.city, cityImage: state.cityImage),
                     ),
 
                     // Required Documents Card
@@ -166,7 +166,8 @@ class ResultsScreen extends StatelessWidget {
   // Tax Information Card
   Widget _buildTaxInfoCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
     final tax = details.taxInformation;
-
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final taxRateFormatter = NumberFormat.percentPattern(languageCode);
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -188,7 +189,7 @@ class ResultsScreen extends StatelessWidget {
             _buildInfoRow(
               context,
               l10n.taxRateLabel,
-              NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(tax.taxRate / 100),
+              taxRateFormatter.format(tax.taxRate / 100),
               Icons.percent,
             ),
 
@@ -199,6 +200,15 @@ class ResultsScreen extends StatelessWidget {
               Icons.shopping_bag,
               iconColor: tax.hasTaxFreeOptions ? Colors.green : Colors.red,
             ),
+
+            if (tax.refundableTaxRate > 0)
+              _buildInfoRow(
+                context,
+                l10n.refundableTaxRateLabel,
+                taxRateFormatter.format(tax.refundableTaxRate / 100),
+                Icons.percent,
+                iconColor: Colors.green,
+              ),
 
             const SizedBox(height: 8),
             Text(tax.taxRefundInformation, style: Theme.of(context).textTheme.bodyMedium),
@@ -318,17 +328,36 @@ class ResultsScreen extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   children:
-                      dayPlan.events.map((event) {
-                        return ListTile(
-                          leading: const Icon(Icons.access_time),
-                          title: Text(event.name),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [Text(event.time), Text(event.location)],
-                          ),
-                          isThreeLine: true,
-                        );
-                      }).toList(),
+                      dayPlan.events.map(
+                        (event) {
+                          return ListTile(
+                            leading: const Icon(Icons.access_time),
+                            title: Text(event.name),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [Text(event.time), Text(event.location)],
+                            ),
+                            trailing:
+                                event.requirements != null
+                                    ? IconButton(
+                                      icon: const Icon(Icons.info_outline),
+                                      onPressed: () {
+                                        // Show a dialog with full event details
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (context) => AlertDialog(
+                                                title: Text(event.name),
+                                                content: Text(event.requirements!),
+                                              ),
+                                        );
+                                      },
+                                    )
+                                    : null,
+                            isThreeLine: true,
+                          );
+                        },
+                      ).toList(),
                 );
               },
             ),

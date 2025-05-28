@@ -554,10 +554,10 @@ abstract class AppLocalizations {
   /// **'Exchange Rate'**
   String get exchangeRateLabel;
 
-  /// Label for average daily cost field
+  /// Label for average daily living cost field
   ///
   /// In en, this message translates to:
-  /// **'Average Daily Cost'**
+  /// **'Average Daily Living Cost'**
   String get averageDailyCostLabel;
 
   /// Title for the tax information card
@@ -577,6 +577,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tax-Free Shopping'**
   String get taxFreeShoppingLabel;
+
+  /// Label for refundable tax rate field
+  ///
+  /// In en, this message translates to:
+  /// **'Refundable Tax Rate'**
+  String get refundableTaxRateLabel;
 
   /// Text for when something is available
   ///

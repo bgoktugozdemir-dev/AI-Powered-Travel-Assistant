@@ -293,7 +293,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exchangeRateLabel => 'Exchange Rate';
 
   @override
-  String get averageDailyCostLabel => 'Average Daily Cost';
+  String get averageDailyCostLabel => 'Average Daily Living Cost';
 
   @override
   String get taxInformationTitle => 'Tax Information';
@@ -303,6 +303,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taxFreeShoppingLabel => 'Tax-Free Shopping';
+
+  @override
+  String get refundableTaxRateLabel => 'Refundable Tax Rate';
 
   @override
   String get availableLabel => 'Available';

@@ -294,7 +294,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exchangeRateLabel => 'Döviz Kuru';
 
   @override
-  String get averageDailyCostLabel => 'Ortalama Günlük Maliyet';
+  String get averageDailyCostLabel => 'Ortalama Günlük Yaşam Maliyeti';
 
   @override
   String get taxInformationTitle => 'Vergi Bilgisi';
@@ -304,6 +304,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get taxFreeShoppingLabel => 'Vergisiz Alışveriş';
+
+  @override
+  String get refundableTaxRateLabel => 'İade Edilebilir Vergi Oranı';
 
   @override
   String get availableLabel => 'Mevcut';
