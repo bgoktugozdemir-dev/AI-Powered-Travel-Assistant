@@ -380,9 +380,9 @@
   "@exchangeRateLabel": {
     "description": "Label for exchange rate field"
   },
-  "averageDailyCostLabel": "Ortalama Günlük Maliyet",
+  "averageDailyCostLabel": "Ortalama Günlük Yaşam Maliyeti",
   "@averageDailyCostLabel": {
-    "description": "Label for average daily cost field"
+    "description": "Label for average daily living cost field"
   },
   "taxInformationTitle": "Vergi Bilgisi",
   "@taxInformationTitle": {
@@ -395,6 +395,10 @@
   "taxFreeShoppingLabel": "Vergisiz Alışveriş",
   "@taxFreeShoppingLabel": {
     "description": "Label for tax-free shopping availability"
+  },
+  "refundableTaxRateLabel": "İade Edilebilir Vergi Oranı",
+  "@refundableTaxRateLabel": {
+    "description": "Label for refundable tax rate field"
   },
   "availableLabel": "Mevcut",
   "@availableLabel": {

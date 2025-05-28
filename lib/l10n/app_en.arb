@@ -380,9 +380,9 @@
   "@exchangeRateLabel": {
     "description": "Label for exchange rate field"
   },
-  "averageDailyCostLabel": "Average Daily Cost",
+  "averageDailyCostLabel": "Average Daily Living Cost",
   "@averageDailyCostLabel": {
-    "description": "Label for average daily cost field"
+    "description": "Label for average daily living cost field"
   },
   "taxInformationTitle": "Tax Information",
   "@taxInformationTitle": {
@@ -395,6 +395,10 @@
   "taxFreeShoppingLabel": "Tax-Free Shopping",
   "@taxFreeShoppingLabel": {
     "description": "Label for tax-free shopping availability"
+  },
+  "refundableTaxRateLabel": "Refundable Tax Rate",
+  "@refundableTaxRateLabel": {
+    "description": "Label for refundable tax rate field"
   },
   "availableLabel": "Available",
   "@availableLabel": {
