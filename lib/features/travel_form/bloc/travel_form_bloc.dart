@@ -528,7 +528,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           ),
           // Get exchange rate from Currency API
           _currencyRepository.getExchangeRate(
-            travelPlan.currency.departureCurrencyCode,
+            travelPlan.currency.departureCurrencyCode ?? travelPlan.currency.code,
             travelPlan.currency.code,
           ),
         ],

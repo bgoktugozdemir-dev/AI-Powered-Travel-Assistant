@@ -7,34 +7,35 @@ class FlightOptions {
   const FlightOptions({
     required this.cheapest,
     required this.comfortable,
-    required this.recommended,
   });
 
-  factory FlightOptions.fromJson(Map<String, dynamic> json) =>
-      _$FlightOptionsFromJson(json);
+  factory FlightOptions.fromJson(Map<String, dynamic> json) => _$FlightOptionsFromJson(json);
 
   @JsonKey(name: 'cheapest')
   final FlightOption cheapest;
 
   @JsonKey(name: 'comfortable')
   final FlightOption comfortable;
-
-  @JsonKey(name: 'recommended')
-  final FlightOption? recommended;
 }
 
 @JsonSerializable(createToJson: false)
 class FlightOption {
-  const FlightOption({required this.departure, required this.arrival});
+  const FlightOption({
+    required this.departure,
+    required this.arrival,
+    required this.bookingUrl,
+  });
 
-  factory FlightOption.fromJson(Map<String, dynamic> json) =>
-      _$FlightOptionFromJson(json);
+  factory FlightOption.fromJson(Map<String, dynamic> json) => _$FlightOptionFromJson(json);
 
   @JsonKey(name: 'departure')
   final Flight departure;
 
   @JsonKey(name: 'arrival')
   final Flight arrival;
+
+  @JsonKey(name: 'booking_url')
+  final String bookingUrl;
 }
 
 @JsonSerializable(createToJson: false)
@@ -100,11 +101,8 @@ class Flight {
   @JsonKey(name: 'more_information')
   final String moreInformation;
 
-  static Duration _durationFromJson(int duration) =>
-      Duration(minutes: duration);
+  static Duration _durationFromJson(int duration) => Duration(minutes: duration);
 
   static List<Duration>? _durationListFromJson(List<dynamic>? durations) =>
-      durations
-          ?.map((duration) => _durationFromJson(int.parse(duration.toString())))
-          .toList();
+      durations?.map((duration) => _durationFromJson(int.parse(duration.toString()))).toList();
 }

@@ -42,25 +42,22 @@ class CityCard extends StatelessWidget {
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
       header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // City Name and Time
-          if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
-            _buildCityNameAndTime(context),
-          ],
-          // Weather information if available
-          if (city.weather.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              l10n.cityCardWeatherForecastTitle,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            _WeatherCards(weathers: city.weather),
-          ],
+      children: [
+        // City Name and Time
+        if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
+          _buildCityNameAndTime(context),
         ],
-      ),
+        // Weather information if available
+        if (city.weather.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.cityCardWeatherForecastTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          _WeatherCards(weathers: city.weather),
+        ],
+      ],
     );
   }
 

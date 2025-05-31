@@ -3,6 +3,7 @@ import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:travel_assistant/common/models/response/required_documents.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 abstract class _Constants {
   static const String bulletPoint = '•';
@@ -19,30 +20,26 @@ class RequiredDocumentsCard extends StatelessWidget {
     return TravelCard(
       icon: icon,
       title: l10n.requiredDocumentsTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Document message
+      children: [
+        // Document message
+        GptMarkdown(
+          requiredDocument.message,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+
+        // Document steps if available
+        if (requiredDocument.steps != null && requiredDocument.steps!.isNotEmpty) _buildSteps(context),
+
+        // More information if available
+        if (requiredDocument.moreInformation != null) ...[
+          const SizedBox(height: 16),
           GptMarkdown(
-            requiredDocument.message,
-            style: Theme.of(context).textTheme.bodyMedium,
+            requiredDocument.moreInformation!,
+            style: Theme.of(context).textTheme.bodySmall,
+            onLinkTab: (url, _) => launchUrl(Uri.parse(url)),
           ),
-
-          // Document steps if available
-          if (requiredDocument.steps != null &&
-              requiredDocument.steps!.isNotEmpty)
-            _buildSteps(context),
-
-          // More information if available
-          if (requiredDocument.moreInformation != null) ...[
-            const SizedBox(height: 16),
-            GptMarkdown(
-              requiredDocument.moreInformation!,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 

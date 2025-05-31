@@ -7,7 +7,6 @@ class TravelSpot {
   const TravelSpot({
     required this.place,
     required this.description,
-    required this.imageUrl,
     required this.requirements,
   });
 
@@ -19,9 +18,6 @@ class TravelSpot {
 
   @JsonKey(name: 'description')
   final String description;
-
-  @JsonKey(name: 'image_url')
-  final String imageUrl;
 
   @JsonKey(name: 'requirements')
   final String? requirements;

@@ -24,5 +24,5 @@ class TaxInformation {
   final double refundableTaxRate;
 
   @JsonKey(name: 'tax_refund_information')
-  final String taxRefundInformation;
+  final String? taxRefundInformation;
 }

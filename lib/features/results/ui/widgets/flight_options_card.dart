@@ -3,6 +3,7 @@ import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/flight_options.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FlightOptionsCard extends StatelessWidget {
   const FlightOptionsCard({required this.flightOptions, super.key});
@@ -16,35 +17,23 @@ class FlightOptionsCard extends StatelessWidget {
     return TravelCard(
       icon: Icons.flight,
       title: l10n.flightOptionsTitle,
-      child: Column(
-        spacing: 16,
-        children: [
-          // Cheapest Option
-          _buildFlightOptions(
-            context,
-            l10n.cheapestOptionTitle,
-            flightOptions.cheapest,
-            l10n,
-          ),
-
-          // Comfortable Option
-          _buildFlightOptions(
-            context,
-            l10n.comfortableOptionTitle,
-            flightOptions.comfortable,
-            l10n,
-          ),
-
-          // Recommended Option
-          if (flightOptions.recommended != null)
-            _buildFlightOptions(
-              context,
-              l10n.recommendedOptionTitle,
-              flightOptions.recommended!,
-              l10n,
-            ),
-        ],
-      ),
+      children: [
+        // Cheapest Option
+        _buildFlightOptions(
+          context,
+          l10n.cheapestOptionTitle,
+          flightOptions.cheapest,
+          l10n,
+        ),
+        const SizedBox(height: 16),
+        // Comfortable Option
+        _buildFlightOptions(
+          context,
+          l10n.comfortableOptionTitle,
+          flightOptions.comfortable,
+          l10n,
+        ),
+      ],
     );
   }
 
@@ -59,38 +48,54 @@ class FlightOptionsCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(title, style: Theme.of(context).textTheme.titleMedium),
-        _FlightCard(flight: flightOption.departure, isOutbound: true),
-        _FlightCard(flight: flightOption.arrival, isOutbound: false),
+        _FlightCard(
+          flight: flightOption.departure,
+          isOutbound: true,
+          bookingUrl: flightOption.bookingUrl,
+        ),
+        _FlightCard(
+          flight: flightOption.arrival,
+          isOutbound: false,
+          bookingUrl: flightOption.bookingUrl,
+        ),
       ],
     );
   }
 }
 
 class _FlightCard extends StatelessWidget {
-  const _FlightCard({required this.flight, required this.isOutbound});
+  const _FlightCard({
+    required this.flight,
+    required this.isOutbound,
+    required this.bookingUrl,
+  });
 
   final Flight flight;
   final bool isOutbound;
+  final String bookingUrl;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Card(
-      elevation: 2,
-      color: Theme.of(context).cardColor.withValues(alpha: 0.8),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 4,
-          children: [
-            _buildFlightHeader(context, l10n),
-            const Divider(),
-            _buildFlightBody(context, l10n),
-            const Divider(),
-            _buildFlightFooter(context, l10n),
-          ],
+    return GestureDetector(
+      onTap: () => launchUrl(Uri.parse(bookingUrl)),
+      child: Card(
+        elevation: 2,
+        color: Theme.of(context).cardColor.withValues(alpha: 0.8),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
+            children: [
+              _buildFlightHeader(context, l10n),
+              const Divider(),
+              _buildFlightBody(context, l10n),
+              const Divider(),
+              _buildFlightFooter(context, l10n),
+            ],
+          ),
         ),
       ),
     );

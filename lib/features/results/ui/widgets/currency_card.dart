@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/currency.dart';
 import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
@@ -22,7 +23,7 @@ class CurrencyCard extends StatelessWidget {
     // Use Formatters for consistent currency formatting
     final departureCurrencyValue = Formatters.currency(
       amount: 1,
-      currencyCode: currency.departureCurrencyCode,
+      currencyCode: currency.departureCurrencyCode ?? currency.code,
       locale: l10n.localeName,
       decimalDigits: 0,
     );
@@ -38,48 +39,32 @@ class CurrencyCard extends StatelessWidget {
     );
     final arrivalAverageLivingCostPerDayInDepartureCurrency = Formatters.currency(
       amount: currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
-      currencyCode: currency.departureCurrencyCode,
+      currencyCode: currency.departureCurrencyCode ?? currency.code,
       locale: l10n.localeName,
     );
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.currency_exchange, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text(l10n.currencyInformationTitle, style: Theme.of(context).textTheme.titleLarge),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            InfoRow(
-              icon: Icons.money,
-              label: l10n.currencyLabel,
-              value: '${currency.name} (${currency.code})',
-            ),
-
-            InfoRow(
-              icon: Icons.swap_horiz,
-              label: l10n.exchangeRateLabel,
-              value: '$departureCurrencyValue = $exchangeRateValue',
-            ),
-
-            InfoRow(
-              icon: Icons.price_change,
-              label: l10n.averageDailyCostLabel,
-              value: '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
-            ),
-          ],
+    return TravelCard(
+      icon: Icons.currency_exchange,
+      title: l10n.currencyInformationTitle,
+      children: [
+        InfoRow(
+          icon: Icons.money,
+          label: l10n.currencyLabel,
+          value: '${currency.name} (${currency.code})',
         ),
-      ),
+
+        InfoRow(
+          icon: Icons.swap_horiz,
+          label: l10n.exchangeRateLabel,
+          value: '$departureCurrencyValue = $exchangeRateValue',
+        ),
+
+        InfoRow(
+          icon: Icons.price_change,
+          label: l10n.averageDailyCostLabel,
+          value: '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
+        ),
+      ],
     );
   }
 }

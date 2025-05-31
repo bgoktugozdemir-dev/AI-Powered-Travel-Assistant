@@ -11,5 +11,5 @@ TaxInformation _$TaxInformationFromJson(Map<String, dynamic> json) =>
       hasTaxFreeOptions: json['has_tax_free_options'] as bool,
       taxRate: (json['tax_rate'] as num).toDouble(),
       refundableTaxRate: (json['refundable_tax_rate'] as num?)?.toDouble() ?? 0,
-      taxRefundInformation: json['tax_refund_information'] as String,
+      taxRefundInformation: json['tax_refund_information'] as String?,
     );
