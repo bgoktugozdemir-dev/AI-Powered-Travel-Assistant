@@ -423,5 +423,31 @@
   "travelItineraryTitle": "Seyahat Programı",
   "@travelItineraryTitle": {
     "description": "Title for the travel itinerary card"
+  },
+  "crowdLevelLabel": "Kalabalık:",
+  "@crowdLevelLabel": {
+    "description": "Label for crowd level information"
+  },
+  "timeDifferenceTooltip": "Saat farkı: {hours} saat",
+  "@timeDifferenceTooltip": {
+    "description": "Tooltip text showing time difference in hours",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "requiredDocumentsTitle": "Gerekli Belgeler",
+  "@requiredDocumentsTitle": {
+    "description": "Title for the required documents card"
+  },
+  "requiredStepsLabel": "Gerekli Adımlar:",
+  "@requiredStepsLabel": {
+    "description": "Label for the required steps section"
+  },
+  "formValidationError": "Lütfen tüm gerekli alanları doldurun",
+  "@formValidationError": {
+    "description": "Generic form validation error message"
   }
 }

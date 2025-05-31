@@ -324,4 +324,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get travelItineraryTitle => 'Travel Itinerary';
+
+  @override
+  String get crowdLevelLabel => 'Crowd:';
+
+  @override
+  String timeDifferenceTooltip(int hours) {
+    return 'Time difference: $hours hours';
+  }
+
+  @override
+  String get requiredDocumentsTitle => 'Required Documents';
+
+  @override
+  String get requiredStepsLabel => 'Required Steps:';
+
+  @override
+  String get formValidationError => 'Please complete all required fields';
 }

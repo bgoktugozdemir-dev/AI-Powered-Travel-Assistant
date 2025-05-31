@@ -5,6 +5,7 @@ import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
+import 'package:travel_assistant/features/results/ui/widgets/currency_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/required_documents_card.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
@@ -50,13 +51,18 @@ class ResultsScreen extends StatelessWidget {
                     // Required Documents Card
                     Visibility(
                       visible: firebaseRemoteConfigRepository.showRequiredDocumentsCard,
-                      child: RequiredDocumentsCard(requiredDocument: travelDetails.requiredDocuments),
+                      child: RequiredDocumentsCard(
+                        requiredDocument: travelDetails.requiredDocuments,
+                      ),
                     ),
 
                     // Currency Information Card
                     Visibility(
                       visible: firebaseRemoteConfigRepository.showCurrencyCard,
-                      child: _buildCurrencyCard(context, travelDetails, l10n, state.exchangeRate),
+                      child: CurrencyCard(
+                        currency: travelDetails.currency,
+                        exchangeRate: state.exchangeRate,
+                      ),
                     ),
 
                     // Flight Options Card
@@ -112,61 +118,6 @@ class ResultsScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  // Currency Information Card
-  Widget _buildCurrencyCard(BuildContext context, TravelDetails details, AppLocalizations l10n, double? exchangeRate) {
-    final currency = details.currency;
-    final currencyExchangeRate = exchangeRate ?? details.currency.exchangeRate;
-    final departureCurrencyFormatter = NumberFormat.currency(symbol: currency.departureCurrencyCode, decimalDigits: 2);
-    final departureCurrencyValue = NumberFormat.currency(
-      symbol: currency.departureCurrencyCode,
-      decimalDigits: 0,
-    ).format(1);
-    final arrivalCurrencyFormatter = NumberFormat.currency(symbol: currency.code, decimalDigits: 2);
-    final exchangeRateValue = arrivalCurrencyFormatter.format(currencyExchangeRate);
-    final arrivalAverageLivingCostPerDay = arrivalCurrencyFormatter.format(currency.arrivalAverageLivingCostPerDay);
-    final arrivalAverageLivingCostPerDayInDepartureCurrency = departureCurrencyFormatter.format(
-      currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
-    );
-
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.currency_exchange, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text(l10n.currencyInformationTitle, style: Theme.of(context).textTheme.titleLarge),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            _buildInfoRow(context, l10n.currencyLabel, '${currency.name} (${currency.code})', Icons.money),
-
-            _buildInfoRow(
-              context,
-              l10n.exchangeRateLabel,
-              '$departureCurrencyValue = $exchangeRateValue',
-              Icons.swap_horiz,
-            ),
-
-            _buildInfoRow(
-              context,
-              l10n.averageDailyCostLabel,
-              '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
-              Icons.price_change,
-            ),
-          ],
-        ),
-      ),
     );
   }
 

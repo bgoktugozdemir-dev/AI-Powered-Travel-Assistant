@@ -619,6 +619,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Travel Itinerary'**
   String get travelItineraryTitle;
+
+  /// Label for crowd level information
+  ///
+  /// In en, this message translates to:
+  /// **'Crowd:'**
+  String get crowdLevelLabel;
+
+  /// Tooltip text showing time difference in hours
+  ///
+  /// In en, this message translates to:
+  /// **'Time difference: {hours} hours'**
+  String timeDifferenceTooltip(int hours);
+
+  /// Title for the required documents card
+  ///
+  /// In en, this message translates to:
+  /// **'Required Documents'**
+  String get requiredDocumentsTitle;
+
+  /// Label for the required steps section
+  ///
+  /// In en, this message translates to:
+  /// **'Required Steps:'**
+  String get requiredStepsLabel;
+
+  /// Generic form validation error message
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all required fields'**
+  String get formValidationError;
 }
 
 class _AppLocalizationsDelegate

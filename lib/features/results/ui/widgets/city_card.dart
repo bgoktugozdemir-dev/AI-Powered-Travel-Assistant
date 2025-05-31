@@ -15,6 +15,7 @@ abstract class _Constants {
   static const double smallScreenWidth = 600.0;
   static const double mediumScreenWidth = 1200.0;
   static const double cityImageMaxHeight = 300.0;
+  static const double crowdLevelBarHeightMultiplier = 0.025;
 }
 
 /// A widget that displays information about a city.
@@ -60,10 +61,34 @@ class CityCard extends StatelessWidget {
     );
   }
 
+  /// Gets a dynamic color based on crowd level percentage
+  Color _getCrowdLevelColor(int crowdLevel) {
+    if (crowdLevel <= 20) {
+      // Very low crowd: Deep green
+      return Colors.green.shade700;
+    } else if (crowdLevel <= 40) {
+      // Low crowd: Light green to yellow-green
+      final t = (crowdLevel - 20) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.green.shade500, Colors.lightGreen, t)!;
+    } else if (crowdLevel <= 60) {
+      // Medium crowd: Yellow-green to orange
+      final t = (crowdLevel - 40) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.lightGreen, Colors.orange.shade600, t)!;
+    } else if (crowdLevel <= 80) {
+      // High crowd: Orange to red-orange
+      final t = (crowdLevel - 60) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.orange.shade600, Colors.deepOrange, t)!;
+    } else {
+      // Very high crowd: Deep red
+      return Colors.red.shade700;
+    }
+  }
+
   Widget _buildCityImage(BuildContext context) {
     final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
     final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
-    final crowdLevelBarHeight = imageHeight * 0.04;
+    final crowdLevelBarHeight = imageHeight * _Constants.crowdLevelBarHeightMultiplier;
+    final crowdLevelColor = _getCrowdLevelColor(city.crowdLevel);
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -79,7 +104,7 @@ class CityCard extends StatelessWidget {
               widget,
               // Black gradient overlay for better text visibility
               Positioned.fill(
-                child: Container(
+                child: DecoratedBox(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.center,
@@ -99,22 +124,15 @@ class CityCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   minHeight: crowdLevelBarHeight,
                   value: city.crowdLevel / 100,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    city.crowdLevel < 30
-                        ? Colors.green
-                        : city.crowdLevel < 70
-                        ? Colors.orange
-                        : Colors.red,
-                  ),
+                  backgroundColor: Colors.grey.shade300.withValues(alpha: 0.25),
+                  valueColor: AlwaysStoppedAnimation<Color>(crowdLevelColor),
                 ),
               ),
-
               Positioned(
                 left: 8,
                 right: 8,
                 bottom: crowdLevelBarHeight + 8,
-                child: _buildCityNameOnImage(context),
+                child: _buildCityNameOnImage(context, crowdLevelColor),
               ),
             ],
           );
@@ -123,7 +141,8 @@ class CityCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCityNameOnImage(BuildContext context) {
+  Widget _buildCityNameOnImage(BuildContext context, Color crowdLevelColor) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       spacing: 8,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,12 +156,27 @@ class CityCard extends StatelessWidget {
             Text(city.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
           ],
         ),
-        Text(
-          "Crowd level: ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
-          textAlign: TextAlign.right,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white70,
-            fontWeight: FontWeight.w500,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          decoration: BoxDecoration(
+            color: crowdLevelColor.withValues(alpha: 0.75),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: crowdLevelColor, width: 1),
+          ),
+          child: Text(
+            "${l10n.crowdLevelLabel} ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: const Offset(1, 1),
+                  blurRadius: 2,
+                  color: Colors.black54,
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -162,6 +196,7 @@ class CityCard extends StatelessWidget {
   }
 
   Widget _buildTimeDifference(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = city.time!.differenceInHours;
     final departureTime = now.toLocal();
@@ -171,7 +206,7 @@ class CityCard extends StatelessWidget {
     final arrivalColor = dayDifference > 0 ? Colors.red : null;
 
     return Tooltip(
-      message: 'Time difference: ${city.time!.differenceInHours} hours',
+      message: l10n.timeDifferenceTooltip(city.time!.differenceInHours),
       child: Chip(
         label: Row(
           mainAxisSize: MainAxisSize.min,

@@ -121,7 +121,7 @@ class TravelSummaryStep extends StatelessWidget {
   // Helper method to format date range
   String _formatDateRange(DateTimeRange? dateRange, BuildContext context) {
     if (dateRange == null) {
-      return 'No dates selected';
+      return AppLocalizations.of(context).noDatesSelected;
     }
 
     final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);

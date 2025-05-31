@@ -15,7 +15,7 @@ class FlightOptionsCard extends StatelessWidget {
 
     return TravelCard(
       icon: Icons.flight,
-      title: 'Flight Options',
+      title: l10n.flightOptionsTitle,
       child: Column(
         spacing: 16,
         children: [

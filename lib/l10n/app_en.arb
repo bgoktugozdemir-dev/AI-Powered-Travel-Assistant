@@ -423,5 +423,31 @@
   "travelItineraryTitle": "Travel Itinerary",
   "@travelItineraryTitle": {
     "description": "Title for the travel itinerary card"
+  },
+  "crowdLevelLabel": "Crowd:",
+  "@crowdLevelLabel": {
+    "description": "Label for crowd level information"
+  },
+  "timeDifferenceTooltip": "Time difference: {hours} hours",
+  "@timeDifferenceTooltip": {
+    "description": "Tooltip text showing time difference in hours",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "requiredDocumentsTitle": "Required Documents",
+  "@requiredDocumentsTitle": {
+    "description": "Title for the required documents card"
+  },
+  "requiredStepsLabel": "Required Steps:",
+  "@requiredStepsLabel": {
+    "description": "Label for the required steps section"
+  },
+  "formValidationError": "Please complete all required fields",
+  "@formValidationError": {
+    "description": "Generic form validation error message"
   }
 }

@@ -325,4 +325,21 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelItineraryTitle => 'Seyahat Programı';
+
+  @override
+  String get crowdLevelLabel => 'Kalabalık:';
+
+  @override
+  String timeDifferenceTooltip(int hours) {
+    return 'Saat farkı: $hours saat';
+  }
+
+  @override
+  String get requiredDocumentsTitle => 'Gerekli Belgeler';
+
+  @override
+  String get requiredStepsLabel => 'Gerekli Adımlar:';
+
+  @override
+  String get formValidationError => 'Lütfen tüm gerekli alanları doldurun';
 }

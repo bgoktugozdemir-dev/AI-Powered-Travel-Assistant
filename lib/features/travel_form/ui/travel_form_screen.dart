@@ -169,7 +169,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                                 } else {
                                   ScaffoldMessenger.of(
                                     context,
-                                  ).showSnackBar(SnackBar(content: Text("TODO"), backgroundColor: Colors.red));
+                                  ).showSnackBar(SnackBar(content: Text(l10n.formValidationError), backgroundColor: Colors.red));
                                 }
                               },
                       icon: const Icon(Icons.search),
