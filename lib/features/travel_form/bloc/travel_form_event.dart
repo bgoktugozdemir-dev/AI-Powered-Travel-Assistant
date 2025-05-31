@@ -129,5 +129,3 @@ class SubmitTravelFormEvent extends TravelFormEvent {
   /// Creates a [SubmitTravelFormEvent] event.
   const SubmitTravelFormEvent();
 }
-
-// TODO: Add events for travel purposes, submission, etc.

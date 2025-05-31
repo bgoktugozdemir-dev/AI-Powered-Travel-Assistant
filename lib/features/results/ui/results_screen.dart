@@ -41,7 +41,10 @@ class ResultsScreen extends StatelessWidget {
                     // City Information Card
                     Visibility(
                       visible: firebaseRemoteConfigRepository.showCityCard,
-                      child: CityCard(city: travelDetails.city, cityImage: state.cityImage),
+                      child: CityCard(
+                        city: travelDetails.city,
+                        cityImageInBytes: state.cityImageInBytes,
+                      ),
                     ),
 
                     // Required Documents Card
@@ -53,7 +56,7 @@ class ResultsScreen extends StatelessWidget {
                     // Currency Information Card
                     Visibility(
                       visible: firebaseRemoteConfigRepository.showCurrencyCard,
-                      child: _buildCurrencyCard(context, travelDetails, l10n),
+                      child: _buildCurrencyCard(context, travelDetails, l10n, state.exchangeRate),
                     ),
 
                     // Flight Options Card
@@ -113,15 +116,19 @@ class ResultsScreen extends StatelessWidget {
   }
 
   // Currency Information Card
-  Widget _buildCurrencyCard(BuildContext context, TravelDetails details, AppLocalizations l10n) {
+  Widget _buildCurrencyCard(BuildContext context, TravelDetails details, AppLocalizations l10n, double? exchangeRate) {
     final currency = details.currency;
+    final currencyExchangeRate = exchangeRate ?? details.currency.exchangeRate;
     final departureCurrencyFormatter = NumberFormat.currency(symbol: currency.departureCurrencyCode, decimalDigits: 2);
-    final departureCurrencyValue = departureCurrencyFormatter.format(1);
+    final departureCurrencyValue = NumberFormat.currency(
+      symbol: currency.departureCurrencyCode,
+      decimalDigits: 0,
+    ).format(1);
     final arrivalCurrencyFormatter = NumberFormat.currency(symbol: currency.code, decimalDigits: 2);
-    final arrivalCurrencyValue = arrivalCurrencyFormatter.format(currency.exchangeRate);
+    final exchangeRateValue = arrivalCurrencyFormatter.format(currencyExchangeRate);
     final arrivalAverageLivingCostPerDay = arrivalCurrencyFormatter.format(currency.arrivalAverageLivingCostPerDay);
     final arrivalAverageLivingCostPerDayInDepartureCurrency = departureCurrencyFormatter.format(
-      currency.arrivalAverageLivingCostPerDayInDepartureCurrency,
+      currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
     );
 
     return Card(
@@ -147,7 +154,7 @@ class ResultsScreen extends StatelessWidget {
             _buildInfoRow(
               context,
               l10n.exchangeRateLabel,
-              '$departureCurrencyValue = $arrivalCurrencyValue',
+              '$departureCurrencyValue = $exchangeRateValue',
               Icons.swap_horiz,
             ),
 

@@ -33,6 +33,12 @@ enum RemoteConfigs {
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
+  /// Key for the Free Currency API key.
+  freeCurrencyApiKey(key: 'free_currency_api_key', defaultValue: ''),
+
+  /// Key for the cache free currency api data.
+  cacheFreeCurrencyApiData(key: 'cache_free_currency_api_data', defaultValue: true),
+
   /// Navigate to next step after selecting travel purpose.
   navigateToNextStepAfterSelectingTravelPurpose(
     key: 'navigate_to_next_step_after_selecting_travel_purpose',
@@ -136,6 +142,16 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns the client ID string if available, otherwise an empty string.
   String get unsplashClientId => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
+
+  /// Fetches the Free Currency API key from Firebase Remote Config.
+  ///
+  /// Returns the API key string if available, otherwise an empty string.
+  String get freeCurrencyApiKey => _firebaseRemoteConfig.getString(RemoteConfigs.freeCurrencyApiKey.key);
+
+  /// Fetches the cache free currency api data from Firebase Remote Config.
+  ///
+  /// Returns true if the cache free currency api data should be cached, otherwise true.
+  bool get cacheFreeCurrencyApiData => _firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
 
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///

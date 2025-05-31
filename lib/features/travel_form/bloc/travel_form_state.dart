@@ -42,7 +42,8 @@ class TravelFormState extends Equatable {
     this.isTravelPurposesLoading = false,
     this.formSubmissionStatus = FormSubmissionStatus.initial,
     this.travelPlan,
-    this.cityImage,
+    this.cityImageInBytes,
+    this.exchangeRate,
     this.error,
   });
 
@@ -103,8 +104,11 @@ class TravelFormState extends Equatable {
   /// The generated travel plan.
   final TravelDetails? travelPlan;
 
-  /// The city image.
-  final UnsplashPhoto? cityImage;
+  /// The city image in bytes.
+  final String? cityImageInBytes;
+
+  /// The exchange rate.
+  final double? exchangeRate;
 
   /// An optional error  if something went wrong.
   final TravelFormError? error;
@@ -141,7 +145,8 @@ class TravelFormState extends Equatable {
     bool? isTravelPurposesLoading,
     FormSubmissionStatus? formSubmissionStatus,
     ValueGetter<TravelDetails?>? travelPlan,
-    ValueGetter<UnsplashPhoto?>? cityImage,
+    ValueGetter<String?>? cityImageInBytes,
+    ValueGetter<double?>? exchangeRate,
     ValueGetter<TravelFormError?>? error, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
@@ -165,7 +170,8 @@ class TravelFormState extends Equatable {
       isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
       travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
-      cityImage: cityImage != null ? cityImage() : this.cityImage,
+      cityImageInBytes: cityImageInBytes != null ? cityImageInBytes() : this.cityImageInBytes,
+      exchangeRate: exchangeRate != null ? exchangeRate() : this.exchangeRate,
       error: error != null ? error() : this.error,
     );
   }
@@ -191,7 +197,8 @@ class TravelFormState extends Equatable {
     isTravelPurposesLoading,
     formSubmissionStatus,
     travelPlan,
-    cityImage,
+    cityImageInBytes,
+    exchangeRate,
     error,
   ];
 }

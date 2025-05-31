@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +23,7 @@ class CityCard extends StatelessWidget {
   /// Creates a [CityCard].
   const CityCard({
     required this.city,
-    required this.cityImage,
+    required this.cityImageInBytes,
     super.key,
   });
 
@@ -29,7 +31,7 @@ class CityCard extends StatelessWidget {
   final City city;
 
   /// The city image.
-  final UnsplashPhoto? cityImage;
+  final String? cityImageInBytes;
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +41,12 @@ class CityCard extends StatelessWidget {
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: firebaseRemoteConfigRepository.showCityView && cityImage != null ? _buildCityImage(context) : null,
+      header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // City Name and Time
-          if (!firebaseRemoteConfigRepository.showCityView && cityImage != null) ...[
+          if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
             _buildCityNameAndTime(context),
           ],
           // Weather information if available
@@ -60,22 +62,18 @@ class CityCard extends StatelessWidget {
   }
 
   Widget _buildCityImage(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: cityImage!.urls.raw,
+    return Image.memory(
+      base64Decode(cityImageInBytes!),
       width: double.infinity,
       fit: BoxFit.cover,
-      imageBuilder: (context, imageProvider) {
+      frameBuilder: (context, widget, frame, wasSynchronouslyLoaded) {
         return Tooltip(
           showDuration: const Duration(seconds: 2),
           triggerMode: TooltipTriggerMode.tap,
           message: "Crowd level of ${city.name} is ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
           child: Stack(
             children: [
-              Image(
-                image: imageProvider,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
+              widget,
               // Black gradient overlay for better text visibility
               Positioned.fill(
                 child: Container(

@@ -12,7 +12,6 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 abstract class _Constants {
   static const pageTransitionDuration = Duration(milliseconds: 300);
   static const pageTransitionCurve = Curves.easeInOut;
-  static const progressIndicatorHeight = 4.0;
 }
 
 /// Screen for users to input their travel details using a multi-step form.
