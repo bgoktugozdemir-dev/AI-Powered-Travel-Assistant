@@ -68,7 +68,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  cached_network_image: ^3.4.1
   gpt_markdown: ^1.0.19
 
 # Add dependency override to fix flutter_math_fork compatibility issue

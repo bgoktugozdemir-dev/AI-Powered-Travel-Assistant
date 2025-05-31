@@ -1,12 +1,10 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
@@ -16,6 +14,7 @@ abstract class _Constants {
   static const double weatherCardMinHeight = 100.0;
   static const double smallScreenWidth = 600.0;
   static const double mediumScreenWidth = 1200.0;
+  static const double cityImageMaxHeight = 300.0;
 }
 
 /// A widget that displays information about a city.
@@ -62,58 +61,65 @@ class CityCard extends StatelessWidget {
   }
 
   Widget _buildCityImage(BuildContext context) {
-    return Image.memory(
-      base64Decode(cityImageInBytes!),
-      width: double.infinity,
-      fit: BoxFit.cover,
-      frameBuilder: (context, widget, frame, wasSynchronouslyLoaded) {
-        return Tooltip(
-          showDuration: const Duration(seconds: 2),
-          triggerMode: TooltipTriggerMode.tap,
-          message: "Crowd level of ${city.name} is ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
-          child: Stack(
-            children: [
-              widget,
-              // Black gradient overlay for better text visibility
-              Positioned.fill(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.center,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black87,
-                      ],
+    final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight,
+      ),
+      child: Image.memory(
+        base64Decode(cityImageInBytes!),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        frameBuilder: (context, widget, frame, wasSynchronouslyLoaded) {
+          return Tooltip(
+            showDuration: const Duration(seconds: 2),
+            triggerMode: TooltipTriggerMode.tap,
+            message: "Crowd level of ${city.name} is ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
+            child: Stack(
+              children: [
+                widget,
+                // Black gradient overlay for better text visibility
+                Positioned.fill(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.center,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black87,
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: LinearProgressIndicator(
-                  value: city.crowdLevel / 100,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    city.crowdLevel < 30
-                        ? Colors.green
-                        : city.crowdLevel < 70
-                        ? Colors.orange
-                        : Colors.red,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: LinearProgressIndicator(
+                    value: city.crowdLevel / 100,
+                    backgroundColor: Colors.grey[300],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      city.crowdLevel < 30
+                          ? Colors.green
+                          : city.crowdLevel < 70
+                          ? Colors.orange
+                          : Colors.red,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 8,
-                bottom: 8,
-                child: _buildCityNameOnImage(context),
-              ),
-            ],
-          ),
-        );
-      },
+                Positioned(
+                  left: 8,
+                  bottom: 8,
+                  child: _buildCityNameOnImage(context),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
