@@ -11,7 +11,8 @@ class TravelSpot {
     required this.requirements,
   });
 
-  factory TravelSpot.fromJson(Map<String, dynamic> json) => _$TravelSpotFromJson(json);
+  factory TravelSpot.fromJson(Map<String, dynamic> json) =>
+      _$TravelSpotFromJson(json);
 
   @JsonKey(name: 'place')
   final String place;

@@ -39,7 +39,9 @@ class CountryService {
               .toList();
 
       _isInitialized = true;
-      appLogger.i('CountryService initialized with ${_countries.length} countries');
+      appLogger.i(
+        'CountryService initialized with ${_countries.length} countries',
+      );
     } catch (e) {
       appLogger.e('Failed to initialize CountryService', error: e);
       _initializeFallbackData();
@@ -49,16 +51,66 @@ class CountryService {
   /// Initialize with fallback data in case API fails
   void _initializeFallbackData() {
     _countries = [
-      Country(code: 'US', name: 'United States', nationality: 'American', flagEmoji: '🇺🇸'),
-      Country(code: 'GB', name: 'United Kingdom', nationality: 'British', flagEmoji: '🇬🇧'),
-      Country(code: 'TR', name: 'Turkey', nationality: 'Turkish', flagEmoji: '🇹🇷'),
-      Country(code: 'DE', name: 'Germany', nationality: 'German', flagEmoji: '🇩🇪'),
-      Country(code: 'FR', name: 'France', nationality: 'French', flagEmoji: '🇫🇷'),
-      Country(code: 'IT', name: 'Italy', nationality: 'Italian', flagEmoji: '🇮🇹'),
-      Country(code: 'ES', name: 'Spain', nationality: 'Spanish', flagEmoji: '🇪🇸'),
-      Country(code: 'JP', name: 'Japan', nationality: 'Japanese', flagEmoji: '🇯🇵'),
-      Country(code: 'CN', name: 'China', nationality: 'Chinese', flagEmoji: '🇨🇳'),
-      Country(code: 'IN', name: 'India', nationality: 'Indian', flagEmoji: '🇮🇳'),
+      Country(
+        code: 'US',
+        name: 'United States',
+        nationality: 'American',
+        flagEmoji: '🇺🇸',
+      ),
+      Country(
+        code: 'GB',
+        name: 'United Kingdom',
+        nationality: 'British',
+        flagEmoji: '🇬🇧',
+      ),
+      Country(
+        code: 'TR',
+        name: 'Turkey',
+        nationality: 'Turkish',
+        flagEmoji: '🇹🇷',
+      ),
+      Country(
+        code: 'DE',
+        name: 'Germany',
+        nationality: 'German',
+        flagEmoji: '🇩🇪',
+      ),
+      Country(
+        code: 'FR',
+        name: 'France',
+        nationality: 'French',
+        flagEmoji: '🇫🇷',
+      ),
+      Country(
+        code: 'IT',
+        name: 'Italy',
+        nationality: 'Italian',
+        flagEmoji: '🇮🇹',
+      ),
+      Country(
+        code: 'ES',
+        name: 'Spain',
+        nationality: 'Spanish',
+        flagEmoji: '🇪🇸',
+      ),
+      Country(
+        code: 'JP',
+        name: 'Japan',
+        nationality: 'Japanese',
+        flagEmoji: '🇯🇵',
+      ),
+      Country(
+        code: 'CN',
+        name: 'China',
+        nationality: 'Chinese',
+        flagEmoji: '🇨🇳',
+      ),
+      Country(
+        code: 'IN',
+        name: 'India',
+        nationality: 'Indian',
+        flagEmoji: '🇮🇳',
+      ),
     ];
     _isInitialized = true;
     appLogger.w('Using fallback country data');
@@ -98,7 +150,8 @@ class CountryService {
     return _countries.where((country) {
       return country.name.toLowerCase().contains(lowercaseQuery) ||
           country.code.toLowerCase().contains(lowercaseQuery) ||
-          (country.nationality?.toLowerCase().contains(lowercaseQuery) ?? false);
+          (country.nationality?.toLowerCase().contains(lowercaseQuery) ??
+              false);
     }).toList();
   }
 
@@ -109,7 +162,9 @@ class CountryService {
     }
 
     try {
-      return _countries.firstWhere((country) => country.code == code.toUpperCase());
+      return _countries.firstWhere(
+        (country) => country.code == code.toUpperCase(),
+      );
     } catch (e) {
       return null;
     }

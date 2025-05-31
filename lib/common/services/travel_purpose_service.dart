@@ -16,9 +16,17 @@ class TravelPurposeService {
     TravelPurpose(id: 'shopping', name: 'Shopping', icon: 'shopping_bag'),
     TravelPurpose(id: 'education', name: 'Education', icon: 'school'),
     TravelPurpose(id: 'sports', name: 'Sports & Activities', icon: 'sports'),
-    TravelPurpose(id: 'medical', name: 'Medical Tourism', icon: 'medical_services'),
+    TravelPurpose(
+      id: 'medical',
+      name: 'Medical Tourism',
+      icon: 'medical_services',
+    ),
     TravelPurpose(id: 'honeymoon', name: 'Honeymoon', icon: 'favorite'),
-    TravelPurpose(id: 'religious', name: 'Religious Pilgrimage', icon: 'church'),
+    TravelPurpose(
+      id: 'religious',
+      name: 'Religious Pilgrimage',
+      icon: 'church',
+    ),
   ];
 
   /// Returns all available travel purposes.
@@ -33,7 +41,7 @@ class TravelPurposeService {
     if (iconName == null) {
       return Icons.category;
     }
-    
+
     switch (iconName) {
       case 'photo_camera':
         return Icons.photo_camera;
@@ -67,4 +75,4 @@ class TravelPurposeService {
         return Icons.category;
     }
   }
-} 
+}

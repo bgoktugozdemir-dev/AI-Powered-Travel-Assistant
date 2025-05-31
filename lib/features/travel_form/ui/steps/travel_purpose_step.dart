@@ -26,13 +26,16 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final maximumTravelPurposesCount = context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
+    final maximumTravelPurposesCount =
+        context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       buildWhen:
           (previous, current) =>
-              previous.isTravelPurposesLoading != current.isTravelPurposesLoading ||
-              previous.availableTravelPurposes != current.availableTravelPurposes ||
+              previous.isTravelPurposesLoading !=
+                  current.isTravelPurposesLoading ||
+              previous.availableTravelPurposes !=
+                  current.availableTravelPurposes ||
               previous.selectedTravelPurposes != current.selectedTravelPurposes,
       builder: (context, state) {
         if (state.isTravelPurposesLoading) {
@@ -43,35 +46,52 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
           return Center(child: Text(l10n.noPurposesAvailable));
         }
 
-        final isSelectable = state.selectedTravelPurposes.length < maximumTravelPurposesCount;
+        final isSelectable =
+            state.selectedTravelPurposes.length < maximumTravelPurposesCount;
 
         return TravelFormStepLayout(
           children: [
-            Text(l10n.selectTravelPurposes, style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              l10n.selectTravelPurposes,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
-            Text(l10n.selectTravelPurposesDescription, style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              l10n.selectTravelPurposesDescription,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const SizedBox(height: 16),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children:
                   state.availableTravelPurposes.map((purpose) {
-                    final isSelected = state.selectedTravelPurposes.any((selected) => selected.id == purpose.id);
+                    final isSelected = state.selectedTravelPurposes.any(
+                      (selected) => selected.id == purpose.id,
+                    );
 
                     return FilterChip(
                       label: Text(purpose.name),
                       selected: isSelected,
-                      avatar: Icon(TravelPurposeService.getIconForPurpose(purpose.icon), size: 18),
+                      avatar: Icon(
+                        TravelPurposeService.getIconForPurpose(purpose.icon),
+                        size: 18,
+                      ),
                       showCheckmark: false,
                       onSelected:
                           !isSelected && !isSelectable
                               ? null
                               : (selected) {
                                 context.read<TravelFormBloc>().add(
-                                  ToggleTravelPurposeEvent(purpose: purpose, isSelected: selected),
+                                  ToggleTravelPurposeEvent(
+                                    purpose: purpose,
+                                    isSelected: selected,
+                                  ),
                                 );
                               },
-                      selectedColor: Theme.of(context).colorScheme.primary.withAlpha(160),
+                      selectedColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withAlpha(160),
                     );
                   }).toList(),
             ),

@@ -6,7 +6,10 @@ import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_ste
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class TravelFormDepartureAirportStep extends StatelessWidget {
-  const TravelFormDepartureAirportStep({super.key, required this.departureAirportController});
+  const TravelFormDepartureAirportStep({
+    super.key,
+    required this.departureAirportController,
+  });
 
   final TextEditingController departureAirportController;
 
@@ -16,10 +19,16 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
 
     return TravelFormStepLayout(
       children: <Widget>[
-        Text(l10n.departureAirportStepTitle, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          l10n.departureAirportStepTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.isDepartureAirportLoading != current.isDepartureAirportLoading,
+          buildWhen:
+              (previous, current) =>
+                  previous.isDepartureAirportLoading !=
+                  current.isDepartureAirportLoading,
           builder: (context, state) {
             return TextField(
               controller: departureAirportController,
@@ -28,25 +37,34 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
                 border: const OutlineInputBorder(),
                 suffixIcon:
                     state.isDepartureAirportLoading
-                        ? const CircularProgressIndicator(padding: EdgeInsets.all(8))
+                        ? const CircularProgressIndicator(
+                          padding: EdgeInsets.all(8),
+                        )
                         : null,
               ),
               onChanged: (query) {
                 appLogger.d("Departure airport search changed: $query");
-                context.read<TravelFormBloc>().add(TravelFormDepartureAirportSearchTermChanged(query));
+                context.read<TravelFormBloc>().add(
+                  TravelFormDepartureAirportSearchTermChanged(query),
+                );
               },
             );
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.departureAirportSuggestions != current.departureAirportSuggestions,
+          buildWhen:
+              (previous, current) =>
+                  previous.departureAirportSuggestions !=
+                  current.departureAirportSuggestions,
           builder: (context, state) {
             if (state.departureAirportSuggestions.isEmpty) {
               return const SizedBox.shrink();
             }
 
             return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.3,
+              ),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: state.departureAirportSuggestions.length,
@@ -56,8 +74,12 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
                     title: Text("${airport.name} (${airport.iataCode})"),
                     subtitle: Text(airport.cityAndCountry),
                     onTap: () {
-                      appLogger.i("Departure airport selected: ${airport.name} (${airport.iataCode})");
-                      context.read<TravelFormBloc>().add(TravelFormDepartureAirportSelected(airport));
+                      appLogger.i(
+                        "Departure airport selected: ${airport.name} (${airport.iataCode})",
+                      );
+                      context.read<TravelFormBloc>().add(
+                        TravelFormDepartureAirportSelected(airport),
+                      );
                     },
                   );
                 },
@@ -66,7 +88,10 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedDepartureAirport != current.selectedDepartureAirport,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedDepartureAirport !=
+                  current.selectedDepartureAirport,
           builder: (context, state) {
             if (state.selectedDepartureAirport == null) {
               return const SizedBox.shrink();
@@ -79,7 +104,10 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
                   state.selectedDepartureAirport!.name,
                   state.selectedDepartureAirport!.iataCode,
                 ),
-                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             );
           },

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
@@ -36,23 +36,32 @@ class CityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+    final firebaseRemoteConfigRepository =
+        context.read<FirebaseRemoteConfigRepository>();
 
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
+      header:
+          firebaseRemoteConfigRepository.showCityView &&
+                  cityImageInBytes != null
+              ? _buildCityImage(context)
+              : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // City Name and Time
-          if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
+          if (!firebaseRemoteConfigRepository.showCityView &&
+              cityImageInBytes != null) ...[
             _buildCityNameAndTime(context),
           ],
           // Weather information if available
           if (city.weather.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(l10n.cityCardWeatherForecastTitle, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.cityCardWeatherForecastTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             _WeatherCards(weathers: city.weather),
           ],
@@ -86,8 +95,12 @@ class CityCard extends StatelessWidget {
 
   Widget _buildCityImage(BuildContext context) {
     final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
-    final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
-    final crowdLevelBarHeight = imageHeight * _Constants.crowdLevelBarHeightMultiplier;
+    final imageHeight =
+        screenHeight != null
+            ? screenHeight * 0.4
+            : _Constants.cityImageMaxHeight;
+    final crowdLevelBarHeight =
+        imageHeight * _Constants.crowdLevelBarHeightMultiplier;
     final crowdLevelColor = _getCrowdLevelColor(city.crowdLevel);
 
     return ConstrainedBox(
@@ -152,8 +165,18 @@ class CityCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(city.country, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-            Text(city.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
+            Text(
+              city.country,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+            ),
+            Text(
+              city.name,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            ),
           ],
         ),
         Container(
@@ -164,7 +187,7 @@ class CityCard extends StatelessWidget {
             border: Border.all(color: crowdLevelColor, width: 1),
           ),
           child: Text(
-            "${l10n.crowdLevelLabel} ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
+            "${l10n.crowdLevelLabel} ${Formatters.crowdLevel(city.crowdLevel)}",
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.white,
@@ -189,7 +212,12 @@ class CityCard extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
       children: [
-        Expanded(child: Text('${city.name}, ${city.country}', style: Theme.of(context).textTheme.titleLarge)),
+        Expanded(
+          child: Text(
+            Formatters.cityCountry(city.name, city.country),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
         if (city.time != null) _buildTimeDifference(context),
       ],
     );
@@ -206,20 +234,27 @@ class CityCard extends StatelessWidget {
     final arrivalColor = dayDifference > 0 ? Colors.red : null;
 
     return Tooltip(
-      message: l10n.timeDifferenceTooltip(city.time!.differenceInHours),
+      message: Formatters.timeDifference(city.time!.differenceInHours, l10n),
       child: Chip(
         label: Row(
           mainAxisSize: MainAxisSize.min,
           spacing: 4,
           children: [
             Text(
-              "${DateFormat('HH:mm').format(departureTime)} (${city.time!.departureTimezone})",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: departureColor),
+              Formatters.timezoneTime(
+                departureTime,
+                city.time!.departureTimezone,
+              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: departureColor),
             ),
             Icon(Icons.arrow_right_alt, size: 16),
             Text(
-              "${DateFormat('HH:mm').format(arrivalTime)} (${city.time!.arrivalTimezone})",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: arrivalColor),
+              Formatters.timezoneTime(arrivalTime, city.time!.arrivalTimezone),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: arrivalColor),
             ),
           ],
         ),
@@ -251,7 +286,8 @@ class _WeatherCards extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: weathers.length,
-            itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
+            itemBuilder:
+                (context, index) => _WeatherCard(weather: weathers[index]),
           ),
         );
       },
@@ -274,11 +310,18 @@ class _WeatherCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text(
-              DateFormat('MMM d').format(DateTime.parse(weather.date)),
+              Formatters.shortDate(DateTime.parse(weather.date)),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Icon(icon, size: 28, color: Theme.of(context).colorScheme.secondary),
-            Text('${weather.temperature}°C', style: Theme.of(context).textTheme.bodyMedium),
+            Icon(
+              icon,
+              size: 28,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            Text(
+              '${weather.temperature}°C',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
         ),
       ),

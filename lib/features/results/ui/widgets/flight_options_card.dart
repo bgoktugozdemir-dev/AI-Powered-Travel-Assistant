@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/flight_options.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -20,20 +20,40 @@ class FlightOptionsCard extends StatelessWidget {
         spacing: 16,
         children: [
           // Cheapest Option
-          _buildFlightOptions(context, l10n.cheapestOptionTitle, flightOptions.cheapest, l10n),
+          _buildFlightOptions(
+            context,
+            l10n.cheapestOptionTitle,
+            flightOptions.cheapest,
+            l10n,
+          ),
 
           // Comfortable Option
-          _buildFlightOptions(context, l10n.comfortableOptionTitle, flightOptions.comfortable, l10n),
+          _buildFlightOptions(
+            context,
+            l10n.comfortableOptionTitle,
+            flightOptions.comfortable,
+            l10n,
+          ),
 
           // Recommended Option
           if (flightOptions.recommended != null)
-            _buildFlightOptions(context, l10n.recommendedOptionTitle, flightOptions.recommended!, l10n),
+            _buildFlightOptions(
+              context,
+              l10n.recommendedOptionTitle,
+              flightOptions.recommended!,
+              l10n,
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildFlightOptions(BuildContext context, String title, FlightOption flightOption, AppLocalizations l10n) {
+  Widget _buildFlightOptions(
+    BuildContext context,
+    String title,
+    FlightOption flightOption,
+    AppLocalizations l10n,
+  ) {
     return Column(
       spacing: 8,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,7 +109,9 @@ class _FlightCard extends StatelessWidget {
             flight.airline,
             textAlign: TextAlign.end,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -107,7 +129,11 @@ class _FlightCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFlightTimeAndAirport(context, flight.departureTime, flight.departureAirport),
+        _buildFlightTimeAndAirport(
+          context,
+          flight.departureTime,
+          flight.departureAirport,
+        ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 4,
@@ -122,42 +148,47 @@ class _FlightCard extends StatelessWidget {
               color: primaryColor,
             ),
             Text(
-              _formatFlightDuration(context, flight.duration, l10n),
+              Formatters.flightDuration(flight.duration, l10n),
               style: textTheme.bodySmall?.copyWith(color: captionColor),
             ),
           ],
         ),
-        _buildFlightTimeAndAirport(context, flight.arrivalTime, flight.arrivalAirport, false),
+        _buildFlightTimeAndAirport(
+          context,
+          flight.arrivalTime,
+          flight.arrivalAirport,
+          false,
+        ),
       ],
     );
   }
 
-  Widget _buildFlightTimeAndAirport(BuildContext context, DateTime time, String airport, [bool isDeparture = true]) {
+  Widget _buildFlightTimeAndAirport(
+    BuildContext context,
+    DateTime time,
+    String airport, [
+    bool isDeparture = true,
+  ]) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme.bodyMedium;
 
     return Column(
-      crossAxisAlignment: isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment:
+          isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
       children: [
         Text(
-          _formatFlightTime(time),
+          Formatters.dateWithTime(time),
           style: textTheme,
         ),
         Text(
           airport,
-          style: textTheme?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+          style: textTheme?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
-  }
-
-  String _formatFlightTime(DateTime time) => DateFormat('MMM d, HH:mm').format(time);
-
-  String _formatFlightDuration(BuildContext context, Duration duration, AppLocalizations l10n) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-
-    return l10n.flightDurationFormat(hours, minutes);
   }
 
   Widget _buildFlightFooter(BuildContext context, AppLocalizations l10n) {
@@ -169,18 +200,21 @@ class _FlightCard extends StatelessWidget {
         Expanded(
           child: Text(
             flight.flightNumber,
-            style: textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
+            style: textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
         Text(
-          _formatMoney(flight.price, flight.currency, l10n),
+          Formatters.flightPrice(
+            price: flight.price,
+            currencyCode: flight.currency,
+            l10n: l10n,
+          ),
           textAlign: TextAlign.end,
           style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
-
-  String _formatMoney(double price, String currency, AppLocalizations l10n) =>
-      NumberFormat.currency(locale: l10n.localeName, symbol: currency).format(price);
 }

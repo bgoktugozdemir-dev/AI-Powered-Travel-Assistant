@@ -13,7 +13,8 @@ class Currency {
     required this.arrivalAverageLivingCostPerDay,
   });
 
-  factory Currency.fromJson(Map<String, dynamic> json) => _$CurrencyFromJson(json);
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
 
   @JsonKey(name: 'code')
   final String code;
@@ -33,7 +34,9 @@ class Currency {
   @JsonKey(name: 'arrival_average_living_cost_per_day')
   final double arrivalAverageLivingCostPerDay;
 
-  double get departureAverageLivingCostPerDayInArrivalCurrency => departureAverageLivingCostPerDay * exchangeRate;
+  double get departureAverageLivingCostPerDayInArrivalCurrency =>
+      departureAverageLivingCostPerDay * exchangeRate;
 
-  double get arrivalAverageLivingCostPerDayInDepartureCurrency => arrivalAverageLivingCostPerDay / exchangeRate;
+  double get arrivalAverageLivingCostPerDayInDepartureCurrency =>
+      arrivalAverageLivingCostPerDay / exchangeRate;
 }

@@ -37,8 +37,11 @@ void main() async {
 
   // Activate Firebase App Check
   await FirebaseAppCheck.instance.activate(
-    webProvider: ReCaptchaV3Provider(firebaseRemoteConfigRepository.recaptchaSiteKey),
-    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    webProvider: ReCaptchaV3Provider(
+      firebaseRemoteConfigRepository.recaptchaSiteKey,
+    ),
+    androidProvider:
+        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
   );
 
@@ -68,14 +71,19 @@ void main() async {
         ),
         RepositoryProvider(
           create: (_) {
-            final apiService = AirportApiService(Dio()..interceptors.add(ApiLoggerInterceptor()));
+            final apiService = AirportApiService(
+              Dio()..interceptors.add(ApiLoggerInterceptor()),
+            );
             return AirportRepository(apiService: apiService);
           },
         ),
         RepositoryProvider(
           create: (context) {
-            final unsplashService = UnsplashService(Dio()..interceptors.add(ApiLoggerInterceptor()));
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final unsplashService = UnsplashService(
+              Dio()..interceptors.add(ApiLoggerInterceptor()),
+            );
+            final firebaseRemoteConfigRepository =
+                context.read<FirebaseRemoteConfigRepository>();
             return UnsplashRepository(
               unsplashService: unsplashService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
@@ -84,8 +92,11 @@ void main() async {
         ),
         RepositoryProvider(
           create: (context) {
-            final freeCurrencyApiService = FreeCurrencyApiService(Dio()..interceptors.add(ApiLoggerInterceptor()));
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final freeCurrencyApiService = FreeCurrencyApiService(
+              Dio()..interceptors.add(ApiLoggerInterceptor()),
+            );
+            final firebaseRemoteConfigRepository =
+                context.read<FirebaseRemoteConfigRepository>();
             return CurrencyRepository(
               freeCurrencyApiService: freeCurrencyApiService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
@@ -98,7 +109,8 @@ void main() async {
             final airportRepository = context.read<AirportRepository>();
             final unsplashRepository = context.read<UnsplashRepository>();
             final currencyRepository = context.read<CurrencyRepository>();
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository =
+                context.read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
             return TravelFormBloc(
               geminiRepository: geminiRepository,

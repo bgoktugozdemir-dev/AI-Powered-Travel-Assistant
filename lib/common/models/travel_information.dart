@@ -10,7 +10,10 @@ part 'travel_information.freezed.dart';
 abstract class TravelInformation with _$TravelInformation {
   const TravelInformation._();
 
-  @Assert('travelPurposes.length > 0', 'Travel purposes must be a non-empty list')
+  @Assert(
+    'travelPurposes.length > 0',
+    'Travel purposes must be a non-empty list',
+  )
   const factory TravelInformation({
     required Airport departureAirport,
     required Airport arrivalAirport,
@@ -32,8 +35,9 @@ abstract class TravelInformation with _$TravelInformation {
   static String _countryToJson(Country country) => country.code;
 
   /// Custom JSON conversion for TravelPurpose list to JSON
-  static List<String> _travelPurposesToJson(List<TravelPurpose> travelPurposes) =>
-      travelPurposes.map((e) => e.name).toList();
+  static List<String> _travelPurposesToJson(
+    List<TravelPurpose> travelPurposes,
+  ) => travelPurposes.map((e) => e.name).toList();
 
   /// Convert to JSON map using custom conversion methods
   Map<String, dynamic> toJson() {

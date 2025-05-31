@@ -8,7 +8,13 @@ abstract class _Constants {
 }
 
 class TravelCard extends StatelessWidget {
-  const TravelCard({required this.icon, required this.title, required this.child, this.header, super.key});
+  const TravelCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+    this.header,
+    super.key,
+  });
 
   final IconData icon;
   final String title;
@@ -19,10 +25,16 @@ class TravelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: _Constants.elevation,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_Constants.borderRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_Constants.borderRadius),
+      ),
       child: Column(
         children: [
-          if (header != null) ClipRRect(borderRadius: BorderRadius.circular(_Constants.borderRadius), child: header),
+          if (header != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(_Constants.borderRadius),
+              child: header,
+            ),
           Padding(
             padding: const EdgeInsets.all(_Constants.padding),
             child: Column(

@@ -49,4 +49,4 @@ class ApiLoggerInterceptor extends Interceptor {
     appLogger.e(jsonEncode(logData), stackTrace: err.stackTrace);
     super.onError(err, handler);
   }
-} 
+}

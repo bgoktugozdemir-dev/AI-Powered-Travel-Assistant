@@ -32,9 +32,14 @@ class City {
 
 @JsonSerializable(createToJson: false)
 class TimeDetails {
-  const TimeDetails({required this.departureTimezone, required this.arrivalTimezone, required this.differenceInHours});
+  const TimeDetails({
+    required this.departureTimezone,
+    required this.arrivalTimezone,
+    required this.differenceInHours,
+  });
 
-  factory TimeDetails.fromJson(Map<String, dynamic> json) => _$TimeDetailsFromJson(json);
+  factory TimeDetails.fromJson(Map<String, dynamic> json) =>
+      _$TimeDetailsFromJson(json);
 
   @JsonKey(name: 'departure_timezone')
   final String departureTimezone;
@@ -48,9 +53,14 @@ class TimeDetails {
 
 @JsonSerializable(createToJson: false)
 class Weather {
-  const Weather({required this.date, required this.weather, required this.temperature});
+  const Weather({
+    required this.date,
+    required this.weather,
+    required this.temperature,
+  });
 
-  factory Weather.fromJson(Map<String, dynamic> json) => _$WeatherFromJson(json);
+  factory Weather.fromJson(Map<String, dynamic> json) =>
+      _$WeatherFromJson(json);
 
   @JsonKey(name: 'date')
   final String date;

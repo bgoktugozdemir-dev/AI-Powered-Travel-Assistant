@@ -11,5 +11,6 @@ abstract class FreeCurrencyApiResponse with _$FreeCurrencyApiResponse {
     required Map<String, double> data,
   }) = _FreeCurrencyApiResponse;
 
-  factory FreeCurrencyApiResponse.fromJson(Map<String, dynamic> json) => _$FreeCurrencyApiResponseFromJson(json);
+  factory FreeCurrencyApiResponse.fromJson(Map<String, dynamic> json) =>
+      _$FreeCurrencyApiResponseFromJson(json);
 }

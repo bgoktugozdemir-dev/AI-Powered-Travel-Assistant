@@ -15,7 +15,10 @@ class GeminiService {
 
   /// Returns the generative model for the Gemini model.
   GenerativeModel getModel() {
-    return _firebaseAI.generativeModel(model: _model, systemInstruction: Content.system(_systemPrompt));
+    return _firebaseAI.generativeModel(
+      model: _model,
+      systemInstruction: Content.system(_systemPrompt),
+    );
   }
 
   /// Returns the chat session for the Gemini model.

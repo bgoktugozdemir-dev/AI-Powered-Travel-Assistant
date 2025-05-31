@@ -14,14 +14,21 @@ class CurrencyRepository {
 
   static final Map<String, Map<String, double>> _exchangeRatesCache = {};
 
-  Future<double?> getExchangeRate(String fromCurrency, String toCurrency) async {
+  Future<double?> getExchangeRate(
+    String fromCurrency,
+    String toCurrency,
+  ) async {
     try {
-      if (_firebaseRemoteConfigRepository.cacheFreeCurrencyApiData && _exchangeRatesCache.containsKey(fromCurrency)) {
+      if (_firebaseRemoteConfigRepository.cacheFreeCurrencyApiData &&
+          _exchangeRatesCache.containsKey(fromCurrency)) {
         return _exchangeRatesCache[fromCurrency]![toCurrency];
       }
       final apiKey = _firebaseRemoteConfigRepository.freeCurrencyApiKey;
 
-      final response = await _freeCurrencyApiService.getExchangeRates(apiKey: apiKey, baseCurrency: fromCurrency);
+      final response = await _freeCurrencyApiService.getExchangeRates(
+        apiKey: apiKey,
+        baseCurrency: fromCurrency,
+      );
 
       final exchangeRates = response.data;
 
@@ -31,14 +38,19 @@ class CurrencyRepository {
         return exchangeRates[toCurrency] ?? 0;
       }
 
-      throw Exception('Failed to get exchange rate from $fromCurrency to $toCurrency');
+      throw Exception(
+        'Failed to get exchange rate from $fromCurrency to $toCurrency',
+      );
     } catch (e) {
       appLogger.e(e.toString());
       return null;
     }
   }
 
-  void _cacheExchangeRates(String fromCurrency, Map<String, double> exchangeRates) {
+  void _cacheExchangeRates(
+    String fromCurrency,
+    Map<String, double> exchangeRates,
+  ) {
     if (_firebaseRemoteConfigRepository.cacheFreeCurrencyApiData) {
       _exchangeRatesCache[fromCurrency] = exchangeRates;
     }

@@ -6,7 +6,8 @@ part 'travel_plan.g.dart';
 class TravelPlan {
   const TravelPlan({required this.date, required this.events});
 
-  factory TravelPlan.fromJson(Map<String, dynamic> json) => _$TravelPlanFromJson(json);
+  factory TravelPlan.fromJson(Map<String, dynamic> json) =>
+      _$TravelPlanFromJson(json);
 
   @JsonKey(name: 'date')
   final DateTime date;
@@ -25,7 +26,8 @@ class TravelEvent {
     required this.requirements,
   });
 
-  factory TravelEvent.fromJson(Map<String, dynamic> json) => _$TravelEventFromJson(json);
+  factory TravelEvent.fromJson(Map<String, dynamic> json) =>
+      _$TravelEventFromJson(json);
 
   @JsonKey(name: 'name')
   final String name;

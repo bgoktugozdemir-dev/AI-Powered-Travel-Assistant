@@ -21,7 +21,8 @@ abstract class Airport with _$Airport {
   }) = _Airport;
 
   /// Creates an [Airport] instance from a JSON object.
-  factory Airport.fromJson(Map<String, dynamic> json) => _$AirportFromJson(json);
+  factory Airport.fromJson(Map<String, dynamic> json) =>
+      _$AirportFromJson(json);
 
   /// Returns city and country name as a single string.
   String get cityAndCountry => '$cityName, $countryName';

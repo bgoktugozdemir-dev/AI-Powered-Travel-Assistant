@@ -12,7 +12,8 @@ abstract class _Constants {
 
 @RestApi(baseUrl: _Constants.baseUrl)
 abstract class FreeCurrencyApiService {
-  factory FreeCurrencyApiService(Dio dio, {String baseUrl}) = _FreeCurrencyApiService;
+  factory FreeCurrencyApiService(Dio dio, {String baseUrl}) =
+      _FreeCurrencyApiService;
 
   /// Get exchange rates for a given base currency
   @GET('/latest')

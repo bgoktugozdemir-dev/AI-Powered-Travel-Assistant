@@ -4,8 +4,10 @@ abstract class AppAssets {
   static const String _baseLottiePath = 'assets/lotties';
 
   // Lottie Animations
-  static const String flightSearchIndicatorLottie = '$_baseLottiePath/flight_search_indicator.json';
-  static const String loadingIndicatorLottie = '$_baseLottiePath/loading_indicator.json';
+  static const String flightSearchIndicatorLottie =
+      '$_baseLottiePath/flight_search_indicator.json';
+  static const String loadingIndicatorLottie =
+      '$_baseLottiePath/loading_indicator.json';
 
   // Other Assets (if any in the root of assets/)
   // static const String exampleJsonc = 'assets/example_travel_plan_response.jsonc'; // Example, if needed

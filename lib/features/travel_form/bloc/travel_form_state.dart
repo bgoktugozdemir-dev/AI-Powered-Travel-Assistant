@@ -15,7 +15,14 @@ enum FormSubmissionStatus {
   failure,
 }
 
-enum TravelFormStep { welcome, departureAirport, arrivalAirport, dates, nationality, purpose }
+enum TravelFormStep {
+  welcome,
+  departureAirport,
+  arrivalAirport,
+  dates,
+  nationality,
+  purpose,
+}
 
 /// Represents the state of the travel form.
 @immutable
@@ -129,13 +136,15 @@ class TravelFormState extends Equatable {
     int? currentStep,
     String? departureAirportSearchTerm,
     List<Airport>? departureAirportSuggestions,
-    ValueGetter<Airport?>? selectedDepartureAirport, // Use ValueGetter for explicit null setting
+    ValueGetter<Airport?>?
+    selectedDepartureAirport, // Use ValueGetter for explicit null setting
     bool? isDepartureAirportLoading,
     String? arrivalAirportSearchTerm,
     List<Airport>? arrivalAirportSuggestions,
     ValueGetter<Airport?>? selectedArrivalAirport,
     bool? isArrivalAirportLoading,
-    ValueGetter<DateTimeRange?>? selectedDateRange, // Use ValueGetter for explicit null setting
+    ValueGetter<DateTimeRange?>?
+    selectedDateRange, // Use ValueGetter for explicit null setting
     String? nationalitySearchTerm,
     List<Country>? nationalitySuggestions,
     ValueGetter<Country?>? selectedNationality,
@@ -147,30 +156,54 @@ class TravelFormState extends Equatable {
     ValueGetter<TravelDetails?>? travelPlan,
     ValueGetter<String?>? cityImageInBytes,
     ValueGetter<double?>? exchangeRate,
-    ValueGetter<TravelFormError?>? error, // Use ValueGetter for explicit null setting
+    ValueGetter<TravelFormError?>?
+    error, // Use ValueGetter for explicit null setting
   }) {
     return TravelFormState(
       currentStep: currentStep ?? this.currentStep,
-      departureAirportSearchTerm: departureAirportSearchTerm ?? this.departureAirportSearchTerm,
-      departureAirportSuggestions: departureAirportSuggestions ?? this.departureAirportSuggestions,
+      departureAirportSearchTerm:
+          departureAirportSearchTerm ?? this.departureAirportSearchTerm,
+      departureAirportSuggestions:
+          departureAirportSuggestions ?? this.departureAirportSuggestions,
       selectedDepartureAirport:
-          selectedDepartureAirport != null ? selectedDepartureAirport() : this.selectedDepartureAirport,
-      isDepartureAirportLoading: isDepartureAirportLoading ?? this.isDepartureAirportLoading,
-      arrivalAirportSearchTerm: arrivalAirportSearchTerm ?? this.arrivalAirportSearchTerm,
-      arrivalAirportSuggestions: arrivalAirportSuggestions ?? this.arrivalAirportSuggestions,
-      selectedArrivalAirport: selectedArrivalAirport != null ? selectedArrivalAirport() : this.selectedArrivalAirport,
-      isArrivalAirportLoading: isArrivalAirportLoading ?? this.isArrivalAirportLoading,
-      selectedDateRange: selectedDateRange != null ? selectedDateRange() : this.selectedDateRange,
-      nationalitySearchTerm: nationalitySearchTerm ?? this.nationalitySearchTerm,
-      nationalitySuggestions: nationalitySuggestions ?? this.nationalitySuggestions,
-      selectedNationality: selectedNationality != null ? selectedNationality() : this.selectedNationality,
+          selectedDepartureAirport != null
+              ? selectedDepartureAirport()
+              : this.selectedDepartureAirport,
+      isDepartureAirportLoading:
+          isDepartureAirportLoading ?? this.isDepartureAirportLoading,
+      arrivalAirportSearchTerm:
+          arrivalAirportSearchTerm ?? this.arrivalAirportSearchTerm,
+      arrivalAirportSuggestions:
+          arrivalAirportSuggestions ?? this.arrivalAirportSuggestions,
+      selectedArrivalAirport:
+          selectedArrivalAirport != null
+              ? selectedArrivalAirport()
+              : this.selectedArrivalAirport,
+      isArrivalAirportLoading:
+          isArrivalAirportLoading ?? this.isArrivalAirportLoading,
+      selectedDateRange:
+          selectedDateRange != null
+              ? selectedDateRange()
+              : this.selectedDateRange,
+      nationalitySearchTerm:
+          nationalitySearchTerm ?? this.nationalitySearchTerm,
+      nationalitySuggestions:
+          nationalitySuggestions ?? this.nationalitySuggestions,
+      selectedNationality:
+          selectedNationality != null
+              ? selectedNationality()
+              : this.selectedNationality,
       isNationalityLoading: isNationalityLoading ?? this.isNationalityLoading,
-      availableTravelPurposes: availableTravelPurposes ?? this.availableTravelPurposes,
-      selectedTravelPurposes: selectedTravelPurposes ?? this.selectedTravelPurposes,
-      isTravelPurposesLoading: isTravelPurposesLoading ?? this.isTravelPurposesLoading,
+      availableTravelPurposes:
+          availableTravelPurposes ?? this.availableTravelPurposes,
+      selectedTravelPurposes:
+          selectedTravelPurposes ?? this.selectedTravelPurposes,
+      isTravelPurposesLoading:
+          isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
       travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
-      cityImageInBytes: cityImageInBytes != null ? cityImageInBytes() : this.cityImageInBytes,
+      cityImageInBytes:
+          cityImageInBytes != null ? cityImageInBytes() : this.cityImageInBytes,
       exchangeRate: exchangeRate != null ? exchangeRate() : this.exchangeRate,
       error: error != null ? error() : this.error,
     );

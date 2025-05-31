@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
+import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -40,7 +41,11 @@ class TravelSummaryStep extends StatelessWidget {
   }
 
   // Travel Input Summary Card
-  Widget _buildTravelSummaryCard(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+  Widget _buildTravelSummaryCard(
+    BuildContext context,
+    TravelFormState state,
+    AppLocalizations l10n,
+  ) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -49,36 +54,43 @@ class TravelSummaryStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.yourTravelPlan, style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              l10n.yourTravelPlan,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const Divider(),
             const SizedBox(height: 8),
-            _buildInfoRow(
-              context,
-              l10n.fromLabel,
-              '${state.selectedDepartureAirport?.name} (${state.selectedDepartureAirport?.iataCode})',
-              Icons.flight_takeoff,
+            InfoRow(
+              icon: Icons.flight_takeoff,
+              label: l10n.fromLabel,
+              value:
+                  '${state.selectedDepartureAirport?.name} (${state.selectedDepartureAirport?.iataCode})',
             ),
-            _buildInfoRow(
-              context,
-              l10n.toLabel,
-              '${state.selectedArrivalAirport?.name} (${state.selectedArrivalAirport?.iataCode})',
-              Icons.flight_land,
+            InfoRow(
+              icon: Icons.flight_land,
+              label: l10n.toLabel,
+              value:
+                  '${state.selectedArrivalAirport?.name} (${state.selectedArrivalAirport?.iataCode})',
             ),
-            _buildInfoRow(
-              context,
-              l10n.datesLabel,
-              _formatDateRange(state.selectedDateRange, context),
-              Icons.calendar_today,
+            InfoRow(
+              icon: Icons.calendar_today,
+              label: l10n.datesLabel,
+              value: Formatters.dateRange(state.selectedDateRange, context),
             ),
-            _buildInfoRow(
-              context,
-              l10n.nationalityLabel,
-              '${state.selectedNationality?.flagEmoji ?? ''} ${state.selectedNationality?.name}',
-              Icons.flag,
+            InfoRow(
+              icon: Icons.flag,
+              label: l10n.nationalityLabel,
+              value: Formatters.nationalityWithFlag(
+                state.selectedNationality?.name ?? '',
+                state.selectedNationality?.flagEmoji,
+              ),
             ),
             const SizedBox(height: 16),
             if (state.selectedTravelPurposes.isNotEmpty) ...[
-              Text(l10n.travelPurposesLabel, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                l10n.travelPurposesLabel,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8.0,
@@ -87,7 +99,11 @@ class TravelSummaryStep extends StatelessWidget {
                     state.selectedTravelPurposes.map((purpose) {
                       return Chip(
                         label: Text(purpose.name),
-                        avatar: const Icon(Icons.check_circle, size: 18, color: Colors.green),
+                        avatar: const Icon(
+                          Icons.check_circle,
+                          size: 18,
+                          color: Colors.green,
+                        ),
                       );
                     }).toList(),
               ),
@@ -96,38 +112,6 @@ class TravelSummaryStep extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // Helper method to build an info row with icon
-  Widget _buildInfoRow(BuildContext context, String label, String value, IconData icon, {Color? iconColor}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20, color: iconColor ?? Theme.of(context).primaryColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(label, style: const TextStyle(fontWeight: FontWeight.bold)), Text(value)],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper method to format date range
-  String _formatDateRange(DateTimeRange? dateRange, BuildContext context) {
-    if (dateRange == null) {
-      return AppLocalizations.of(context).noDatesSelected;
-    }
-
-    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
-    final startDate = dateFormat.format(dateRange.start);
-    final endDate = dateFormat.format(dateRange.end);
-    return '$startDate - $endDate';
   }
 
   Widget _buildDisclaimerCard(
@@ -154,13 +138,19 @@ class TravelSummaryStep extends StatelessWidget {
                 Icon(
                   icon,
                   size: 24,
-                  color: iconColor ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color:
+                      iconColor ??
+                      Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -170,7 +160,11 @@ class TravelSummaryStep extends StatelessWidget {
               content,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
+              ).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
+              ),
             ),
           ],
         ),

@@ -10,7 +10,12 @@ abstract class _Constants {
 }
 
 class TravelFormStepLayout extends StatelessWidget {
-  const TravelFormStepLayout({required this.children, this.spacing = 0, this.showHeader = true, super.key});
+  const TravelFormStepLayout({
+    required this.children,
+    this.spacing = 0,
+    this.showHeader = true,
+    super.key,
+  });
 
   final List<Widget> children;
   final double spacing;
@@ -27,18 +32,28 @@ class TravelFormStepLayout extends StatelessWidget {
         children: [
           if (showHeader)
             BlocBuilder<TravelFormBloc, TravelFormState>(
-              buildWhen: (previous, current) => previous.currentStep != current.currentStep,
+              buildWhen:
+                  (previous, current) =>
+                      previous.currentStep != current.currentStep,
               builder: (context, state) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(getTitle(context, state.currentStep), style: textTheme.headlineMedium),
-                    Text(getDescription(context, state.currentStep), style: textTheme.bodyLarge),
+                    Text(
+                      getTitle(context, state.currentStep),
+                      style: textTheme.headlineMedium,
+                    ),
+                    Text(
+                      getDescription(context, state.currentStep),
+                      style: textTheme.bodyLarge,
+                    ),
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: state.currentStep / state.totalSteps,
                       minHeight: _Constants.progressIndicatorHeight,
-                      borderRadius: BorderRadius.circular(_Constants.progressIndicatorBorderRadius),
+                      borderRadius: BorderRadius.circular(
+                        _Constants.progressIndicatorBorderRadius,
+                      ),
                     ),
                     const SizedBox(height: 24),
                   ],

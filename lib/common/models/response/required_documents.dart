@@ -17,9 +17,15 @@ enum RequiredDocumentType {
 
 @JsonSerializable(createToJson: false)
 class RequiredDocuments {
-  const RequiredDocuments({required this.documentType, required this.message, this.steps, this.moreInformation});
+  const RequiredDocuments({
+    required this.documentType,
+    required this.message,
+    this.steps,
+    this.moreInformation,
+  });
 
-  factory RequiredDocuments.fromJson(Map<String, dynamic> json) => _$RequiredDocumentsFromJson(json);
+  factory RequiredDocuments.fromJson(Map<String, dynamic> json) =>
+      _$RequiredDocumentsFromJson(json);
 
   @JsonKey(name: 'type')
   final RequiredDocumentType documentType;

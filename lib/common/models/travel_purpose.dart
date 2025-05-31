@@ -8,7 +8,7 @@ part 'travel_purpose.g.dart';
 abstract class TravelPurpose with _$TravelPurpose {
   /// Private constructor needed for custom methods
   const TravelPurpose._();
-  
+
   /// Creates a [TravelPurpose] instance.
   ///
   /// Requires [id] and [name].
@@ -19,5 +19,6 @@ abstract class TravelPurpose with _$TravelPurpose {
   }) = _TravelPurpose;
 
   /// Creates a [TravelPurpose] instance from a JSON object.
-  factory TravelPurpose.fromJson(Map<String, dynamic> json) => _$TravelPurposeFromJson(json);
-} 
+  factory TravelPurpose.fromJson(Map<String, dynamic> json) =>
+      _$TravelPurposeFromJson(json);
+}

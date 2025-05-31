@@ -73,13 +73,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     // Departure Airport
     on<TravelFormDepartureAirportSearchTermChanged>(
       _onDepartureAirportSearchTermChanged,
-      transformer: _debounceRestartable(const Duration(milliseconds: 500)), // Use transformer
+      transformer: _debounceRestartable(
+        const Duration(milliseconds: 500),
+      ), // Use transformer
     );
     on<TravelFormDepartureAirportSelected>(_onDepartureAirportSelected);
     // Arrival Airport
     on<TravelFormArrivalAirportSearchTermChanged>(
       _onArrivalAirportSearchTermChanged,
-      transformer: _debounceRestartable(const Duration(milliseconds: 500)), // Use transformer
+      transformer: _debounceRestartable(
+        const Duration(milliseconds: 500),
+      ), // Use transformer
     );
     on<TravelFormArrivalAirportSelected>(_onArrivalAirportSelected);
     // Travel Dates
@@ -111,7 +115,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     emit(const TravelFormState());
   }
 
-  void _onNextStepRequested(TravelFormNextStepRequested event, Emitter<TravelFormState> emit) {
+  void _onNextStepRequested(
+    TravelFormNextStepRequested event,
+    Emitter<TravelFormState> emit,
+  ) {
     if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
       emit(state.copyWith(error: () => DepartureAirportMissingError()));
       return;
@@ -126,26 +133,51 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       return;
     } else if (state.currentStep == 4) {
       final selectedTravelPurposes = state.selectedTravelPurposes.length;
-      final minimumTravelPurposes = _firebaseRemoteConfigRepository.minimumTravelPurposes;
-      final maximumTravelPurposes = _firebaseRemoteConfigRepository.maximumTravelPurposes;
+      final minimumTravelPurposes =
+          _firebaseRemoteConfigRepository.minimumTravelPurposes;
+      final maximumTravelPurposes =
+          _firebaseRemoteConfigRepository.maximumTravelPurposes;
       if (selectedTravelPurposes < minimumTravelPurposes) {
-        emit(state.copyWith(error: () => TravelPurposeMissingError(selectedTravelPurposes, minimumTravelPurposes)));
+        emit(
+          state.copyWith(
+            error:
+                () => TravelPurposeMissingError(
+                  selectedTravelPurposes,
+                  minimumTravelPurposes,
+                ),
+          ),
+        );
         return;
       } else if (selectedTravelPurposes > maximumTravelPurposes) {
-        emit(state.copyWith(error: () => TravelPurposeTooManyError(selectedTravelPurposes, maximumTravelPurposes)));
+        emit(
+          state.copyWith(
+            error:
+                () => TravelPurposeTooManyError(
+                  selectedTravelPurposes,
+                  maximumTravelPurposes,
+                ),
+          ),
+        );
         return;
       }
     }
 
     if (state.currentStep < state.totalSteps - 1) {
       appLogger.i("Validation passed, moving to next step.");
-      emit(state.copyWith(currentStep: state.currentStep + 1, error: () => null));
+      emit(
+        state.copyWith(currentStep: state.currentStep + 1, error: () => null),
+      );
     }
   }
 
-  void _onPreviousStepRequested(TravelFormPreviousStepRequested event, Emitter<TravelFormState> emit) {
+  void _onPreviousStepRequested(
+    TravelFormPreviousStepRequested event,
+    Emitter<TravelFormState> emit,
+  ) {
     if (state.currentStep > 0) {
-      emit(state.copyWith(currentStep: state.currentStep - 1, error: () => null));
+      emit(
+        state.copyWith(currentStep: state.currentStep - 1, error: () => null),
+      );
     }
   }
 
@@ -156,19 +188,35 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) async {
     // Made async
-    emit(state.copyWith(departureAirportSearchTerm: event.searchTerm, selectedDepartureAirport: () => null));
+    emit(
+      state.copyWith(
+        departureAirportSearchTerm: event.searchTerm,
+        selectedDepartureAirport: () => null,
+      ),
+    );
 
     if (event.searchTerm.length < 3) {
-      emit(state.copyWith(departureAirportSuggestions: [], isDepartureAirportLoading: false));
+      emit(
+        state.copyWith(
+          departureAirportSuggestions: [],
+          isDepartureAirportLoading: false,
+        ),
+      );
       return;
     }
     emit(state.copyWith(isDepartureAirportLoading: true));
 
     try {
-      final suggestions = await _airportRepository.searchAirports(event.searchTerm);
+      final suggestions = await _airportRepository.searchAirports(
+        event.searchTerm,
+      );
 
       emit(
-        state.copyWith(departureAirportSuggestions: suggestions, isDepartureAirportLoading: false, error: () => null),
+        state.copyWith(
+          departureAirportSuggestions: suggestions,
+          isDepartureAirportLoading: false,
+          error: () => null,
+        ),
       );
     } catch (e) {
       emit(
@@ -181,7 +229,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     }
   }
 
-  void _onDepartureAirportSelected(TravelFormDepartureAirportSelected event, Emitter<TravelFormState> emit) {
+  void _onDepartureAirportSelected(
+    TravelFormDepartureAirportSelected event,
+    Emitter<TravelFormState> emit,
+  ) {
     emit(
       state.copyWith(
         selectedDepartureAirport: () => event.airport,
@@ -190,7 +241,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -202,17 +254,35 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) async {
     // Made async
-    emit(state.copyWith(arrivalAirportSearchTerm: event.searchTerm, selectedArrivalAirport: () => null));
+    emit(
+      state.copyWith(
+        arrivalAirportSearchTerm: event.searchTerm,
+        selectedArrivalAirport: () => null,
+      ),
+    );
 
     if (event.searchTerm.length < 3) {
-      emit(state.copyWith(arrivalAirportSuggestions: [], isArrivalAirportLoading: false));
+      emit(
+        state.copyWith(
+          arrivalAirportSuggestions: [],
+          isArrivalAirportLoading: false,
+        ),
+      );
       return;
     }
     emit(state.copyWith(isArrivalAirportLoading: true));
 
     try {
-      final suggestions = await _airportRepository.searchAirports(event.searchTerm);
-      emit(state.copyWith(arrivalAirportSuggestions: suggestions, isArrivalAirportLoading: false, error: () => null));
+      final suggestions = await _airportRepository.searchAirports(
+        event.searchTerm,
+      );
+      emit(
+        state.copyWith(
+          arrivalAirportSuggestions: suggestions,
+          isArrivalAirportLoading: false,
+          error: () => null,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -224,7 +294,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     }
   }
 
-  void _onArrivalAirportSelected(TravelFormArrivalAirportSelected event, Emitter<TravelFormState> emit) {
+  void _onArrivalAirportSelected(
+    TravelFormArrivalAirportSelected event,
+    Emitter<TravelFormState> emit,
+  ) {
     emit(
       state.copyWith(
         selectedArrivalAirport: () => event.airport,
@@ -233,20 +306,30 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
 
   // --- Travel Dates Handler ---
-  void _onDateRangeSelected(TravelFormDateRangeSelected event, Emitter<TravelFormState> emit) {
+  void _onDateRangeSelected(
+    TravelFormDateRangeSelected event,
+    Emitter<TravelFormState> emit,
+  ) {
     if (event.dateRange.end.isBefore(event.dateRange.start)) {
       emit(state.copyWith(error: () => DateRangeInvalidError()));
       return;
     }
-    emit(state.copyWith(selectedDateRange: () => event.dateRange, error: () => null));
+    emit(
+      state.copyWith(
+        selectedDateRange: () => event.dateRange,
+        error: () => null,
+      ),
+    );
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -256,25 +339,47 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     TravelFormNationalitySearchTermChanged event,
     Emitter<TravelFormState> emit,
   ) async {
-    emit(state.copyWith(nationalitySearchTerm: event.searchTerm, selectedNationality: () => null));
+    emit(
+      state.copyWith(
+        nationalitySearchTerm: event.searchTerm,
+        selectedNationality: () => null,
+      ),
+    );
 
     if (event.searchTerm.length < 2) {
-      emit(state.copyWith(nationalitySuggestions: [], isNationalityLoading: false));
+      emit(
+        state.copyWith(nationalitySuggestions: [], isNationalityLoading: false),
+      );
       return;
     }
     emit(state.copyWith(isNationalityLoading: true));
 
     try {
-      final suggestions = await _countryService.searchCountries(event.searchTerm);
-      emit(state.copyWith(nationalitySuggestions: suggestions, isNationalityLoading: false, error: () => null));
+      final suggestions = await _countryService.searchCountries(
+        event.searchTerm,
+      );
+      emit(
+        state.copyWith(
+          nationalitySuggestions: suggestions,
+          isNationalityLoading: false,
+          error: () => null,
+        ),
+      );
     } catch (e) {
       emit(
-        state.copyWith(isNationalityLoading: false, nationalitySuggestions: [], error: () => GeneralTravelFormError()),
+        state.copyWith(
+          isNationalityLoading: false,
+          nationalitySuggestions: [],
+          error: () => GeneralTravelFormError(),
+        ),
       );
     }
   }
 
-  void _onNationalitySelected(TravelFormNationalitySelected event, Emitter<TravelFormState> emit) {
+  void _onNationalitySelected(
+    TravelFormNationalitySelected event,
+    Emitter<TravelFormState> emit,
+  ) {
     emit(
       state.copyWith(
         selectedNationality: () => event.country,
@@ -283,25 +388,45 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
 
   // --- Travel Purpose Handlers ---
-  Future<void> _onLoadTravelPurposes(LoadTravelPurposesEvent event, Emitter<TravelFormState> emit) async {
+  Future<void> _onLoadTravelPurposes(
+    LoadTravelPurposesEvent event,
+    Emitter<TravelFormState> emit,
+  ) async {
     emit(state.copyWith(isTravelPurposesLoading: true));
 
     try {
       final purposes = await _travelPurposeService.getTravelPurposes();
-      emit(state.copyWith(availableTravelPurposes: purposes, isTravelPurposesLoading: false, error: () => null));
+      emit(
+        state.copyWith(
+          availableTravelPurposes: purposes,
+          isTravelPurposesLoading: false,
+          error: () => null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(isTravelPurposesLoading: false, error: () => GeneralTravelFormError()));
+      emit(
+        state.copyWith(
+          isTravelPurposesLoading: false,
+          error: () => GeneralTravelFormError(),
+        ),
+      );
     }
   }
 
-  void _onToggleTravelPurpose(ToggleTravelPurposeEvent event, Emitter<TravelFormState> emit) {
-    final currentPurposes = List<TravelPurpose>.from(state.selectedTravelPurposes);
+  void _onToggleTravelPurpose(
+    ToggleTravelPurposeEvent event,
+    Emitter<TravelFormState> emit,
+  ) {
+    final currentPurposes = List<TravelPurpose>.from(
+      state.selectedTravelPurposes,
+    );
 
     if (event.isSelected) {
       // Add purpose if not already in the list
@@ -317,10 +442,18 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   }
 
   // --- Form Submission Handler ---
-  Future<void> _onSubmitTravelForm(SubmitTravelFormEvent event, Emitter<TravelFormState> emit) async {
+  Future<void> _onSubmitTravelForm(
+    SubmitTravelFormEvent event,
+    Emitter<TravelFormState> emit,
+  ) async {
     // Check if form is valid before submission
     if (!state.isFormValid) {
-      emit(state.copyWith(formSubmissionStatus: FormSubmissionStatus.failure, error: () => GeneralTravelFormError()));
+      emit(
+        state.copyWith(
+          formSubmissionStatus: FormSubmissionStatus.failure,
+          error: () => GeneralTravelFormError(),
+        ),
+      );
       return;
     }
 
@@ -344,7 +477,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       );
 
       // Simulate API call with delay
-      final travelPlan = await _geminiRepository.generateTravelPlan(travelInformation);
+      final travelPlan = await _geminiRepository.generateTravelPlan(
+        travelInformation,
+      );
 
       final results = await Future.wait(
         [
@@ -364,7 +499,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       final cityImage = results[0] as UnsplashPhoto?;
       final exchangeRate = results[1] as double?;
 
-      final cityImageInBytes = await _imageRepository.downloadImageAsBase64(url: cityImage?.urls.full ?? '');
+      final cityImageInBytes = await _imageRepository.downloadImageAsBase64(
+        url: cityImage?.urls.full ?? '',
+      );
 
       // Successful form submission
       emit(
@@ -381,7 +518,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
+          error:
+              e is FirebaseError
+                  ? () => ServerError()
+                  : () => GeneralTravelFormError(),
         ),
       );
     }

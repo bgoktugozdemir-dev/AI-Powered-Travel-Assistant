@@ -11,7 +11,8 @@ class TaxInformation {
     required this.taxRefundInformation,
   });
 
-  factory TaxInformation.fromJson(Map<String, dynamic> json) => _$TaxInformationFromJson(json);
+  factory TaxInformation.fromJson(Map<String, dynamic> json) =>
+      _$TaxInformationFromJson(json);
 
   @JsonKey(name: 'has_tax_free_options')
   final bool hasTaxFreeOptions;

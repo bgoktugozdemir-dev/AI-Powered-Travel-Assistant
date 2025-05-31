@@ -6,12 +6,14 @@ import 'package:travel_assistant/common/utils/logger/logger.dart'; // Import app
 /// Repository for fetching airport data.
 class AirportRepository {
   final AirportApiService _apiService;
-  final String _datasetId = 'airports-code@public'; // The dataset ID for Opendatasoft
+  final String _datasetId =
+      'airports-code@public'; // The dataset ID for Opendatasoft
 
   /// Creates an [AirportRepository].
   ///
   /// Requires an [AirportApiService] instance.
-  AirportRepository({required AirportApiService apiService}) : _apiService = apiService;
+  AirportRepository({required AirportApiService apiService})
+    : _apiService = apiService;
 
   /// Searches for airports using the provided [query].
   ///
@@ -20,12 +22,18 @@ class AirportRepository {
   Future<List<Airport>> searchAirports(String query) async {
     if (query.length < 3) {
       // Align with BLoC logic
-      appLogger.i("Airport search query too short: '$query'. Returning empty list.");
+      appLogger.i(
+        "Airport search query too short: '$query'. Returning empty list.",
+      );
       return [];
     }
     try {
       appLogger.d("Searching airports with query: '$query'");
-      final response = await _apiService.searchAirports(_datasetId, query, rows: 15);
+      final response = await _apiService.searchAirports(
+        _datasetId,
+        query,
+        rows: 15,
+      );
 
       // Log the raw records count if records exist
       if (response.records != null) {
@@ -67,7 +75,11 @@ class AirportRepository {
       appLogger.i("Successfully parsed ${airports.length} airport(s).");
       return airports;
     } on DioException catch (e) {
-      appLogger.e('AirportRepository DioError', error: e, stackTrace: e.stackTrace);
+      appLogger.e(
+        'AirportRepository DioError',
+        error: e,
+        stackTrace: e.stackTrace,
+      );
       throw Exception('Failed to fetch airports (Network Error): ${e.message}');
     } catch (e, stackTrace) {
       appLogger.e('AirportRepository Error', error: e, stackTrace: stackTrace);

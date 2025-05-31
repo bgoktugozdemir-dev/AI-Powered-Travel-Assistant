@@ -12,7 +12,10 @@ class UnsplashRepository {
   final UnsplashService _unsplashService;
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
 
-  Future<UnsplashPhoto?> getCityView({required String cityName, required String countryName}) async {
+  Future<UnsplashPhoto?> getCityView({
+    required String cityName,
+    required String countryName,
+  }) async {
     try {
       final clientId = _firebaseRemoteConfigRepository.unsplashClientId;
       final response = await _unsplashService.searchPhotos(

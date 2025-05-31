@@ -29,10 +29,16 @@ class ImageRepository {
     try {
       appLogger.d("Downloading image from URL: '$url'");
       final base64String = await _imageService.downloadImageAsBase64(url: url);
-      appLogger.i("Successfully downloaded and converted image to base64 from $url");
+      appLogger.i(
+        "Successfully downloaded and converted image to base64 from $url",
+      );
       return base64String;
     } catch (e, stackTrace) {
-      appLogger.e('ImageRepository Error: Failed to download and convert image', error: e, stackTrace: stackTrace);
+      appLogger.e(
+        'ImageRepository Error: Failed to download and convert image',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return null;
     }
   }
@@ -52,7 +58,15 @@ class ImageRepository {
       }
 
       // Check for common image extensions (optional, as some URLs might not have extensions)
-      final commonImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
+      final commonImageExtensions = [
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.bmp',
+        '.webp',
+        '.svg',
+      ];
       final path = uri.path.toLowerCase();
 
       // If no extension found, still consider it valid (could be a dynamic URL)

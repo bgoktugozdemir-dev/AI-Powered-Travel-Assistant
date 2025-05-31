@@ -18,10 +18,15 @@ abstract class AppTheme {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: AppColors.neutralWhite,
-      appBarTheme: const AppBarTheme(backgroundColor: AppColors.primaryBlue, foregroundColor: AppColors.neutralWhite),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: AppColors.neutralWhite,
+      ),
       cardTheme: CardThemeData(
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
         color: AppColors.neutralWhite,
         surfaceTintColor: AppColors.neutralWhite,
       ),
@@ -31,7 +36,10 @@ abstract class AppTheme {
         secondarySelectedColor: AppColors.accentTeal,
         labelStyle: const TextStyle(color: AppColors.neutralBlack),
         secondaryLabelStyle: const TextStyle(color: AppColors.neutralWhite),
-        iconTheme: const IconThemeData(color: AppColors.primaryDarkBlue, size: 18),
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryDarkBlue,
+          size: 18,
+        ),
         checkmarkColor: AppColors.neutralWhite,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -41,11 +49,16 @@ abstract class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
-      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: AppColors.primaryBlue)),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: AppColors.primaryBlue),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.neutralLightGrey.withValues(alpha: 0.5),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
@@ -53,10 +66,19 @@ abstract class AppTheme {
         hintStyle: const TextStyle(color: AppColors.neutralDarkGrey),
       ),
       textTheme: const TextTheme(
-        titleLarge: TextStyle(color: AppColors.primaryDarkBlue, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(color: AppColors.primaryDarkBlue, fontWeight: FontWeight.w600),
+        titleLarge: TextStyle(
+          color: AppColors.primaryDarkBlue,
+          fontWeight: FontWeight.bold,
+        ),
+        titleMedium: TextStyle(
+          color: AppColors.primaryDarkBlue,
+          fontWeight: FontWeight.w600,
+        ),
         bodyMedium: TextStyle(color: AppColors.neutralBlack),
-        labelLarge: TextStyle(color: AppColors.neutralWhite, fontWeight: FontWeight.bold),
+        labelLarge: TextStyle(
+          color: AppColors.neutralWhite,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

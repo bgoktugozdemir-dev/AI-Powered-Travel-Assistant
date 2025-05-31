@@ -4,9 +4,14 @@ part 'flight_options.g.dart';
 
 @JsonSerializable(createToJson: false)
 class FlightOptions {
-  const FlightOptions({required this.cheapest, required this.comfortable, required this.recommended});
+  const FlightOptions({
+    required this.cheapest,
+    required this.comfortable,
+    required this.recommended,
+  });
 
-  factory FlightOptions.fromJson(Map<String, dynamic> json) => _$FlightOptionsFromJson(json);
+  factory FlightOptions.fromJson(Map<String, dynamic> json) =>
+      _$FlightOptionsFromJson(json);
 
   @JsonKey(name: 'cheapest')
   final FlightOption cheapest;
@@ -22,7 +27,8 @@ class FlightOptions {
 class FlightOption {
   const FlightOption({required this.departure, required this.arrival});
 
-  factory FlightOption.fromJson(Map<String, dynamic> json) => _$FlightOptionFromJson(json);
+  factory FlightOption.fromJson(Map<String, dynamic> json) =>
+      _$FlightOptionFromJson(json);
 
   @JsonKey(name: 'departure')
   final Flight departure;
@@ -94,8 +100,11 @@ class Flight {
   @JsonKey(name: 'more_information')
   final String moreInformation;
 
-  static Duration _durationFromJson(int duration) => Duration(minutes: duration);
+  static Duration _durationFromJson(int duration) =>
+      Duration(minutes: duration);
 
   static List<Duration>? _durationListFromJson(List<dynamic>? durations) =>
-      durations?.map((duration) => _durationFromJson(int.parse(duration.toString()))).toList();
+      durations
+          ?.map((duration) => _durationFromJson(int.parse(duration.toString())))
+          .toList();
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:travel_assistant/common/constants/formatters.dart';
 import 'package:travel_assistant/common/models/response/currency.dart';
+import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 class CurrencyCard extends StatelessWidget {
@@ -17,17 +18,31 @@ class CurrencyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currencyExchangeRate = exchangeRate ?? currency.exchangeRate;
-    final departureCurrencyFormatter = NumberFormat.currency(symbol: currency.departureCurrencyCode, decimalDigits: 2);
-    final departureCurrencyValue = NumberFormat.currency(
-      symbol: currency.departureCurrencyCode,
+
+    // Use Formatters for consistent currency formatting
+    final departureCurrencyValue = Formatters.currency(
+      amount: 1,
+      currencyCode: currency.departureCurrencyCode,
+      locale: l10n.localeName,
       decimalDigits: 0,
-    ).format(1);
-    final arrivalCurrencyFormatter = NumberFormat.currency(symbol: currency.code, decimalDigits: 2);
-    final exchangeRateValue = arrivalCurrencyFormatter.format(currencyExchangeRate);
-    final arrivalAverageLivingCostPerDay = arrivalCurrencyFormatter.format(currency.arrivalAverageLivingCostPerDay);
-    final arrivalAverageLivingCostPerDayInDepartureCurrency = departureCurrencyFormatter.format(
-      currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
     );
+    final exchangeRateValue = Formatters.currency(
+      amount: currencyExchangeRate,
+      currencyCode: currency.code,
+      locale: l10n.localeName,
+    );
+    final arrivalAverageLivingCostPerDay = Formatters.currency(
+      amount: currency.arrivalAverageLivingCostPerDay,
+      currencyCode: currency.code,
+      locale: l10n.localeName,
+    );
+    final arrivalAverageLivingCostPerDayInDepartureCurrency =
+        Formatters.currency(
+          amount:
+              currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
+          currencyCode: currency.departureCurrencyCode,
+          locale: l10n.localeName,
+        );
 
     return Card(
       elevation: 4,
@@ -39,54 +54,40 @@ class CurrencyCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.currency_exchange, color: Theme.of(context).primaryColor),
+                Icon(
+                  Icons.currency_exchange,
+                  color: Theme.of(context).primaryColor,
+                ),
                 const SizedBox(width: 8),
-                Text(l10n.currencyInformationTitle, style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  l10n.currencyInformationTitle,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ],
             ),
             const Divider(),
             const SizedBox(height: 8),
 
-            _buildInfoRow(context, l10n.currencyLabel, '${currency.name} (${currency.code})', Icons.money),
-
-            _buildInfoRow(
-              context,
-              l10n.exchangeRateLabel,
-              '$departureCurrencyValue = $exchangeRateValue',
-              Icons.swap_horiz,
+            InfoRow(
+              icon: Icons.money,
+              label: l10n.currencyLabel,
+              value: '${currency.name} (${currency.code})',
             ),
 
-            _buildInfoRow(
-              context,
-              l10n.averageDailyCostLabel,
-              '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
-              Icons.price_change,
+            InfoRow(
+              icon: Icons.swap_horiz,
+              label: l10n.exchangeRateLabel,
+              value: '$departureCurrencyValue = $exchangeRateValue',
+            ),
+
+            InfoRow(
+              icon: Icons.price_change,
+              label: l10n.averageDailyCostLabel,
+              value:
+                  '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // Helper method to build an info row with icon
-  Widget _buildInfoRow(BuildContext context, String label, String value, IconData icon, {Color? iconColor}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: iconColor ?? Theme.of(context).primaryColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                Text(value, style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
