@@ -482,5 +482,63 @@
   "@tryAgainButton": {
     "description": "Button text for retrying failed operations"
   },
-  "serviceUnavailableError": "Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+  "serviceUnavailableError": "Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "preparingTravelPlan": "Seyahat planı hazırlanıyor...",
+  "@preparingTravelPlan": {
+    "description": "Loading message when generating PDF for sharing"
+  },
+  "shareText": "{destination}{dates} için seyahat planımı inceleyin!",
+  "@shareText": {
+    "description": "Text content when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, Birleşik Arap Emirlikleri"
+      },
+      "dates": {
+        "type": "String", 
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "shareSubject": "Seyahat Planı: {destination}{dates}",
+  "@shareSubject": {
+    "description": "Email subject when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, Birleşik Arap Emirlikleri"
+      },
+      "dates": {
+        "type": "String",
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "errorSharingTravelPlan": "Seyahat planı paylaşılırken hata: {error}",
+  "@errorSharingTravelPlan": {
+    "description": "Error message when sharing travel plan fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Ağ hatası"
+      }
+    }
+  },
+  "pdfShareFallback": "PDF paylaşılamadı, ancak seyahat detayları metin olarak paylaşıldı",
+  "@pdfShareFallback": {
+    "description": "Message when PDF sharing fails but text sharing succeeds"
+  },
+  "copiedToClipboard": "Seyahat planı panoya kopyalandı! Herhangi bir yere yapıştırarak paylaşabilirsiniz.",
+  "@copiedToClipboard": {
+    "description": "Message when travel plan is copied to clipboard on macOS"
+  },
+  "clipboardError": "Panoya kopyalanamadı. Lütfen tekrar deneyin.",
+  "@clipboardError": {
+    "description": "Error message when clipboard operation fails"
+  },
+  "sharingFallbackClipboard": "Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı",
+  "@sharingFallbackClipboard": {
+    "description": "Message when all sharing methods fail but clipboard succeeds"
+  }
 }

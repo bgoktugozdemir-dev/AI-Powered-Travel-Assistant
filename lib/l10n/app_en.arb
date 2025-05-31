@@ -485,5 +485,63 @@
   "serviceUnavailableError": "This feature is temporarily unavailable. Please try again later.",
   "@serviceUnavailableError": {
     "description": "Error message when a service is unavailable"
+  },
+  "preparingTravelPlan": "Preparing travel plan...",
+  "@preparingTravelPlan": {
+    "description": "Loading message when generating PDF for sharing"
+  },
+  "shareText": "Check out my travel plan for {destination}{dates}!",
+  "@shareText": {
+    "description": "Text content when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, United Arab Emirates"
+      },
+      "dates": {
+        "type": "String", 
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "shareSubject": "Travel Plan: {destination}{dates}",
+  "@shareSubject": {
+    "description": "Email subject when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, United Arab Emirates"
+      },
+      "dates": {
+        "type": "String",
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "errorSharingTravelPlan": "Error sharing travel plan: {error}",
+  "@errorSharingTravelPlan": {
+    "description": "Error message when sharing travel plan fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  "pdfShareFallback": "PDF could not be shared, but travel details were shared as text",
+  "@pdfShareFallback": {
+    "description": "Message when PDF sharing fails but text sharing succeeds"
+  },
+  "copiedToClipboard": "Travel plan copied to clipboard! You can paste it anywhere to share.",
+  "@copiedToClipboard": {
+    "description": "Message when travel plan is copied to clipboard on macOS"
+  },
+  "clipboardError": "Could not copy to clipboard. Please try again.",
+  "@clipboardError": {
+    "description": "Error message when clipboard operation fails"
+  },
+  "sharingFallbackClipboard": "Sharing failed, but travel plan was copied to clipboard",
+  "@sharingFallbackClipboard": {
+    "description": "Message when all sharing methods fail but clipboard succeeds"
   }
 }

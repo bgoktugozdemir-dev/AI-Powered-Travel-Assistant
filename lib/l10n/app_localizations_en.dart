@@ -366,4 +366,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get serviceUnavailableError =>
       'This feature is temporarily unavailable. Please try again later.';
+
+  @override
+  String get preparingTravelPlan => 'Preparing travel plan...';
+
+  @override
+  String shareText(String destination, String dates) {
+    return 'Check out my travel plan for $destination$dates!';
+  }
+
+  @override
+  String shareSubject(String destination, String dates) {
+    return 'Travel Plan: $destination$dates';
+  }
+
+  @override
+  String errorSharingTravelPlan(String error) {
+    return 'Error sharing travel plan: $error';
+  }
+
+  @override
+  String get pdfShareFallback =>
+      'PDF could not be shared, but travel details were shared as text';
+
+  @override
+  String get copiedToClipboard =>
+      'Travel plan copied to clipboard! You can paste it anywhere to share.';
+
+  @override
+  String get clipboardError => 'Could not copy to clipboard. Please try again.';
+
+  @override
+  String get sharingFallbackClipboard =>
+      'Sharing failed, but travel plan was copied to clipboard';
 }

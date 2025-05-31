@@ -100,9 +100,13 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (4.4.0)
-  - PromisesObjC (2.4.0)
-  - webview_flutter_wkwebview (0.0.1):
+  - path_provider_foundation (0.0.1):
     - Flutter
+    - FlutterMacOS
+  - PromisesObjC (2.4.0)
+  - share_plus (0.0.1):
+    - FlutterMacOS
+  - url_launcher_macos (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
@@ -111,7 +115,9 @@ DEPENDENCIES:
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - firebase_remote_config (from `Flutter/ephemeral/.symlinks/plugins/firebase_remote_config/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - webview_flutter_wkwebview (from `Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin`)
+  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
+  - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
 
 SPEC REPOS:
   trunk:
@@ -144,8 +150,12 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_remote_config/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  webview_flutter_wkwebview:
-    :path: Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin
+  path_provider_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
+  share_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/share_plus/macos
+  url_launcher_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
 
 SPEC CHECKSUMS:
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
@@ -169,8 +179,10 @@ SPEC CHECKSUMS:
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMSessionFetcher: 75b671f9e551e4c49153d4c4f8659ef4f559b970
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
+  share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
+  url_launcher_macos: 0fba8ddabfc33ce0a9afe7c5fef5aab3d8d2d673
 
 PODFILE CHECKSUM: 54d867c82ac51cbd61b565781b9fada492027009
 

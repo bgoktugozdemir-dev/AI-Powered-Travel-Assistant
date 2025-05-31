@@ -367,4 +367,37 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get serviceUnavailableError =>
       'Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get preparingTravelPlan => 'Seyahat planı hazırlanıyor...';
+
+  @override
+  String shareText(String destination, String dates) {
+    return '$destination$dates için seyahat planımı inceleyin!';
+  }
+
+  @override
+  String shareSubject(String destination, String dates) {
+    return 'Seyahat Planı: $destination$dates';
+  }
+
+  @override
+  String errorSharingTravelPlan(String error) {
+    return 'Seyahat planı paylaşılırken hata: $error';
+  }
+
+  @override
+  String get pdfShareFallback =>
+      'PDF paylaşılamadı, ancak seyahat detayları metin olarak paylaşıldı';
+
+  @override
+  String get copiedToClipboard =>
+      'Seyahat planı panoya kopyalandı! Herhangi bir yere yapıştırarak paylaşabilirsiniz.';
+
+  @override
+  String get clipboardError => 'Panoya kopyalanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get sharingFallbackClipboard =>
+      'Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı';
 }

@@ -33,6 +33,15 @@ class ResultsScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(l10n.appTitle),
             automaticallyImplyLeading: false, // Disable back button
+            actions: [
+              IconButton(
+                onPressed: () {
+                  // TODO: Implement share functionality for mobile platforms
+                  // TODO: Implement download functionality for other platforms
+                },
+                icon: const Icon(Icons.share),
+              ),
+            ],
           ),
           body: SafeArea(
             child: SingleChildScrollView(

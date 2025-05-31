@@ -685,6 +685,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This feature is temporarily unavailable. Please try again later.'**
   String get serviceUnavailableError;
+
+  /// Loading message when generating PDF for sharing
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing travel plan...'**
+  String get preparingTravelPlan;
+
+  /// Text content when sharing travel plan
+  ///
+  /// In en, this message translates to:
+  /// **'Check out my travel plan for {destination}{dates}!'**
+  String shareText(String destination, String dates);
+
+  /// Email subject when sharing travel plan
+  ///
+  /// In en, this message translates to:
+  /// **'Travel Plan: {destination}{dates}'**
+  String shareSubject(String destination, String dates);
+
+  /// Error message when sharing travel plan fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error sharing travel plan: {error}'**
+  String errorSharingTravelPlan(String error);
+
+  /// Message when PDF sharing fails but text sharing succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'PDF could not be shared, but travel details were shared as text'**
+  String get pdfShareFallback;
+
+  /// Message when travel plan is copied to clipboard on macOS
+  ///
+  /// In en, this message translates to:
+  /// **'Travel plan copied to clipboard! You can paste it anywhere to share.'**
+  String get copiedToClipboard;
+
+  /// Error message when clipboard operation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not copy to clipboard. Please try again.'**
+  String get clipboardError;
+
+  /// Message when all sharing methods fail but clipboard succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing failed, but travel plan was copied to clipboard'**
+  String get sharingFallbackClipboard;
 }
 
 class _AppLocalizationsDelegate
