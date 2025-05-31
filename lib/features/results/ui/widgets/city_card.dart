@@ -62,61 +62,61 @@ class CityCard extends StatelessWidget {
 
   Widget _buildCityImage(BuildContext context) {
     final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
+    final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
+    final crowdLevelBarHeight = imageHeight * 0.04;
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight,
+        maxHeight: imageHeight,
       ),
       child: Image.memory(
         base64Decode(cityImageInBytes!),
         fit: BoxFit.cover,
         width: double.infinity,
         frameBuilder: (context, widget, frame, wasSynchronouslyLoaded) {
-          return Tooltip(
-            showDuration: const Duration(seconds: 2),
-            triggerMode: TooltipTriggerMode.tap,
-            message: "Crowd level of ${city.name} is ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
-            child: Stack(
-              children: [
-                widget,
-                // Black gradient overlay for better text visibility
-                Positioned.fill(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.center,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black87,
-                        ],
-                      ),
+          return Stack(
+            children: [
+              widget,
+              // Black gradient overlay for better text visibility
+              Positioned.fill(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.center,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black87,
+                      ],
                     ),
                   ),
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: LinearProgressIndicator(
-                    value: city.crowdLevel / 100,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      city.crowdLevel < 30
-                          ? Colors.green
-                          : city.crowdLevel < 70
-                          ? Colors.orange
-                          : Colors.red,
-                    ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: LinearProgressIndicator(
+                  minHeight: crowdLevelBarHeight,
+                  value: city.crowdLevel / 100,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    city.crowdLevel < 30
+                        ? Colors.green
+                        : city.crowdLevel < 70
+                        ? Colors.orange
+                        : Colors.red,
                   ),
                 ),
-                Positioned(
-                  left: 8,
-                  bottom: 8,
-                  child: _buildCityNameOnImage(context),
-                ),
-              ],
-            ),
+              ),
+
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom: crowdLevelBarHeight + 8,
+                child: _buildCityNameOnImage(context),
+              ),
+            ],
           );
         },
       ),
@@ -124,11 +124,27 @@ class CityCard extends StatelessWidget {
   }
 
   Widget _buildCityNameOnImage(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      spacing: 8,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(city.country, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-        Text(city.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(city.country, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
+            Text(city.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
+          ],
+        ),
+        Text(
+          "Crowd level: ${NumberFormat.percentPattern().format(city.crowdLevel / 100)}",
+          textAlign: TextAlign.right,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.white70,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }

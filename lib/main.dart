@@ -48,7 +48,7 @@ void main() async {
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
         RepositoryProvider(
           create: (_) {
-            final dio = Dio()..interceptors.add(ApiLoggerInterceptor());
+            final dio = Dio();
             final imageService = ImageToBase64Service(dio: dio);
             return ImageRepository(imageService: imageService);
           },
