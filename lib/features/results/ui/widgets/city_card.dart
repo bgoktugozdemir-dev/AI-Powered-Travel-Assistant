@@ -36,23 +36,17 @@ class CityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final firebaseRemoteConfigRepository =
-        context.read<FirebaseRemoteConfigRepository>();
+    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
 
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header:
-          firebaseRemoteConfigRepository.showCityView &&
-                  cityImageInBytes != null
-              ? _buildCityImage(context)
-              : null,
+      header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // City Name and Time
-          if (!firebaseRemoteConfigRepository.showCityView &&
-              cityImageInBytes != null) ...[
+          if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
             _buildCityNameAndTime(context),
           ],
           // Weather information if available
@@ -95,12 +89,8 @@ class CityCard extends StatelessWidget {
 
   Widget _buildCityImage(BuildContext context) {
     final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
-    final imageHeight =
-        screenHeight != null
-            ? screenHeight * 0.4
-            : _Constants.cityImageMaxHeight;
-    final crowdLevelBarHeight =
-        imageHeight * _Constants.crowdLevelBarHeightMultiplier;
+    final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
+    final crowdLevelBarHeight = imageHeight * _Constants.crowdLevelBarHeightMultiplier;
     final crowdLevelColor = _getCrowdLevelColor(city.crowdLevel);
 
     return ConstrainedBox(
@@ -156,6 +146,7 @@ class CityCard extends StatelessWidget {
 
   Widget _buildCityNameOnImage(BuildContext context, Color crowdLevelColor) {
     final l10n = AppLocalizations.of(context);
+
     return Row(
       spacing: 8,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,29 +170,30 @@ class CityCard extends StatelessWidget {
             ),
           ],
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: crowdLevelColor.withValues(alpha: 0.75),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: crowdLevelColor, width: 1),
-          ),
-          child: Text(
-            "${l10n.crowdLevelLabel} ${Formatters.crowdLevel(city.crowdLevel)}",
-            textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              shadows: [
-                Shadow(
-                  offset: const Offset(1, 1),
-                  blurRadius: 2,
-                  color: Colors.black54,
-                ),
-              ],
+        if (context.read<FirebaseRemoteConfigRepository>().showCityCrowdLevel)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: crowdLevelColor.withValues(alpha: 0.75),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: crowdLevelColor, width: 1),
+            ),
+            child: Text(
+              "${l10n.crowdLevelLabel} ${Formatters.crowdLevel(city.crowdLevel, l10n.localeName)}",
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    offset: const Offset(1, 1),
+                    blurRadius: 2,
+                    color: Colors.black54,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -286,8 +278,7 @@ class _WeatherCards extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: weathers.length,
-            itemBuilder:
-                (context, index) => _WeatherCard(weather: weathers[index]),
+            itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
           ),
         );
       },

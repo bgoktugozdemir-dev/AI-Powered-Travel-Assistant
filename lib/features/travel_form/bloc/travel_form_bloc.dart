@@ -29,11 +29,6 @@ import 'package:travel_assistant/features/travel_form/error/travel_form_error.da
 part 'travel_form_event.dart';
 part 'travel_form_state.dart';
 
-// Helper event transformer
-EventTransformer<E> _debounceRestartable<E>(Duration duration) {
-  return (events, mapper) => events.debounceTime(duration).switchMap(mapper);
-}
-
 /// {@template travel_form_bloc}
 /// Manages the state for the travel input form.
 /// {@endtemplate}
@@ -48,66 +43,102 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final ImageRepository _imageRepository;
 
   TravelFormBloc({
-    required GeminiRepository geminiRepository,
-    required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
     required AirportRepository airportRepository,
+    required TravelPurposeService travelPurposeService,
+    required GeminiRepository geminiRepository,
     required UnsplashRepository unsplashRepository,
-    required CurrencyRepository currencyRepository,
     required ImageRepository imageRepository,
-  }) : _geminiRepository = geminiRepository,
-       _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
-       _airportRepository = airportRepository,
+    required CurrencyRepository currencyRepository,
+    required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+    CountryService? countryService,
+  }) : _airportRepository = airportRepository,
+       _travelPurposeService = travelPurposeService,
+       _geminiRepository = geminiRepository,
        _unsplashRepository = unsplashRepository,
-       _currencyRepository = currencyRepository,
        _imageRepository = imageRepository,
+       _currencyRepository = currencyRepository,
+       _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
        _countryService = CountryService(),
-       _travelPurposeService = TravelPurposeService(),
        super(const TravelFormState()) {
-    // Initialize services
-    _initializeServices();
+    on<TravelFormInitializeServices>(_onInitializeServices);
 
-    // Register event handlers
+    // Transformation for debouncing airport search
+    on<TravelFormDepartureAirportSearchTermChanged>(
+      _onDepartureAirportSearchTermChanged,
+      transformer:
+          (events, mapper) => events
+              .switchMap(mapper)
+              .debounceTime(
+                const Duration(milliseconds: 300),
+              ),
+    );
+
+    on<TravelFormArrivalAirportSearchTermChanged>(
+      _onArrivalAirportSearchTermChanged,
+      transformer:
+          (events, mapper) => events
+              .switchMap(mapper)
+              .debounceTime(
+                const Duration(milliseconds: 300),
+              ),
+    );
+
+    on<TravelFormNationalitySearchTermChanged>(
+      _onNationalitySearchTermChanged,
+      transformer:
+          (events, mapper) => events
+              .switchMap(mapper)
+              .debounceTime(
+                const Duration(milliseconds: 300),
+              ),
+    );
+
+    // Form Events
     on<TravelFormStarted>(_onStarted);
     on<TravelFormNextStepRequested>(_onNextStepRequested);
     on<TravelFormPreviousStepRequested>(_onPreviousStepRequested);
-    // Departure Airport
-    on<TravelFormDepartureAirportSearchTermChanged>(
-      _onDepartureAirportSearchTermChanged,
-      transformer: _debounceRestartable(
-        const Duration(milliseconds: 500),
-      ), // Use transformer
-    );
+
+    // Airport Events
     on<TravelFormDepartureAirportSelected>(_onDepartureAirportSelected);
-    // Arrival Airport
-    on<TravelFormArrivalAirportSearchTermChanged>(
-      _onArrivalAirportSearchTermChanged,
-      transformer: _debounceRestartable(
-        const Duration(milliseconds: 500),
-      ), // Use transformer
-    );
     on<TravelFormArrivalAirportSelected>(_onArrivalAirportSelected);
-    // Travel Dates
+
+    // Date Events
     on<TravelFormDateRangeSelected>(_onDateRangeSelected);
-    // Nationality
-    on<TravelFormNationalitySearchTermChanged>(
-      _onNationalitySearchTermChanged,
-      transformer: _debounceRestartable(const Duration(milliseconds: 500)),
-    );
+
+    // Nationality Events
     on<TravelFormNationalitySelected>(_onNationalitySelected);
-    // Travel Purposes
+
+    // Travel Purposes Events
     on<LoadTravelPurposesEvent>(_onLoadTravelPurposes);
     on<ToggleTravelPurposeEvent>(_onToggleTravelPurpose);
+
     // Form Submission
     on<SubmitTravelFormEvent>(_onSubmitTravelForm);
+
+    // Country Service Retry
+    on<RetryCountryServiceEvent>(_onRetryCountryService);
+
+    // Initialize services
+    add(const TravelFormInitializeServices());
   }
 
   /// Initialize all required services
-  Future<void> _initializeServices() async {
+  Future<void> _onInitializeServices(
+    TravelFormInitializeServices event,
+    Emitter<TravelFormState> emit,
+  ) async {
+    emit(state.copyWith(countryServiceStatus: CountryServiceStatus.loading));
     try {
       await _countryService.initialize();
+      emit(state.copyWith(countryServiceStatus: CountryServiceStatus.success));
     } catch (e) {
-      // Service has fallback mechanism, so we can continue even if initialization fails
-      // But we should log the error
+      appLogger.e('Failed to initialize CountryService', error: e);
+      emit(
+        state.copyWith(
+          countryServiceStatus: CountryServiceStatus.failure,
+          error: () => CountryServiceError(),
+        ),
+      );
     }
   }
 
@@ -133,10 +164,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       return;
     } else if (state.currentStep == 4) {
       final selectedTravelPurposes = state.selectedTravelPurposes.length;
-      final minimumTravelPurposes =
-          _firebaseRemoteConfigRepository.minimumTravelPurposes;
-      final maximumTravelPurposes =
-          _firebaseRemoteConfigRepository.maximumTravelPurposes;
+      final minimumTravelPurposes = _firebaseRemoteConfigRepository.minimumTravelPurposes;
+      final maximumTravelPurposes = _firebaseRemoteConfigRepository.maximumTravelPurposes;
       if (selectedTravelPurposes < minimumTravelPurposes) {
         emit(
           state.copyWith(
@@ -241,8 +270,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -306,8 +334,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -328,8 +355,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -352,6 +378,19 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       );
       return;
     }
+
+    // Check if country service is available
+    if (state.countryServiceStatus != CountryServiceStatus.success) {
+      emit(
+        state.copyWith(
+          isNationalityLoading: false,
+          nationalitySuggestions: [],
+          error: () => CountryServiceError(),
+        ),
+      );
+      return;
+    }
+
     emit(state.copyWith(isNationalityLoading: true));
 
     try {
@@ -370,7 +409,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         state.copyWith(
           isNationalityLoading: false,
           nationalitySuggestions: [],
-          error: () => GeneralTravelFormError(),
+          error: () => CountryServiceError(),
         ),
       );
     }
@@ -388,8 +427,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -518,12 +556,19 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error:
-              e is FirebaseError
-                  ? () => ServerError()
-                  : () => GeneralTravelFormError(),
+          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
         ),
       );
     }
+  }
+
+  void _onRetryCountryService(
+    RetryCountryServiceEvent event,
+    Emitter<TravelFormState> emit,
+  ) {
+    // Reset the country service and reinitialize
+    _countryService.reset();
+    emit(state.copyWith(error: () => null));
+    add(const TravelFormInitializeServices());
   }
 }

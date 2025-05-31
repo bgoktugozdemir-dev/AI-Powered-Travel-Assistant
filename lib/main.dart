@@ -17,6 +17,7 @@ import 'package:travel_assistant/common/services/api_logger_interceptor.dart';
 import 'package:travel_assistant/common/services/free_currency_api_service.dart';
 import 'package:travel_assistant/common/services/gemini_service.dart';
 import 'package:travel_assistant/common/services/image_to_base64_service.dart';
+import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
@@ -40,8 +41,7 @@ void main() async {
     webProvider: ReCaptchaV3Provider(
       firebaseRemoteConfigRepository.recaptchaSiteKey,
     ),
-    androidProvider:
-        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
   );
 
@@ -82,8 +82,7 @@ void main() async {
             final unsplashService = UnsplashService(
               Dio()..interceptors.add(ApiLoggerInterceptor()),
             );
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             return UnsplashRepository(
               unsplashService: unsplashService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
@@ -95,8 +94,7 @@ void main() async {
             final freeCurrencyApiService = FreeCurrencyApiService(
               Dio()..interceptors.add(ApiLoggerInterceptor()),
             );
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             return CurrencyRepository(
               freeCurrencyApiService: freeCurrencyApiService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
@@ -109,9 +107,9 @@ void main() async {
             final airportRepository = context.read<AirportRepository>();
             final unsplashRepository = context.read<UnsplashRepository>();
             final currencyRepository = context.read<CurrencyRepository>();
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
+            final travelPurposeService = TravelPurposeService();
             return TravelFormBloc(
               geminiRepository: geminiRepository,
               airportRepository: airportRepository,
@@ -119,6 +117,7 @@ void main() async {
               currencyRepository: currencyRepository,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               imageRepository: imageRepository,
+              travelPurposeService: travelPurposeService,
             )..add(TravelFormStarted());
           },
         ),

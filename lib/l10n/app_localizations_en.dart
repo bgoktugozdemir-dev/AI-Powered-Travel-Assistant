@@ -186,6 +186,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String flightDurationHoursOnly(int hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String flightDurationMinutesOnly(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
   String get flightOptionsTitle => 'Flight Options';
 
   @override
@@ -340,5 +350,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requiredStepsLabel => 'Required Steps:';
 
   @override
-  String get formValidationError => 'Please complete all required fields';
+  String get formValidationError =>
+      'Please check your form inputs and try again.';
+
+  @override
+  String get countryServiceErrorTitle => 'Unable to Load Countries';
+
+  @override
+  String get countryServiceErrorMessage =>
+      'We\'re having trouble loading the list of countries. Please check your internet connection and try again.';
+
+  @override
+  String get tryAgainButton => 'Try Again';
+
+  @override
+  String get serviceUnavailableError =>
+      'This feature is temporarily unavailable. Please try again later.';
 }

@@ -362,11 +362,23 @@ abstract class AppLocalizations {
   /// **'Plan Another Trip'**
   String get planAnotherTrip;
 
-  /// Format for displaying flight duration
+  /// Format for displaying flight duration with hours and minutes
   ///
   /// In en, this message translates to:
   /// **'{hours}h {minutes}m'**
   String flightDurationFormat(int hours, int minutes);
+
+  /// Format for displaying flight duration with hours only
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h'**
+  String flightDurationHoursOnly(int hours);
+
+  /// Format for displaying flight duration with minutes only
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String flightDurationMinutesOnly(int minutes);
 
   /// Title for the flight options section
   ///
@@ -644,11 +656,35 @@ abstract class AppLocalizations {
   /// **'Required Steps:'**
   String get requiredStepsLabel;
 
-  /// Generic form validation error message
+  /// Error message for form validation failure
   ///
   /// In en, this message translates to:
-  /// **'Please complete all required fields'**
+  /// **'Please check your form inputs and try again.'**
   String get formValidationError;
+
+  /// Title for country service error screen
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to Load Countries'**
+  String get countryServiceErrorTitle;
+
+  /// Error message when country service fails to initialize
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re having trouble loading the list of countries. Please check your internet connection and try again.'**
+  String get countryServiceErrorMessage;
+
+  /// Button text for retrying failed operations
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgainButton;
+
+  /// Error message when a service is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is temporarily unavailable. Please try again later.'**
+  String get serviceUnavailableError;
 }
 
 class _AppLocalizationsDelegate

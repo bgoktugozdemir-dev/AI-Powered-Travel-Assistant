@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_assistant/common/constants/formatters.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
@@ -23,9 +23,7 @@ class TravelFormTravelDatesStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.selectedDateRange != current.selectedDateRange,
+          buildWhen: (previous, current) => previous.selectedDateRange != current.selectedDateRange,
           builder: (context, state) {
             final today = DateTime.now();
             return Center(
@@ -69,9 +67,7 @@ class TravelFormTravelDatesStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.selectedDateRange != current.selectedDateRange,
+          buildWhen: (previous, current) => previous.selectedDateRange != current.selectedDateRange,
           builder: (context, state) {
             if (bloc.state.selectedDateRange == null) {
               selectedDatesText = l10n.noDatesSelected;

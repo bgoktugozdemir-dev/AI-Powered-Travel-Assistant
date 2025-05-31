@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_assistant/common/constants/formatters.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/currency.dart';
 import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -36,13 +36,11 @@ class CurrencyCard extends StatelessWidget {
       currencyCode: currency.code,
       locale: l10n.localeName,
     );
-    final arrivalAverageLivingCostPerDayInDepartureCurrency =
-        Formatters.currency(
-          amount:
-              currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
-          currencyCode: currency.departureCurrencyCode,
-          locale: l10n.localeName,
-        );
+    final arrivalAverageLivingCostPerDayInDepartureCurrency = Formatters.currency(
+      amount: currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
+      currencyCode: currency.departureCurrencyCode,
+      locale: l10n.localeName,
+    );
 
     return Card(
       elevation: 4,
@@ -54,15 +52,9 @@ class CurrencyCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.currency_exchange,
-                  color: Theme.of(context).primaryColor,
-                ),
+                Icon(Icons.currency_exchange, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text(
-                  l10n.currencyInformationTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text(l10n.currencyInformationTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),
@@ -83,8 +75,7 @@ class CurrencyCard extends StatelessWidget {
             InfoRow(
               icon: Icons.price_change,
               label: l10n.averageDailyCostLabel,
-              value:
-                  '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
+              value: '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
             ),
           ],
         ),

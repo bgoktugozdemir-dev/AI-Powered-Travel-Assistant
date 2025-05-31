@@ -15,6 +15,21 @@ enum FormSubmissionStatus {
   failure,
 }
 
+/// Status of country service initialization
+enum CountryServiceStatus {
+  /// Initial status, not initialized
+  initial,
+
+  /// Service is being initialized
+  loading,
+
+  /// Service initialization succeeded
+  success,
+
+  /// Service initialization failed
+  failure,
+}
+
 enum TravelFormStep {
   welcome,
   departureAirport,
@@ -48,6 +63,7 @@ class TravelFormState extends Equatable {
     this.selectedTravelPurposes = const [],
     this.isTravelPurposesLoading = false,
     this.formSubmissionStatus = FormSubmissionStatus.initial,
+    this.countryServiceStatus = CountryServiceStatus.initial,
     this.travelPlan,
     this.cityImageInBytes,
     this.exchangeRate,
@@ -108,6 +124,9 @@ class TravelFormState extends Equatable {
   /// The status of form submission.
   final FormSubmissionStatus formSubmissionStatus;
 
+  /// The status of country service initialization.
+  final CountryServiceStatus countryServiceStatus;
+
   /// The generated travel plan.
   final TravelDetails? travelPlan;
 
@@ -117,7 +136,7 @@ class TravelFormState extends Equatable {
   /// The exchange rate.
   final double? exchangeRate;
 
-  /// An optional error  if something went wrong.
+  /// An optional error if something went wrong.
   final TravelFormError? error;
 
   /// Returns true if the form is valid and can be submitted.
@@ -153,6 +172,7 @@ class TravelFormState extends Equatable {
     List<TravelPurpose>? selectedTravelPurposes,
     bool? isTravelPurposesLoading,
     FormSubmissionStatus? formSubmissionStatus,
+    CountryServiceStatus? countryServiceStatus,
     ValueGetter<TravelDetails?>? travelPlan,
     ValueGetter<String?>? cityImageInBytes,
     ValueGetter<double?>? exchangeRate,
@@ -201,6 +221,7 @@ class TravelFormState extends Equatable {
       isTravelPurposesLoading:
           isTravelPurposesLoading ?? this.isTravelPurposesLoading,
       formSubmissionStatus: formSubmissionStatus ?? this.formSubmissionStatus,
+      countryServiceStatus: countryServiceStatus ?? this.countryServiceStatus,
       travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
       cityImageInBytes:
           cityImageInBytes != null ? cityImageInBytes() : this.cityImageInBytes,
@@ -229,6 +250,7 @@ class TravelFormState extends Equatable {
     selectedTravelPurposes,
     isTravelPurposesLoading,
     formSubmissionStatus,
+    countryServiceStatus,
     travelPlan,
     cityImageInBytes,
     exchangeRate,

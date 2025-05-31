@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  static const int defaultDecimalDigits = 2;
+  static const int currencyDecimalDigits = 0;
+}
+
 /// Centralized formatting utilities for the travel assistant app.
 /// This class provides consistent formatting for dates, currency, durations, etc.
 abstract class Formatters {
@@ -14,12 +19,10 @@ abstract class Formatters {
   static String shortDate(DateTime date) => DateFormat('MMM d').format(date);
 
   /// Formats a date as "MMM d, HH:mm" (e.g., "Dec 25, 14:30").
-  static String dateWithTime(DateTime date) =>
-      DateFormat('MMM d, HH:mm').format(date);
+  static String dateWithTime(DateTime date) => DateFormat('MMM d, HH:mm').format(date);
 
   /// Formats a date as "EEEE, MMMM d, yyyy" (e.g., "Monday, December 25, 2023").
-  static String fullDate(DateTime date) =>
-      DateFormat('EEEE, MMMM d, yyyy').format(date);
+  static String fullDate(DateTime date) => DateFormat('EEEE, MMMM d, yyyy').format(date);
 
   /// Formats time as "HH:mm" (e.g., "14:30").
   static String timeOnly(DateTime date) => DateFormat('HH:mm').format(date);
@@ -27,11 +30,11 @@ abstract class Formatters {
   /// Formats date range with localization support.
   static String dateRange(DateTimeRange? dateRange, BuildContext context) {
     if (dateRange == null) {
-      return AppLocalizations.of(context).noDatesSelected;
+      final l10n = AppLocalizations.of(context);
+      return l10n.noDatesSelected;
     }
 
-    final l10n = AppLocalizations.of(context);
-    final dateFormat = DateFormat.yMMMd(l10n.localeName);
+    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
     final startDate = dateFormat.format(dateRange.start);
     final endDate = dateFormat.format(dateRange.end);
     return '$startDate - $endDate';
@@ -42,53 +45,53 @@ abstract class Formatters {
     DateTimeRange dateRange,
     BuildContext context,
   ) {
-    final l10n = AppLocalizations.of(context);
-    final dateFormat = DateFormat.yMMMd(l10n.localeName);
+    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
     final startDate = dateFormat.format(dateRange.start);
     final endDate = dateFormat.format(dateRange.end);
-    return l10n.selectedDatesLabel(startDate, endDate);
+    return '$startDate - $endDate';
   }
 
   /// Formats date for logging purposes as "yMd" (e.g., "12/25/2023").
-  static String logDate(DateTime date) => DateFormat.yMd().format(date);
+  static String logDate(DateTime date) => date.toIso8601String();
 
   // Currency Formatters
 
-  /// Formats currency with proper locale and symbol.
+  /// Formats a currency amount with proper localization.
   static String currency({
     required double amount,
     required String currencyCode,
-    required String locale,
-    int decimalDigits = 2,
+    String? locale,
+    int? decimalDigits,
   }) {
-    return NumberFormat.currency(
+    final formatter = NumberFormat.currency(
       locale: locale,
       symbol: currencyCode,
-      decimalDigits: decimalDigits,
-    ).format(amount);
+      decimalDigits: decimalDigits ?? _Constants.defaultDecimalDigits,
+    );
+    return formatter.format(amount);
   }
 
-  /// Formats currency for flight prices using l10n.
+  /// Formats flight price with currency code and localization.
   static String flightPrice({
     required double price,
     required String currencyCode,
     required AppLocalizations l10n,
   }) {
-    return NumberFormat.currency(
+    return currency(
+      amount: price,
+      currencyCode: currencyCode,
       locale: l10n.localeName,
-      symbol: currencyCode,
-    ).format(price);
+      decimalDigits: _Constants.currencyDecimalDigits,
+    );
   }
 
   // Number Formatters
 
   /// Formats percentage (e.g., "75%").
-  static String percentage(double value) =>
-      NumberFormat.percentPattern().format(value);
+  static String percentage(double value, [String? locale]) => NumberFormat.percentPattern(locale).format(value);
 
-  /// Formats crowd level as percentage.
-  static String crowdLevel(int level) =>
-      NumberFormat.percentPattern().format(level / 100);
+  /// Formats crowd level as percentage with localization support.
+  static String crowdLevel(int level, [String? locale]) => NumberFormat.percentPattern(locale).format(level / 100);
 
   /// Formats number with thousand separators.
   static String number(num value, [String? locale]) {
@@ -97,18 +100,19 @@ abstract class Formatters {
 
   // Duration Formatters
 
-  /// Formats flight duration using localized format.
-  static String flightDuration(Duration duration, AppLocalizations l10n) {
+  /// Formats flight duration in minutes to human-readable format using localization.
+  static String duration(BuildContext context, Duration duration, {bool showFullDuration = false}) {
+    final l10n = AppLocalizations.of(context);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
-    return l10n.flightDurationFormat(hours, minutes);
-  }
 
-  /// Formats duration as "Xh Ym" format.
-  static String duration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    return '${hours}h ${minutes}m';
+    if (hours > 0 && minutes > 0 || showFullDuration) {
+      return l10n.flightDurationFormat(hours, minutes);
+    } else if (hours > 0) {
+      return l10n.flightDurationHoursOnly(hours);
+    } else {
+      return l10n.flightDurationMinutesOnly(minutes);
+    }
   }
 
   // Airport and Location Formatters
@@ -162,6 +166,9 @@ abstract class Formatters {
 
   /// Formats nationality with flag emoji.
   static String nationalityWithFlag(String nationality, String? flagEmoji) {
-    return '${flagEmoji ?? ''} $nationality'.trim();
+    if (flagEmoji != null && flagEmoji.isNotEmpty) {
+      return '$flagEmoji $nationality';
+    }
+    return nationality;
   }
 }

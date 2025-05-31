@@ -10,6 +10,12 @@ abstract class TravelFormEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Event triggered to initialize services.
+class TravelFormInitializeServices extends TravelFormEvent {
+  /// Creates a [TravelFormInitializeServices] event.
+  const TravelFormInitializeServices();
+}
+
 /// Event to initialize or load initial form data.
 class TravelFormStarted extends TravelFormEvent {}
 
@@ -131,4 +137,10 @@ class ToggleTravelPurposeEvent extends TravelFormEvent {
 class SubmitTravelFormEvent extends TravelFormEvent {
   /// Creates a [SubmitTravelFormEvent] event.
   const SubmitTravelFormEvent();
+}
+
+/// Event triggered to retry country service initialization.
+class RetryCountryServiceEvent extends TravelFormEvent {
+  /// Creates a [RetryCountryServiceEvent] event.
+  const RetryCountryServiceEvent();
 }

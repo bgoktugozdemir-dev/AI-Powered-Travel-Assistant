@@ -148,7 +148,7 @@ class _FlightCard extends StatelessWidget {
               color: primaryColor,
             ),
             Text(
-              Formatters.flightDuration(flight.duration, l10n),
+              Formatters.duration(context, flight.duration),
               style: textTheme.bodySmall?.copyWith(color: captionColor),
             ),
           ],
@@ -173,8 +173,7 @@ class _FlightCard extends StatelessWidget {
     final textTheme = theme.textTheme.bodyMedium;
 
     return Column(
-      crossAxisAlignment:
-          isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment: isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
       children: [
         Text(
           Formatters.dateWithTime(time),

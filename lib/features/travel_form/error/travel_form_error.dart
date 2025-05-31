@@ -49,3 +49,7 @@ class TravelPurposeTooManyError extends TravelFormError {
 class ServerError extends TravelFormError {
   const ServerError();
 }
+
+class CountryServiceError extends TravelFormError {
+  const CountryServiceError();
+}

@@ -5,6 +5,7 @@ import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dar
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 import 'package:travel_assistant/features/travel_form/ui/steps/steps.dart';
+import 'package:travel_assistant/features/travel_form/ui/widgets/country_service_error_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -136,8 +137,14 @@ class _TravelFormScreenState extends State<TravelFormScreen>
           },
           buildWhen:
               (previous, current) =>
-                  previous.currentStep != current.currentStep,
+                  previous.currentStep != current.currentStep ||
+                  previous.countryServiceStatus != current.countryServiceStatus,
           builder: (context, state) {
+            // Show error screen if country service failed
+            if (state.countryServiceStatus == CountryServiceStatus.failure) {
+              return const CountryServiceErrorScreen();
+            }
+
             // Update text controller if search term changed from outside (e.g. after selection)
             // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
             if (_departureAirportController.text !=

@@ -187,6 +187,16 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String flightDurationHoursOnly(int hours) {
+    return '${hours}s';
+  }
+
+  @override
+  String flightDurationMinutesOnly(int minutes) {
+    return '${minutes}d';
+  }
+
+  @override
   String get flightOptionsTitle => 'Uçuş Seçenekleri';
 
   @override
@@ -341,5 +351,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get requiredStepsLabel => 'Gerekli Adımlar:';
 
   @override
-  String get formValidationError => 'Lütfen tüm gerekli alanları doldurun';
+  String get formValidationError =>
+      'Lütfen form girişlerinizi kontrol edin ve tekrar deneyin.';
+
+  @override
+  String get countryServiceErrorTitle => 'Ülkeler Yüklenemiyor';
+
+  @override
+  String get countryServiceErrorMessage =>
+      'Ülke listesini yüklerken sorun yaşıyoruz. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.';
+
+  @override
+  String get tryAgainButton => 'Tekrar Dene';
+
+  @override
+  String get serviceUnavailableError =>
+      'Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
 }

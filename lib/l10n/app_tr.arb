@@ -226,7 +226,7 @@
   },
   "flightDurationFormat": "{hours}s {minutes}d",
   "@flightDurationFormat": {
-    "description": "Format for displaying flight duration",
+    "description": "Format for displaying flight duration with hours and minutes",
     "placeholders": {
       "hours": {
         "type": "int",
@@ -235,6 +235,26 @@
       "minutes": {
         "type": "int",
         "example": "55"
+      }
+    }
+  },
+  "flightDurationHoursOnly": "{hours}s",
+  "@flightDurationHoursOnly": {
+    "description": "Format for displaying flight duration with hours only",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "flightDurationMinutesOnly": "{minutes}d",
+  "@flightDurationMinutesOnly": {
+    "description": "Format for displaying flight duration with minutes only",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "45"
       }
     }
   },
@@ -446,8 +466,21 @@
   "@requiredStepsLabel": {
     "description": "Label for the required steps section"
   },
-  "formValidationError": "Lütfen tüm gerekli alanları doldurun",
+  "formValidationError": "Lütfen form girişlerinizi kontrol edin ve tekrar deneyin.",
   "@formValidationError": {
-    "description": "Generic form validation error message"
-  }
+    "description": "Error message for form validation failure"
+  },
+  "countryServiceErrorTitle": "Ülkeler Yüklenemiyor",
+  "@countryServiceErrorTitle": {
+    "description": "Title for country service error screen"
+  },
+  "countryServiceErrorMessage": "Ülke listesini yüklerken sorun yaşıyoruz. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.",
+  "@countryServiceErrorMessage": {
+    "description": "Error message when country service fails to initialize"
+  },
+  "tryAgainButton": "Tekrar Dene",
+  "@tryAgainButton": {
+    "description": "Button text for retrying failed operations"
+  },
+  "serviceUnavailableError": "Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
 }

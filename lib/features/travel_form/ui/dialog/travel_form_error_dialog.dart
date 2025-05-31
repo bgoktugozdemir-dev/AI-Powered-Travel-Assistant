@@ -29,8 +29,7 @@ class TravelFormErrorDialog extends StatelessWidget {
 
   String _getErrorMessage(AppLocalizations l10n) => switch (error) {
     GeneralTravelFormError() => l10n.errorGeneralTravelForm,
-    DepartureAirportMissingError() =>
-      l10n.validationErrorDepartureAirportMissing,
+    DepartureAirportMissingError() => l10n.validationErrorDepartureAirportMissing,
     ArrivalAirportMissingError() => l10n.validationErrorArrivalAirportMissing,
     DateRangeMissingError() => l10n.validationErrorDateRangeMissing,
     DateRangeInvalidError() => l10n.errorInvalidDateRange,
@@ -51,6 +50,7 @@ class TravelFormErrorDialog extends StatelessWidget {
         selectedTravelPurposes,
         maximumTravelPurposes,
       ),
+    CountryServiceError() => l10n.countryServiceErrorMessage,
     ServerError() => l10n.errorServer,
   };
 }

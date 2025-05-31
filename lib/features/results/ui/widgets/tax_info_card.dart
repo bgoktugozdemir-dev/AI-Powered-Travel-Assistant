@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_assistant/common/constants/formatters.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/tax_information.dart';
 import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -28,10 +28,7 @@ class TaxInfoCard extends StatelessWidget {
               children: [
                 Icon(Icons.receipt_long, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                Text(
-                  l10n.taxInformationTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text(l10n.taxInformationTitle, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
             const Divider(),
@@ -40,27 +37,21 @@ class TaxInfoCard extends StatelessWidget {
             InfoRow(
               icon: Icons.percent,
               label: l10n.taxRateLabel,
-              value: Formatters.percentage(taxInformation.taxRate / 100),
+              value: Formatters.percentage(taxInformation.taxRate / 100, l10n.localeName),
             ),
 
             InfoRow(
               icon: Icons.shopping_bag,
               label: l10n.taxFreeShoppingLabel,
-              value:
-                  taxInformation.hasTaxFreeOptions
-                      ? l10n.availableLabel
-                      : l10n.notAvailableLabel,
-              iconColor:
-                  taxInformation.hasTaxFreeOptions ? Colors.green : Colors.red,
+              value: taxInformation.hasTaxFreeOptions ? l10n.availableLabel : l10n.notAvailableLabel,
+              iconColor: taxInformation.hasTaxFreeOptions ? Colors.green : Colors.red,
             ),
 
             if (taxInformation.refundableTaxRate > 0)
               InfoRow(
                 icon: Icons.percent,
                 label: l10n.refundableTaxRateLabel,
-                value: Formatters.percentage(
-                  taxInformation.refundableTaxRate / 100,
-                ),
+                value: Formatters.percentage(taxInformation.refundableTaxRate / 100, l10n.localeName),
                 iconColor: Colors.green,
               ),
 
