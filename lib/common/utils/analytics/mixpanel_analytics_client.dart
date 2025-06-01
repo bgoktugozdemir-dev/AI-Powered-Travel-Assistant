@@ -12,6 +12,7 @@ abstract class _Constants {
   static const String selectTravelPurposeEventName = 'Select Travel Purpose';
   static const String unselectTravelPurposeEventName = 'Unselect Travel Purpose';
   static const String submitTravelDetailsEventName = 'Submit Travel Details';
+  static const String submitTravelDetailsErrorEventName = 'Submit Travel Details Error';
   static const String moveToNextStepEventName = 'Move to Next Step';
   static const String moveToPreviousStepEventName = 'Move to Previous Step';
   static const String planAnotherTripEventName = 'Plan Another Trip';
@@ -23,6 +24,7 @@ abstract class _Constants {
   static const String nationalityParameterName = 'nationality';
   static const String purposeParameterName = 'purpose';
   static const String stepParameterName = 'step';
+  static const String errorParameterName = 'error';
 }
 
 class MixpanelAnalyticsClient implements AnalyticsClient {
@@ -138,6 +140,17 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   @override
   Future<void> logSubmitTravelDetails() async {
     await _mixpanel.track(_Constants.submitTravelDetailsEventName);
+  }
+
+  @override
+  Future<void> logTravelFormError(String error, String step) async {
+    await _mixpanel.track(
+      _Constants.submitTravelDetailsErrorEventName,
+      properties: {
+        _Constants.errorParameterName: error,
+        _Constants.stepParameterName: step,
+      },
+    );
   }
 
   @override

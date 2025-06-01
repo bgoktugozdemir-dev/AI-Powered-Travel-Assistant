@@ -37,6 +37,9 @@ abstract class AnalyticsClient {
   /// Logs when a user submits their travel details.
   FutureOr<void> logSubmitTravelDetails();
 
+  /// Logs when a user submits their travel details with an [error] on the given [step].
+  FutureOr<void> logTravelFormError(String error, String step);
+
   /// Logs when a user moves to the next [step] in the travel form.
   FutureOr<void> logMoveToNextStep(String step);
 

@@ -65,6 +65,11 @@ class LoggerAnalyticsClient implements AnalyticsClient {
   }
 
   @override
+  void logTravelFormError(String error, String step) {
+    appLogger.d('Logging submit travel details error: $error on step: $step');
+  }
+
+  @override
   void logMoveToNextStep(String step) {
     appLogger.d('Logging move to next step: $step');
   }

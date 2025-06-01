@@ -12,6 +12,7 @@ abstract class _Constants {
   static const String selectTravelPurposeEventName = 'select_travel_purpose';
   static const String unselectTravelPurposeEventName = 'unselect_travel_purpose';
   static const String submitTravelDetailsEventName = 'submit_travel_details';
+  static const String submitTravelDetailsErrorEventName = 'submit_travel_details_error';
   static const String moveToNextStepEventName = 'move_to_next_step';
   static const String moveToPreviousStepEventName = 'move_to_previous_step';
   static const String planAnotherTripEventName = 'plan_another_trip';
@@ -23,6 +24,7 @@ abstract class _Constants {
   static const String nationalityParameterName = 'nationality';
   static const String purposeParameterName = 'purpose';
   static const String stepParameterName = 'step';
+  static const String errorParameterName = 'error';
 }
 
 class FirebaseAnalyticsClient implements AnalyticsClient {
@@ -135,6 +137,17 @@ class FirebaseAnalyticsClient implements AnalyticsClient {
   Future<void> logSubmitTravelDetails() async {
     await _analytics.logEvent(
       name: _Constants.submitTravelDetailsEventName,
+    );
+  }
+
+  @override
+  Future<void> logTravelFormError(String error, String step) async {
+    await _analytics.logEvent(
+      name: _Constants.submitTravelDetailsErrorEventName,
+      parameters: {
+        _Constants.errorParameterName: error,
+        _Constants.stepParameterName: step,
+      },
     );
   }
 

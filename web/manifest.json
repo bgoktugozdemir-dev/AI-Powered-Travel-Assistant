@@ -3,14 +3,14 @@
     "short_name": "Travel Assistant",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#2196F3",
-    "theme_color": "#2196F3",
+    "background_color": "#0077B6",
+    "theme_color": "#0077B6",
     "description": "AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "scope": "/",
     "lang": "en",
-    "categories": ["travel", "productivity", "lifestyle"],
+    "categories": ["travel", "productivity", "lifestyle", "ai"],
     "screenshots": [
         {
             "src": "icons/Icon-512.png",

@@ -90,6 +90,13 @@ class AnalyticsFacade implements AnalyticsClient {
   }
 
   @override
+  void logTravelFormError(String error, String step) {
+    _dispatch(
+      (client) async => client.logTravelFormError(error, step),
+    );
+  }
+
+  @override
   void logMoveToNextStep(String step) {
     _dispatch(
       (client) async => client.logMoveToNextStep(step),
