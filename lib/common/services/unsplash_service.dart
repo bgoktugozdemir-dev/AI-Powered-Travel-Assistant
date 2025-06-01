@@ -43,7 +43,12 @@ abstract class UnsplashService {
 /// Model class for a photo from Unsplash
 class UnsplashPhoto {
   /// Creates an [UnsplashPhoto] instance
-  UnsplashPhoto({required this.id, required this.urls, required this.user, required this.downloadLocation});
+  UnsplashPhoto({
+    required this.id,
+    required this.urls,
+    required this.user,
+    required this.downloadLocation,
+  });
 
   /// Creates an [UnsplashPhoto] from a JSON map
   factory UnsplashPhoto.fromJson(Map<String, dynamic> json) => UnsplashPhoto(
@@ -78,13 +83,14 @@ class UnsplashPhotoUrls {
   });
 
   /// Creates [UnsplashPhotoUrls] from a JSON map
-  factory UnsplashPhotoUrls.fromJson(Map<String, dynamic> json) => UnsplashPhotoUrls(
-    raw: json['raw'] as String,
-    full: json['full'] as String,
-    regular: json['regular'] as String,
-    small: json['small'] as String,
-    thumb: json['thumb'] as String,
-  );
+  factory UnsplashPhotoUrls.fromJson(Map<String, dynamic> json) =>
+      UnsplashPhotoUrls(
+        raw: json['raw'] as String,
+        full: json['full'] as String,
+        regular: json['regular'] as String,
+        small: json['small'] as String,
+        thumb: json['thumb'] as String,
+      );
 
   /// URL for the raw image
   final String raw;
@@ -122,7 +128,11 @@ class UnsplashPhotoUrls {
 /// Model class for an Unsplash user
 class UnsplashUser {
   /// Creates an [UnsplashUser] instance
-  UnsplashUser({required this.name, required this.username, required this.portfolioUrl});
+  UnsplashUser({
+    required this.name,
+    required this.username,
+    required this.portfolioUrl,
+  });
 
   /// Creates an [UnsplashUser] from a JSON map
   factory UnsplashUser.fromJson(Map<String, dynamic> json) => UnsplashUser(
@@ -144,7 +154,10 @@ class UnsplashUser {
 /// Model class for a token response from Unsplash
 class UnsplashTokenResponse {
   /// Creates an [UnsplashTokenResponse] instance
-  UnsplashTokenResponse({required this.accessToken, required this.refreshToken});
+  UnsplashTokenResponse({
+    required this.accessToken,
+    required this.refreshToken,
+  });
 
   /// The access token
   final String accessToken;
@@ -156,17 +169,25 @@ class UnsplashTokenResponse {
 /// Model class for a search response from Unsplash
 class UnsplashSearchResponse {
   /// Creates an [UnsplashSearchResponse] instance
-  UnsplashSearchResponse({required this.total, required this.totalPages, required this.results});
+  UnsplashSearchResponse({
+    required this.total,
+    required this.totalPages,
+    required this.results,
+  });
 
   /// Creates an [UnsplashSearchResponse] from a JSON map
-  factory UnsplashSearchResponse.fromJson(Map<String, dynamic> json) => UnsplashSearchResponse(
-    total: json['total'] as int,
-    totalPages: json['total_pages'] as int,
-    results:
-        (json['results'] as List<dynamic>)
-            .map((result) => UnsplashPhoto.fromJson(result as Map<String, dynamic>))
-            .toList(),
-  );
+  factory UnsplashSearchResponse.fromJson(Map<String, dynamic> json) =>
+      UnsplashSearchResponse(
+        total: json['total'] as int,
+        totalPages: json['total_pages'] as int,
+        results:
+            (json['results'] as List<dynamic>)
+                .map(
+                  (result) =>
+                      UnsplashPhoto.fromJson(result as Map<String, dynamic>),
+                )
+                .toList(),
+      );
 
   /// The total number of results
   final int total;

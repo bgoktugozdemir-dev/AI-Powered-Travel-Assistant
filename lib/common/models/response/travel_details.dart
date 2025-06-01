@@ -22,7 +22,8 @@ class TravelDetails {
     required this.recommendations,
   });
 
-  factory TravelDetails.fromJson(Map<String, dynamic> json) => _$TravelDetailsFromJson(json);
+  factory TravelDetails.fromJson(Map<String, dynamic> json) =>
+      _$TravelDetailsFromJson(json);
 
   @JsonKey(name: 'city')
   final City city;

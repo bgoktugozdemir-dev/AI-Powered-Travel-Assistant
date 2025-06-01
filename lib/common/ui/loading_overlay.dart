@@ -4,7 +4,13 @@ import 'package:travel_assistant/common/constants/app_assets.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
 
 class LoadingOverlay extends StatefulWidget {
-  const LoadingOverlay({this.isDismissible = false, this.onDismiss, this.loadingAsset, this.label, super.key});
+  const LoadingOverlay({
+    this.isDismissible = false,
+    this.onDismiss,
+    this.loadingAsset,
+    this.label,
+    super.key,
+  });
 
   final bool isDismissible;
   final VoidCallback? onDismiss;
@@ -15,7 +21,8 @@ class LoadingOverlay extends StatefulWidget {
   State<LoadingOverlay> createState() => _LoadingOverlayState();
 }
 
-class _LoadingOverlayState extends State<LoadingOverlay> with LoadingOverlayHelper {
+class _LoadingOverlayState extends State<LoadingOverlay>
+    with LoadingOverlayHelper {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -35,7 +42,9 @@ class _LoadingOverlayState extends State<LoadingOverlay> with LoadingOverlayHelp
               spacing: 24,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Lottie.asset(widget.loadingAsset ?? AppAssets.loadingIndicatorLottie),
+                Lottie.asset(
+                  widget.loadingAsset ?? AppAssets.loadingIndicatorLottie,
+                ),
                 if (widget.label != null)
                   Text(
                     widget.label!,

@@ -33,6 +33,15 @@ enum RemoteConfigs {
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
+  /// Key for the Free Currency API key.
+  freeCurrencyApiKey(key: 'free_currency_api_key', defaultValue: ''),
+
+  /// Key for the cache free currency api data.
+  cacheFreeCurrencyApiData(
+    key: 'cache_free_currency_api_data',
+    defaultValue: true,
+  ),
+
   /// Navigate to next step after selecting travel purpose.
   navigateToNextStepAfterSelectingTravelPurpose(
     key: 'navigate_to_next_step_after_selecting_travel_purpose',
@@ -51,8 +60,14 @@ enum RemoteConfigs {
   /// Show city card.
   showCityCard(key: 'show_city_card', defaultValue: true),
 
+  /// Show city crowd level.
+  showCityCrowdLevel(key: 'show_city_crowd_level', defaultValue: true),
+
   /// Show required documents card.
-  showRequiredDocumentsCard(key: 'show_required_documents_card', defaultValue: true),
+  showRequiredDocumentsCard(
+    key: 'show_required_documents_card',
+    defaultValue: true,
+  ),
 
   /// Show currency card.
   showCurrencyCard(key: 'show_currency_card', defaultValue: true),
@@ -80,8 +95,9 @@ enum RemoteConfigs {
 
 /// Repository for accessing Firebase Remote Config values.
 class FirebaseRemoteConfigRepository {
-  FirebaseRemoteConfigRepository({required FirebaseRemoteConfig firebaseRemoteConfig})
-    : _firebaseRemoteConfig = firebaseRemoteConfig;
+  FirebaseRemoteConfigRepository({
+    required FirebaseRemoteConfig firebaseRemoteConfig,
+  }) : _firebaseRemoteConfig = firebaseRemoteConfig;
 
   final FirebaseRemoteConfig _firebaseRemoteConfig;
 
@@ -137,6 +153,16 @@ class FirebaseRemoteConfigRepository {
   /// Returns the client ID string if available, otherwise an empty string.
   String get unsplashClientId => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
 
+  /// Fetches the Free Currency API key from Firebase Remote Config.
+  ///
+  /// Returns the API key string if available, otherwise an empty string.
+  String get freeCurrencyApiKey => _firebaseRemoteConfig.getString(RemoteConfigs.freeCurrencyApiKey.key);
+
+  /// Fetches the cache free currency api data from Firebase Remote Config.
+  ///
+  /// Returns true if the cache free currency api data should be cached, otherwise true.
+  bool get cacheFreeCurrencyApiData => _firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
+
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///
   /// Returns the minimum number of travel purposes if available, otherwise 1.
@@ -157,10 +183,17 @@ class FirebaseRemoteConfigRepository {
   /// Returns true if the city card should be shown, otherwise true.
   bool get showCityCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showCityCard.key);
 
+  /// Fetches the show city crowd level from Firebase Remote Config.
+  ///
+  /// Returns true if the city crowd level should be shown, otherwise true.
+  bool get showCityCrowdLevel => _firebaseRemoteConfig.getBool(RemoteConfigs.showCityCrowdLevel.key);
+
   /// Fetches the show required documents card from Firebase Remote Config.
   ///
   /// Returns true if the required documents card should be shown, otherwise true.
-  bool get showRequiredDocumentsCard => _firebaseRemoteConfig.getBool(RemoteConfigs.showRequiredDocumentsCard.key);
+  bool get showRequiredDocumentsCard => _firebaseRemoteConfig.getBool(
+    RemoteConfigs.showRequiredDocumentsCard.key,
+  );
 
   /// Fetches the show currency card from Firebase Remote Config.
   ///
@@ -195,6 +228,7 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the navigate to next step after selecting travel purpose from Firebase Remote Config.
   ///
   /// Returns true if the navigate to next step after selecting travel purpose should be shown, otherwise false.
-  bool get navigateToNextStepAfterSelectingTravelPurpose =>
-      _firebaseRemoteConfig.getBool(RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key);
+  bool get navigateToNextStepAfterSelectingTravelPurpose => _firebaseRemoteConfig.getBool(
+    RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,
+  );
 }

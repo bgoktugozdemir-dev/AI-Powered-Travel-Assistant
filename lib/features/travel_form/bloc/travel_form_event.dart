@@ -10,6 +10,12 @@ abstract class TravelFormEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Event triggered to initialize services.
+class TravelFormInitializeServices extends TravelFormEvent {
+  /// Creates a [TravelFormInitializeServices] event.
+  const TravelFormInitializeServices();
+}
+
 /// Event to initialize or load initial form data.
 class TravelFormStarted extends TravelFormEvent {}
 
@@ -118,7 +124,10 @@ class ToggleTravelPurposeEvent extends TravelFormEvent {
   final bool isSelected;
 
   /// Creates a [ToggleTravelPurposeEvent] event.
-  const ToggleTravelPurposeEvent({required this.purpose, required this.isSelected});
+  const ToggleTravelPurposeEvent({
+    required this.purpose,
+    required this.isSelected,
+  });
 
   @override
   List<Object?> get props => [purpose, isSelected];
@@ -130,4 +139,8 @@ class SubmitTravelFormEvent extends TravelFormEvent {
   const SubmitTravelFormEvent();
 }
 
-// TODO: Add events for travel purposes, submission, etc.
+/// Event triggered to retry country service initialization.
+class RetryCountryServiceEvent extends TravelFormEvent {
+  /// Creates a [RetryCountryServiceEvent] event.
+  const RetryCountryServiceEvent();
+}

@@ -1,21 +1,37 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
-import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
+
+abstract class _Constants {
+  static const double weatherCardHeight = 120.0;
+  static const double weatherCardMaxHeight = 140.0;
+  static const double weatherCardMinHeight = 100.0;
+  static const double smallScreenWidth = 600.0;
+  static const double mediumScreenWidth = 1200.0;
+  static const double cityImageMaxHeight = 300.0;
+  static const double crowdLevelBarHeightMultiplier = 0.025;
+}
 
 /// A widget that displays information about a city.
 class CityCard extends StatelessWidget {
   /// Creates a [CityCard].
-  const CityCard({required this.city, super.key});
+  const CityCard({
+    required this.city,
+    required this.cityImageInBytes,
+    super.key,
+  });
 
   /// The city to display information for.
   final City city;
+
+  /// The city image.
+  final String? cityImageInBytes;
 
   @override
   Widget build(BuildContext context) {
@@ -25,63 +41,157 @@ class CityCard extends StatelessWidget {
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: firebaseRemoteConfigRepository.showCityView ? _buildCityImage(context) : null,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // City Name and Time
+      header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
+      children: [
+        // City Name and Time
+        if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
           _buildCityNameAndTime(context),
-
-          const SizedBox(height: 8),
-
-          // Crowd Level
-          _buildCrowdLevel(context, l10n),
-
-          // Weather information if available
-          if (city.weather.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-            Text(l10n.cityCardWeatherForecastTitle, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            _WeatherCards(weathers: city.weather),
-          ],
         ],
+        // Weather information if available
+        if (city.weather.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.cityCardWeatherForecastTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          _WeatherCards(weathers: city.weather),
+        ],
+      ],
+    );
+  }
+
+  /// Gets a dynamic color based on crowd level percentage
+  Color _getCrowdLevelColor(int crowdLevel) {
+    if (crowdLevel <= 20) {
+      // Very low crowd: Deep green
+      return Colors.green.shade700;
+    } else if (crowdLevel <= 40) {
+      // Low crowd: Light green to yellow-green
+      final t = (crowdLevel - 20) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.green.shade500, Colors.lightGreen, t)!;
+    } else if (crowdLevel <= 60) {
+      // Medium crowd: Yellow-green to orange
+      final t = (crowdLevel - 40) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.lightGreen, Colors.orange.shade600, t)!;
+    } else if (crowdLevel <= 80) {
+      // High crowd: Orange to red-orange
+      final t = (crowdLevel - 60) / 20; // 0.0 to 1.0
+      return Color.lerp(Colors.orange.shade600, Colors.deepOrange, t)!;
+    } else {
+      // Very high crowd: Deep red
+      return Colors.red.shade700;
+    }
+  }
+
+  Widget _buildCityImage(BuildContext context) {
+    final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
+    final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
+    final crowdLevelBarHeight = imageHeight * _Constants.crowdLevelBarHeightMultiplier;
+    final crowdLevelColor = _getCrowdLevelColor(city.crowdLevel);
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: imageHeight,
+      ),
+      child: Image.memory(
+        base64Decode(cityImageInBytes!),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        frameBuilder: (context, widget, frame, wasSynchronouslyLoaded) {
+          return Stack(
+            children: [
+              widget,
+              // Black gradient overlay for better text visibility
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.center,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black87,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: LinearProgressIndicator(
+                  minHeight: crowdLevelBarHeight,
+                  value: city.crowdLevel / 100,
+                  backgroundColor: Colors.grey.shade300.withValues(alpha: 0.25),
+                  valueColor: AlwaysStoppedAnimation<Color>(crowdLevelColor),
+                ),
+              ),
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom: crowdLevelBarHeight + 8,
+                child: _buildCityNameOnImage(context, crowdLevelColor),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildCityImage(BuildContext context) {
-    // Use Unsplash image if available, otherwise use the original image URL
+  Widget _buildCityNameOnImage(BuildContext context, Color crowdLevelColor) {
+    final l10n = AppLocalizations.of(context);
 
-    return FutureBuilder<UnsplashPhoto>(
-      future: context.read<UnsplashRepository>().getCityView(cityName: city.name, countryName: city.country),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Container(
-            height: 180,
-            width: double.infinity,
-            color: Colors.grey[300],
-            child: Center(child: Text(snapshot.error.toString())),
-          );
-        } else if (snapshot.connectionState == ConnectionState.active) {
-          return Container(
-            height: 180,
-            width: double.infinity,
-            color: Colors.grey[300],
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (snapshot.hasData) {
-          return CachedNetworkImage(
-            imageUrl: snapshot.data!.urls.regular,
-            height: 180,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          );
-        }
-        return const SizedBox.shrink();
-      },
+    return Row(
+      spacing: 8,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              city.country,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+            ),
+            Text(
+              city.name,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
+        if (context.read<FirebaseRemoteConfigRepository>().showCityCrowdLevel)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: crowdLevelColor.withValues(alpha: 0.75),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: crowdLevelColor, width: 1),
+            ),
+            child: Text(
+              "${l10n.crowdLevelLabel} ${Formatters.crowdLevel(city.crowdLevel, l10n.localeName)}",
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    offset: const Offset(1, 1),
+                    blurRadius: 2,
+                    color: Colors.black54,
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -91,13 +201,19 @@ class CityCard extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
       children: [
-        Expanded(child: Text('${city.name}, ${city.country}', style: Theme.of(context).textTheme.titleLarge)),
+        Expanded(
+          child: Text(
+            Formatters.cityCountry(city.name, city.country),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
         if (city.time != null) _buildTimeDifference(context),
       ],
     );
   }
 
   Widget _buildTimeDifference(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = city.time!.differenceInHours;
     final departureTime = now.toLocal();
@@ -107,50 +223,32 @@ class CityCard extends StatelessWidget {
     final arrivalColor = dayDifference > 0 ? Colors.red : null;
 
     return Tooltip(
-      message: 'Time difference: ${city.time!.differenceInHours} hours',
+      message: Formatters.timeDifference(city.time!.differenceInHours, l10n),
       child: Chip(
         label: Row(
           mainAxisSize: MainAxisSize.min,
           spacing: 4,
           children: [
             Text(
-              "${DateFormat('HH:mm').format(departureTime)} (${city.time!.departureTimezone})",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: departureColor),
+              Formatters.timezoneTime(
+                departureTime,
+                city.time!.departureTimezone,
+              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: departureColor),
             ),
             Icon(Icons.arrow_right_alt, size: 16),
             Text(
-              "${DateFormat('HH:mm').format(arrivalTime)} (${city.time!.arrivalTimezone})",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: arrivalColor),
+              Formatters.timezoneTime(arrivalTime, city.time!.arrivalTimezone),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: arrivalColor),
             ),
           ],
         ),
         avatar: Icon(Icons.access_time, size: 16),
       ),
-    );
-  }
-
-  Widget _buildCrowdLevel(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        const Icon(Icons.people, size: 18),
-        const SizedBox(width: 8),
-        Text('${l10n.cityCardCrowdLevelLabel}: ', style: Theme.of(context).textTheme.bodyMedium),
-        Expanded(
-          child: LinearProgressIndicator(
-            value: city.crowdLevel / 100,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              city.crowdLevel < 30
-                  ? Colors.green
-                  : city.crowdLevel < 70
-                  ? Colors.orange
-                  : Colors.red,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text('${city.crowdLevel}%'),
-      ],
     );
   }
 }
@@ -162,15 +260,25 @@ class _WeatherCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.width / 3;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final height =
+            screenWidth < _Constants.smallScreenWidth
+                ? _Constants.weatherCardHeight
+                : (screenWidth < _Constants.mediumScreenWidth
+                    ? _Constants.weatherCardMaxHeight
+                    : _Constants.weatherCardMinHeight);
 
-    return SizedBox(
-      height: height,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: weathers.length,
-        itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
-      ),
+        return SizedBox(
+          height: height,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: weathers.length,
+            itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
+          ),
+        );
+      },
     );
   }
 }
@@ -190,11 +298,18 @@ class _WeatherCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text(
-              DateFormat('MMM d').format(DateTime.parse(weather.date)),
+              Formatters.shortDate(DateTime.parse(weather.date)),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Icon(icon, size: 28, color: Theme.of(context).colorScheme.secondary),
-            Text('${weather.temperature}°C', style: Theme.of(context).textTheme.bodyMedium),
+            Icon(
+              icon,
+              size: 28,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            Text(
+              '${weather.temperature}°C',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
         ),
       ),

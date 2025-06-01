@@ -22,7 +22,9 @@ class GeminiRepository {
   ///
   /// Returns the generated text response.
   /// Throws an exception if text generation fails.
-  Future<TravelDetails> generateTravelPlan(TravelInformation travelInformation) async {
+  Future<TravelDetails> generateTravelPlan(
+    TravelInformation travelInformation,
+  ) async {
     final prompt = jsonEncode(travelInformation.toJson());
     final content = Content.text(prompt);
     final stopwatch = Stopwatch()..start();
@@ -53,8 +55,14 @@ class GeminiRepository {
       }
 
       // Log the successful response
-      LlmLogger.response('Gemini', responseText, durationMs: stopwatch.elapsedMilliseconds);
-      responseText = responseText.replaceAll('```json', '').replaceAll('```', '');
+      LlmLogger.response(
+        'Gemini',
+        responseText,
+        durationMs: stopwatch.elapsedMilliseconds,
+      );
+      responseText = responseText
+          .replaceAll('```json', '')
+          .replaceAll('```', '');
       final responseJson = jsonDecode(responseText);
 
       return TravelDetails.fromJson(responseJson);
@@ -62,7 +70,12 @@ class GeminiRepository {
       stopwatch.stop();
 
       // Log the error
-      LlmLogger.error('Gemini', 'Exception while generating text', e, stackTrace: stackTrace);
+      LlmLogger.error(
+        'Gemini',
+        'Exception while generating text',
+        e,
+        stackTrace: stackTrace,
+      );
 
       // Also log with the error logger
       ErrorLogger.logAIError(

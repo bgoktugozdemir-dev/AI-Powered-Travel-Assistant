@@ -226,7 +226,7 @@
   },
   "flightDurationFormat": "{hours}s {minutes}d",
   "@flightDurationFormat": {
-    "description": "Format for displaying flight duration",
+    "description": "Format for displaying flight duration with hours and minutes",
     "placeholders": {
       "hours": {
         "type": "int",
@@ -235,6 +235,26 @@
       "minutes": {
         "type": "int",
         "example": "55"
+      }
+    }
+  },
+  "flightDurationHoursOnly": "{hours}s",
+  "@flightDurationHoursOnly": {
+    "description": "Format for displaying flight duration with hours only",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "flightDurationMinutesOnly": "{minutes}d",
+  "@flightDurationMinutesOnly": {
+    "description": "Format for displaying flight duration with minutes only",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "45"
       }
     }
   },
@@ -380,9 +400,9 @@
   "@exchangeRateLabel": {
     "description": "Label for exchange rate field"
   },
-  "averageDailyCostLabel": "Ortalama Günlük Maliyet",
+  "averageDailyCostLabel": "Ortalama Günlük Yaşam Maliyeti",
   "@averageDailyCostLabel": {
-    "description": "Label for average daily cost field"
+    "description": "Label for average daily living cost field"
   },
   "taxInformationTitle": "Vergi Bilgisi",
   "@taxInformationTitle": {
@@ -395,6 +415,10 @@
   "taxFreeShoppingLabel": "Vergisiz Alışveriş",
   "@taxFreeShoppingLabel": {
     "description": "Label for tax-free shopping availability"
+  },
+  "refundableTaxRateLabel": "İade Edilebilir Vergi Oranı",
+  "@refundableTaxRateLabel": {
+    "description": "Label for refundable tax rate field"
   },
   "availableLabel": "Mevcut",
   "@availableLabel": {
@@ -419,5 +443,102 @@
   "travelItineraryTitle": "Seyahat Programı",
   "@travelItineraryTitle": {
     "description": "Title for the travel itinerary card"
+  },
+  "crowdLevelLabel": "Kalabalık:",
+  "@crowdLevelLabel": {
+    "description": "Label for crowd level information"
+  },
+  "timeDifferenceTooltip": "Saat farkı: {hours} saat",
+  "@timeDifferenceTooltip": {
+    "description": "Tooltip text showing time difference in hours",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "requiredDocumentsTitle": "Gerekli Belgeler",
+  "@requiredDocumentsTitle": {
+    "description": "Title for the required documents card"
+  },
+  "requiredStepsLabel": "Gerekli Adımlar:",
+  "@requiredStepsLabel": {
+    "description": "Label for the required steps section"
+  },
+  "formValidationError": "Lütfen form girişlerinizi kontrol edin ve tekrar deneyin.",
+  "@formValidationError": {
+    "description": "Error message for form validation failure"
+  },
+  "countryServiceErrorTitle": "Ülkeler Yüklenemiyor",
+  "@countryServiceErrorTitle": {
+    "description": "Title for country service error screen"
+  },
+  "countryServiceErrorMessage": "Ülke listesini yüklerken sorun yaşıyoruz. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.",
+  "@countryServiceErrorMessage": {
+    "description": "Error message when country service fails to initialize"
+  },
+  "tryAgainButton": "Tekrar Dene",
+  "@tryAgainButton": {
+    "description": "Button text for retrying failed operations"
+  },
+  "serviceUnavailableError": "Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "preparingTravelPlan": "Seyahat planı hazırlanıyor...",
+  "@preparingTravelPlan": {
+    "description": "Loading message when generating PDF for sharing"
+  },
+  "shareText": "{destination}{dates} için seyahat planımı inceleyin!",
+  "@shareText": {
+    "description": "Text content when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, Birleşik Arap Emirlikleri"
+      },
+      "dates": {
+        "type": "String", 
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "shareSubject": "Seyahat Planı: {destination}{dates}",
+  "@shareSubject": {
+    "description": "Email subject when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, Birleşik Arap Emirlikleri"
+      },
+      "dates": {
+        "type": "String",
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "errorSharingTravelPlan": "Seyahat planı paylaşılırken hata: {error}",
+  "@errorSharingTravelPlan": {
+    "description": "Error message when sharing travel plan fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Ağ hatası"
+      }
+    }
+  },
+  "pdfShareFallback": "PDF paylaşılamadı, ancak seyahat detayları metin olarak paylaşıldı",
+  "@pdfShareFallback": {
+    "description": "Message when PDF sharing fails but text sharing succeeds"
+  },
+  "copiedToClipboard": "Seyahat planı panoya kopyalandı! Herhangi bir yere yapıştırarak paylaşabilirsiniz.",
+  "@copiedToClipboard": {
+    "description": "Message when travel plan is copied to clipboard on macOS"
+  },
+  "clipboardError": "Panoya kopyalanamadı. Lütfen tekrar deneyin.",
+  "@clipboardError": {
+    "description": "Error message when clipboard operation fails"
+  },
+  "sharingFallbackClipboard": "Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı",
+  "@sharingFallbackClipboard": {
+    "description": "Message when all sharing methods fail but clipboard succeeds"
   }
 }

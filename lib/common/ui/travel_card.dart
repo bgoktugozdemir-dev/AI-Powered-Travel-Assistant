@@ -8,21 +8,36 @@ abstract class _Constants {
 }
 
 class TravelCard extends StatelessWidget {
-  const TravelCard({required this.icon, required this.title, required this.child, this.header, super.key});
+  const TravelCard({
+    required this.icon,
+    required this.title,
+    required this.children,
+    this.header,
+    this.iconColor,
+    super.key,
+  });
 
   final IconData icon;
   final String title;
   final Widget? header;
-  final Widget child;
+  final List<Widget> children;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: _Constants.elevation,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_Constants.borderRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_Constants.borderRadius),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (header != null) ClipRRect(borderRadius: BorderRadius.circular(_Constants.borderRadius), child: header),
+          if (header != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(_Constants.borderRadius),
+              child: header,
+            ),
           Padding(
             padding: const EdgeInsets.all(_Constants.padding),
             child: Column(
@@ -30,15 +45,21 @@ class TravelCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
+                  spacing: _Constants.spacing,
                   children: [
-                    Icon(icon, color: Theme.of(context).primaryColor),
-                    const SizedBox(width: 8),
-                    Text(title, style: Theme.of(context).textTheme.titleLarge),
+                    Icon(
+                      icon,
+                      color: iconColor ?? Theme.of(context).primaryColor,
+                    ),
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ],
                 ),
                 const Divider(),
                 const SizedBox(height: _Constants.spacing),
-                child,
+                ...children,
               ],
             ),
           ),

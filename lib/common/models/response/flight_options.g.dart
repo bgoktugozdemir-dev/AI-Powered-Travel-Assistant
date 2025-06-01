@@ -12,17 +12,12 @@ FlightOptions _$FlightOptionsFromJson(Map<String, dynamic> json) =>
       comfortable: FlightOption.fromJson(
         json['comfortable'] as Map<String, dynamic>,
       ),
-      recommended:
-          json['recommended'] == null
-              ? null
-              : FlightOption.fromJson(
-                json['recommended'] as Map<String, dynamic>,
-              ),
     );
 
 FlightOption _$FlightOptionFromJson(Map<String, dynamic> json) => FlightOption(
   departure: Flight.fromJson(json['departure'] as Map<String, dynamic>),
   arrival: Flight.fromJson(json['arrival'] as Map<String, dynamic>),
+  bookingUrl: json['booking_url'] as String,
 );
 
 Flight _$FlightFromJson(Map<String, dynamic> json) => Flight(

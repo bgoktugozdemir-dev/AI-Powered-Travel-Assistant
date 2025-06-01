@@ -4,12 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:travel_assistant/common/models/country.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 
+abstract class _Constants {
+  static const String countryApiUrl =
+      'https://raw.githubusercontent.com/Imagin-io/country-nationality-list/refs/heads/master/countries.json';
+}
+
 /// Service for providing country data.
 /// Fetches country data from a remote API and provides methods to search and filter.
 class CountryService {
-  static const String _countryApiUrl =
-      'https://raw.githubusercontent.com/Imagin-io/country-nationality-list/refs/heads/master/countries.json';
-
   final Dio _dio;
   List<Country> _countries = [];
   bool _isInitialized = false;
@@ -19,11 +21,12 @@ class CountryService {
 
   /// Initialize the service by fetching countries from the API.
   /// This should be called before using the service.
+  /// Throws an exception if initialization fails.
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      final response = await _dio.get(_countryApiUrl);
+      final response = await _dio.get(_Constants.countryApiUrl);
       final List<dynamic> jsonData = jsonDecode(response.data);
 
       _countries =
@@ -39,29 +42,13 @@ class CountryService {
               .toList();
 
       _isInitialized = true;
-      appLogger.i('CountryService initialized with ${_countries.length} countries');
+      appLogger.i(
+        'CountryService initialized with ${_countries.length} countries',
+      );
     } catch (e) {
       appLogger.e('Failed to initialize CountryService', error: e);
-      _initializeFallbackData();
+      rethrow; // Rethrow the error instead of using fallback data
     }
-  }
-
-  /// Initialize with fallback data in case API fails
-  void _initializeFallbackData() {
-    _countries = [
-      Country(code: 'US', name: 'United States', nationality: 'American', flagEmoji: '🇺🇸'),
-      Country(code: 'GB', name: 'United Kingdom', nationality: 'British', flagEmoji: '🇬🇧'),
-      Country(code: 'TR', name: 'Turkey', nationality: 'Turkish', flagEmoji: '🇹🇷'),
-      Country(code: 'DE', name: 'Germany', nationality: 'German', flagEmoji: '🇩🇪'),
-      Country(code: 'FR', name: 'France', nationality: 'French', flagEmoji: '🇫🇷'),
-      Country(code: 'IT', name: 'Italy', nationality: 'Italian', flagEmoji: '🇮🇹'),
-      Country(code: 'ES', name: 'Spain', nationality: 'Spanish', flagEmoji: '🇪🇸'),
-      Country(code: 'JP', name: 'Japan', nationality: 'Japanese', flagEmoji: '🇯🇵'),
-      Country(code: 'CN', name: 'China', nationality: 'Chinese', flagEmoji: '🇨🇳'),
-      Country(code: 'IN', name: 'India', nationality: 'Indian', flagEmoji: '🇮🇳'),
-    ];
-    _isInitialized = true;
-    appLogger.w('Using fallback country data');
   }
 
   /// Convert country code to flag emoji
@@ -76,6 +63,7 @@ class CountryService {
   }
 
   /// Returns a list of all countries.
+  /// Throws an exception if the service is not initialized.
   Future<List<Country>> getCountries() async {
     if (!_isInitialized) {
       await initialize();
@@ -85,6 +73,7 @@ class CountryService {
 
   /// Searches for countries based on a query string.
   /// The search is case-insensitive and matches against name, code, and nationality.
+  /// Throws an exception if the service is not initialized.
   Future<List<Country>> searchCountries(String query) async {
     if (!_isInitialized) {
       await initialize();
@@ -98,20 +87,31 @@ class CountryService {
     return _countries.where((country) {
       return country.name.toLowerCase().contains(lowercaseQuery) ||
           country.code.toLowerCase().contains(lowercaseQuery) ||
-          (country.nationality?.toLowerCase().contains(lowercaseQuery) ?? false);
+          (country.nationality?.toLowerCase().contains(lowercaseQuery) ??
+              false);
     }).toList();
   }
 
   /// Returns a country by its code.
+  /// Throws an exception if the service is not initialized.
   Future<Country?> getCountryByCode(String code) async {
     if (!_isInitialized) {
       await initialize();
     }
 
     try {
-      return _countries.firstWhere((country) => country.code == code.toUpperCase());
+      return _countries.firstWhere(
+        (country) => country.code == code.toUpperCase(),
+      );
     } catch (e) {
       return null;
     }
+  }
+
+  /// Reset the service initialization state.
+  /// Useful for retry functionality.
+  void reset() {
+    _isInitialized = false;
+    _countries = [];
   }
 }

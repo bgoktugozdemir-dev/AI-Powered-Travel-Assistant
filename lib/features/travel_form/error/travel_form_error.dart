@@ -27,14 +27,20 @@ class NationalityMissingError extends TravelFormError {
 }
 
 class TravelPurposeMissingError extends TravelFormError {
-  const TravelPurposeMissingError(this.selectedTravelPurposes, this.minimumTravelPurposes);
+  const TravelPurposeMissingError(
+    this.selectedTravelPurposes,
+    this.minimumTravelPurposes,
+  );
 
   final int selectedTravelPurposes;
   final int minimumTravelPurposes;
 }
 
 class TravelPurposeTooManyError extends TravelFormError {
-  const TravelPurposeTooManyError(this.selectedTravelPurposes, this.maximumTravelPurposes);
+  const TravelPurposeTooManyError(
+    this.selectedTravelPurposes,
+    this.maximumTravelPurposes,
+  );
 
   final int selectedTravelPurposes;
   final int maximumTravelPurposes;
@@ -42,4 +48,8 @@ class TravelPurposeTooManyError extends TravelFormError {
 
 class ServerError extends TravelFormError {
   const ServerError();
+}
+
+class CountryServiceError extends TravelFormError {
+  const CountryServiceError();
 }

@@ -30,7 +30,8 @@ class ErrorLogger {
 
   /// The minimum error level for which to capture full details
   /// This can be set differently for debug vs production
-  static final Level _minLevelForDetails = kDebugMode ? Level.warning : Level.error;
+  static final Level _minLevelForDetails =
+      kDebugMode ? Level.warning : Level.error;
 
   /// Log an error with detailed context information
   ///
@@ -99,18 +100,51 @@ class ErrorLogger {
   }
 
   /// Log a network error
-  static void logNetworkError(String message, dynamic error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
-    logError(message: message, error: error, category: ErrorCategory.network, stackTrace: stackTrace, context: context);
+  static void logNetworkError(
+    String message,
+    dynamic error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
+    logError(
+      message: message,
+      error: error,
+      category: ErrorCategory.network,
+      stackTrace: stackTrace,
+      context: context,
+    );
   }
 
   /// Log an AI service error
-  static void logAIError(String message, dynamic error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
-    logError(message: message, error: error, category: ErrorCategory.ai, stackTrace: stackTrace, context: context);
+  static void logAIError(
+    String message,
+    dynamic error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
+    logError(
+      message: message,
+      error: error,
+      category: ErrorCategory.ai,
+      stackTrace: stackTrace,
+      context: context,
+    );
   }
 
   /// Log a data processing error
-  static void logDataError(String message, dynamic error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
-    logError(message: message, error: error, category: ErrorCategory.data, stackTrace: stackTrace, context: context);
+  static void logDataError(
+    String message,
+    dynamic error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
+    logError(
+      message: message,
+      error: error,
+      category: ErrorCategory.data,
+      stackTrace: stackTrace,
+      context: context,
+    );
   }
 
   /// Log a network-related error
@@ -144,12 +178,22 @@ class ErrorLogger {
   }
 
   /// Log a UI-related error
-  static void logUIErrorSimple(String message, Object error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
+  static void logUIErrorSimple(
+    String message,
+    Object error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
     _logErrorSimple(ErrorCategory.ui, message, error, stackTrace, context);
   }
 
   /// Log an AI-related error
-  static void logAIErrorSimple(String message, Object error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
+  static void logAIErrorSimple(
+    String message,
+    Object error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) {
     _logErrorSimple(ErrorCategory.ai, message, error, stackTrace, context);
   }
 

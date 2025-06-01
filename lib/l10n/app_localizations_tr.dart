@@ -187,6 +187,16 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String flightDurationHoursOnly(int hours) {
+    return '${hours}s';
+  }
+
+  @override
+  String flightDurationMinutesOnly(int minutes) {
+    return '${minutes}d';
+  }
+
+  @override
   String get flightOptionsTitle => 'Uçuş Seçenekleri';
 
   @override
@@ -294,7 +304,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exchangeRateLabel => 'Döviz Kuru';
 
   @override
-  String get averageDailyCostLabel => 'Ortalama Günlük Maliyet';
+  String get averageDailyCostLabel => 'Ortalama Günlük Yaşam Maliyeti';
 
   @override
   String get taxInformationTitle => 'Vergi Bilgisi';
@@ -304,6 +314,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get taxFreeShoppingLabel => 'Vergisiz Alışveriş';
+
+  @override
+  String get refundableTaxRateLabel => 'İade Edilebilir Vergi Oranı';
 
   @override
   String get availableLabel => 'Mevcut';
@@ -322,4 +335,69 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelItineraryTitle => 'Seyahat Programı';
+
+  @override
+  String get crowdLevelLabel => 'Kalabalık:';
+
+  @override
+  String timeDifferenceTooltip(int hours) {
+    return 'Saat farkı: $hours saat';
+  }
+
+  @override
+  String get requiredDocumentsTitle => 'Gerekli Belgeler';
+
+  @override
+  String get requiredStepsLabel => 'Gerekli Adımlar:';
+
+  @override
+  String get formValidationError =>
+      'Lütfen form girişlerinizi kontrol edin ve tekrar deneyin.';
+
+  @override
+  String get countryServiceErrorTitle => 'Ülkeler Yüklenemiyor';
+
+  @override
+  String get countryServiceErrorMessage =>
+      'Ülke listesini yüklerken sorun yaşıyoruz. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.';
+
+  @override
+  String get tryAgainButton => 'Tekrar Dene';
+
+  @override
+  String get serviceUnavailableError =>
+      'Bu özellik geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get preparingTravelPlan => 'Seyahat planı hazırlanıyor...';
+
+  @override
+  String shareText(String destination, String dates) {
+    return '$destination$dates için seyahat planımı inceleyin!';
+  }
+
+  @override
+  String shareSubject(String destination, String dates) {
+    return 'Seyahat Planı: $destination$dates';
+  }
+
+  @override
+  String errorSharingTravelPlan(String error) {
+    return 'Seyahat planı paylaşılırken hata: $error';
+  }
+
+  @override
+  String get pdfShareFallback =>
+      'PDF paylaşılamadı, ancak seyahat detayları metin olarak paylaşıldı';
+
+  @override
+  String get copiedToClipboard =>
+      'Seyahat planı panoya kopyalandı! Herhangi bir yere yapıştırarak paylaşabilirsiniz.';
+
+  @override
+  String get clipboardError => 'Panoya kopyalanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get sharingFallbackClipboard =>
+      'Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı';
 }

@@ -20,7 +20,12 @@ class LlmLogger {
   }
 
   /// Log an error that occurred during LLM communication
-  static void error(String modelName, String message, Object error, {StackTrace? stackTrace}) {
+  static void error(
+    String modelName,
+    String message,
+    Object error, {
+    StackTrace? stackTrace,
+  }) {
     if (!kDebugMode) return;
 
     developer.log('❌ [$modelName] $message - $error', name: 'llm');
@@ -32,7 +37,12 @@ class LlmLogger {
   }
 
   /// Save full conversation to console (both prompt and response)
-  static void conversation(String modelName, String prompt, String response, {int? durationMs}) {
+  static void conversation(
+    String modelName,
+    String prompt,
+    String response, {
+    int? durationMs,
+  }) {
     LlmLogger.prompt(modelName, prompt);
     LlmLogger.response(modelName, response, durationMs: durationMs);
   }

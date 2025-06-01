@@ -19,21 +19,19 @@ class Currency {
   final String code;
 
   @JsonKey(name: 'departure_currency_code')
-  final String departureCurrencyCode;
+  final String? departureCurrencyCode;
 
   @JsonKey(name: 'name')
   final String name;
 
-  @JsonKey(name: 'exchange_rate')
+  @JsonKey(name: 'exchange_rate', defaultValue: 1)
   final double exchangeRate;
 
   @JsonKey(name: 'departure_average_living_cost_per_day')
-  final double departureAverageLivingCostPerDay;
+  final double? departureAverageLivingCostPerDay;
 
   @JsonKey(name: 'arrival_average_living_cost_per_day')
   final double arrivalAverageLivingCostPerDay;
-
-  double get departureAverageLivingCostPerDayInArrivalCurrency => departureAverageLivingCostPerDay * exchangeRate;
 
   double get arrivalAverageLivingCostPerDayInDepartureCurrency => arrivalAverageLivingCostPerDay / exchangeRate;
 }

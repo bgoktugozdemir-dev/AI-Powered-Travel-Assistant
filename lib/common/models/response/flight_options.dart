@@ -4,7 +4,10 @@ part 'flight_options.g.dart';
 
 @JsonSerializable(createToJson: false)
 class FlightOptions {
-  const FlightOptions({required this.cheapest, required this.comfortable, required this.recommended});
+  const FlightOptions({
+    required this.cheapest,
+    required this.comfortable,
+  });
 
   factory FlightOptions.fromJson(Map<String, dynamic> json) => _$FlightOptionsFromJson(json);
 
@@ -13,14 +16,15 @@ class FlightOptions {
 
   @JsonKey(name: 'comfortable')
   final FlightOption comfortable;
-
-  @JsonKey(name: 'recommended')
-  final FlightOption? recommended;
 }
 
 @JsonSerializable(createToJson: false)
 class FlightOption {
-  const FlightOption({required this.departure, required this.arrival});
+  const FlightOption({
+    required this.departure,
+    required this.arrival,
+    required this.bookingUrl,
+  });
 
   factory FlightOption.fromJson(Map<String, dynamic> json) => _$FlightOptionFromJson(json);
 
@@ -29,6 +33,9 @@ class FlightOption {
 
   @JsonKey(name: 'arrival')
   final Flight arrival;
+
+  @JsonKey(name: 'booking_url')
+  final String bookingUrl;
 }
 
 @JsonSerializable(createToJson: false)

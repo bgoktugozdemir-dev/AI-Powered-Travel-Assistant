@@ -13,33 +13,49 @@ class TravelFormNationalityStep extends StatelessWidget {
 
     return TravelFormStepLayout(
       children: <Widget>[
-        Text(l10n.nationalityStepTitle, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          l10n.nationalityStepTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.isNationalityLoading != current.isNationalityLoading,
+          buildWhen:
+              (previous, current) =>
+                  previous.isNationalityLoading != current.isNationalityLoading,
           builder: (context, state) {
             return TextField(
               decoration: InputDecoration(
                 hintText: l10n.nationalityHintText,
                 border: const OutlineInputBorder(),
                 suffixIcon:
-                    state.isNationalityLoading ? const CircularProgressIndicator(padding: EdgeInsets.all(8)) : null,
+                    state.isNationalityLoading
+                        ? const CircularProgressIndicator(
+                          padding: EdgeInsets.all(8),
+                        )
+                        : null,
               ),
               onChanged: (query) {
-                context.read<TravelFormBloc>().add(TravelFormNationalitySearchTermChanged(query));
+                context.read<TravelFormBloc>().add(
+                  TravelFormNationalitySearchTermChanged(query),
+                );
               },
             );
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.nationalitySuggestions != current.nationalitySuggestions,
+          buildWhen:
+              (previous, current) =>
+                  previous.nationalitySuggestions !=
+                  current.nationalitySuggestions,
           builder: (context, state) {
             if (state.nationalitySuggestions.isEmpty) {
               return const SizedBox.shrink();
             }
 
             return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.3,
+              ),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: state.nationalitySuggestions.length,
@@ -48,12 +64,17 @@ class TravelFormNationalityStep extends StatelessWidget {
                   return ListTile(
                     leading:
                         country.flagEmoji != null
-                            ? Text(country.flagEmoji!, style: const TextStyle(fontSize: 24))
+                            ? Text(
+                              country.flagEmoji!,
+                              style: const TextStyle(fontSize: 24),
+                            )
                             : null,
                     title: Text(country.name),
                     subtitle: Text(country.nationality ?? country.code),
                     onTap: () {
-                      context.read<TravelFormBloc>().add(TravelFormNationalitySelected(country));
+                      context.read<TravelFormBloc>().add(
+                        TravelFormNationalitySelected(country),
+                      );
                     },
                   );
                 },
@@ -62,7 +83,9 @@ class TravelFormNationalityStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedNationality != current.selectedNationality,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedNationality != current.selectedNationality,
           builder: (context, state) {
             if (state.selectedNationality == null) {
               return const SizedBox.shrink();
@@ -75,18 +98,29 @@ class TravelFormNationalityStep extends StatelessWidget {
                   if (state.selectedNationality!.flagEmoji != null)
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(state.selectedNationality!.flagEmoji!, style: const TextStyle(fontSize: 24)),
+                      child: Text(
+                        state.selectedNationality!.flagEmoji!,
+                        style: const TextStyle(fontSize: 24),
+                      ),
                     ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.selectedNationalityLabel(state.selectedNationality!.name),
-                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          l10n.selectedNationalityLabel(
+                            state.selectedNationality!.name,
+                          ),
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         if (state.selectedNationality!.nationality != null)
-                          Text(state.selectedNationality!.nationality!, style: const TextStyle(color: Colors.grey)),
+                          Text(
+                            state.selectedNationality!.nationality!,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
                       ],
                     ),
                   ),

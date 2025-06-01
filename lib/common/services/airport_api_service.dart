@@ -15,7 +15,9 @@ class AirportApiResponse {
   factory AirportApiResponse.fromJson(Map<String, dynamic> json) {
     return AirportApiResponse(
       records:
-          (json['records'] as List<dynamic>?)?.map((e) => AirportRecord.fromJson(e as Map<String, dynamic>)).toList(),
+          (json['records'] as List<dynamic>?)
+              ?.map((e) => AirportRecord.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 }
@@ -28,7 +30,10 @@ class AirportRecord {
 
   factory AirportRecord.fromJson(Map<String, dynamic> json) {
     return AirportRecord(
-      fields: json['fields'] != null ? AirportFields.fromJson(json['fields'] as Map<String, dynamic>) : null,
+      fields:
+          json['fields'] != null
+              ? AirportFields.fromJson(json['fields'] as Map<String, dynamic>)
+              : null,
     );
   }
 }
@@ -58,7 +63,8 @@ class AirportFields {
     required this.cityName,
   });
 
-  factory AirportFields.fromJson(Map<String, dynamic> json) => _$AirportFieldsFromJson(json);
+  factory AirportFields.fromJson(Map<String, dynamic> json) =>
+      _$AirportFieldsFromJson(json);
   Map<String, dynamic> toJson() => _$AirportFieldsToJson(this);
 }
 

@@ -21,7 +21,13 @@ class SimpleLogger {
   }
 
   /// Log error message
-  static void error(String message, {String? tag, Object? error, StackTrace? stackTrace, bool printStack = true}) {
+  static void error(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+    bool printStack = true,
+  }) {
     if (!kDebugMode) return;
 
     final logTag = tag != null ? '[$tag]' : '';
@@ -49,7 +55,8 @@ class SimpleLogger {
 
     // Find first frame that's not from the logger
     for (final frame in frames) {
-      if (!frame.contains('logger') && frame.contains('package:travel_assistant')) {
+      if (!frame.contains('logger') &&
+          frame.contains('package:travel_assistant')) {
         return frame.trim();
       }
     }

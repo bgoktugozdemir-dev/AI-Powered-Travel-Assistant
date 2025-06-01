@@ -9,6 +9,5 @@ part of 'travel_spot.dart';
 TravelSpot _$TravelSpotFromJson(Map<String, dynamic> json) => TravelSpot(
   place: json['place'] as String,
   description: json['description'] as String,
-  imageUrl: json['image_url'] as String,
   requirements: json['requirements'] as String?,
 );

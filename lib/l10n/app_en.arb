@@ -226,7 +226,7 @@
   },
   "flightDurationFormat": "{hours}h {minutes}m",
   "@flightDurationFormat": {
-    "description": "Format for displaying flight duration",
+    "description": "Format for displaying flight duration with hours and minutes",
     "placeholders": {
       "hours": {
         "type": "int",
@@ -235,6 +235,26 @@
       "minutes": {
         "type": "int",
         "example": "55"
+      }
+    }
+  },
+  "flightDurationHoursOnly": "{hours}h",
+  "@flightDurationHoursOnly": {
+    "description": "Format for displaying flight duration with hours only",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "flightDurationMinutesOnly": "{minutes}m",
+  "@flightDurationMinutesOnly": {
+    "description": "Format for displaying flight duration with minutes only",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "45"
       }
     }
   },
@@ -380,9 +400,9 @@
   "@exchangeRateLabel": {
     "description": "Label for exchange rate field"
   },
-  "averageDailyCostLabel": "Average Daily Cost",
+  "averageDailyCostLabel": "Average Daily Living Cost",
   "@averageDailyCostLabel": {
-    "description": "Label for average daily cost field"
+    "description": "Label for average daily living cost field"
   },
   "taxInformationTitle": "Tax Information",
   "@taxInformationTitle": {
@@ -395,6 +415,10 @@
   "taxFreeShoppingLabel": "Tax-Free Shopping",
   "@taxFreeShoppingLabel": {
     "description": "Label for tax-free shopping availability"
+  },
+  "refundableTaxRateLabel": "Refundable Tax Rate",
+  "@refundableTaxRateLabel": {
+    "description": "Label for refundable tax rate field"
   },
   "availableLabel": "Available",
   "@availableLabel": {
@@ -419,5 +443,105 @@
   "travelItineraryTitle": "Travel Itinerary",
   "@travelItineraryTitle": {
     "description": "Title for the travel itinerary card"
+  },
+  "crowdLevelLabel": "Crowd:",
+  "@crowdLevelLabel": {
+    "description": "Label for crowd level information"
+  },
+  "timeDifferenceTooltip": "Time difference: {hours} hours",
+  "@timeDifferenceTooltip": {
+    "description": "Tooltip text showing time difference in hours",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "requiredDocumentsTitle": "Required Documents",
+  "@requiredDocumentsTitle": {
+    "description": "Title for the required documents card"
+  },
+  "requiredStepsLabel": "Required Steps:",
+  "@requiredStepsLabel": {
+    "description": "Label for the required steps section"
+  },
+  "formValidationError": "Please check your form inputs and try again.",
+  "@formValidationError": {
+    "description": "Error message for form validation failure"
+  },
+  "countryServiceErrorTitle": "Unable to Load Countries",
+  "@countryServiceErrorTitle": {
+    "description": "Title for country service error screen"
+  },
+  "countryServiceErrorMessage": "We're having trouble loading the list of countries. Please check your internet connection and try again.",
+  "@countryServiceErrorMessage": {
+    "description": "Error message when country service fails to initialize"
+  },
+  "tryAgainButton": "Try Again",
+  "@tryAgainButton": {
+    "description": "Button text for retrying failed operations"
+  },
+  "serviceUnavailableError": "This feature is temporarily unavailable. Please try again later.",
+  "@serviceUnavailableError": {
+    "description": "Error message when a service is unavailable"
+  },
+  "preparingTravelPlan": "Preparing travel plan...",
+  "@preparingTravelPlan": {
+    "description": "Loading message when generating PDF for sharing"
+  },
+  "shareText": "Check out my travel plan for {destination}{dates}!",
+  "@shareText": {
+    "description": "Text content when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, United Arab Emirates"
+      },
+      "dates": {
+        "type": "String", 
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "shareSubject": "Travel Plan: {destination}{dates}",
+  "@shareSubject": {
+    "description": "Email subject when sharing travel plan",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Dubai, United Arab Emirates"
+      },
+      "dates": {
+        "type": "String",
+        "example": " (15/5 - 20/5)"
+      }
+    }
+  },
+  "errorSharingTravelPlan": "Error sharing travel plan: {error}",
+  "@errorSharingTravelPlan": {
+    "description": "Error message when sharing travel plan fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  "pdfShareFallback": "PDF could not be shared, but travel details were shared as text",
+  "@pdfShareFallback": {
+    "description": "Message when PDF sharing fails but text sharing succeeds"
+  },
+  "copiedToClipboard": "Travel plan copied to clipboard! You can paste it anywhere to share.",
+  "@copiedToClipboard": {
+    "description": "Message when travel plan is copied to clipboard on macOS"
+  },
+  "clipboardError": "Could not copy to clipboard. Please try again.",
+  "@clipboardError": {
+    "description": "Error message when clipboard operation fails"
+  },
+  "sharingFallbackClipboard": "Sharing failed, but travel plan was copied to clipboard",
+  "@sharingFallbackClipboard": {
+    "description": "Message when all sharing methods fail but clipboard succeeds"
   }
 }

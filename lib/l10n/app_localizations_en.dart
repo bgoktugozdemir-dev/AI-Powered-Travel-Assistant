@@ -186,6 +186,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String flightDurationHoursOnly(int hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String flightDurationMinutesOnly(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
   String get flightOptionsTitle => 'Flight Options';
 
   @override
@@ -293,7 +303,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exchangeRateLabel => 'Exchange Rate';
 
   @override
-  String get averageDailyCostLabel => 'Average Daily Cost';
+  String get averageDailyCostLabel => 'Average Daily Living Cost';
 
   @override
   String get taxInformationTitle => 'Tax Information';
@@ -303,6 +313,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taxFreeShoppingLabel => 'Tax-Free Shopping';
+
+  @override
+  String get refundableTaxRateLabel => 'Refundable Tax Rate';
 
   @override
   String get availableLabel => 'Available';
@@ -321,4 +334,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get travelItineraryTitle => 'Travel Itinerary';
+
+  @override
+  String get crowdLevelLabel => 'Crowd:';
+
+  @override
+  String timeDifferenceTooltip(int hours) {
+    return 'Time difference: $hours hours';
+  }
+
+  @override
+  String get requiredDocumentsTitle => 'Required Documents';
+
+  @override
+  String get requiredStepsLabel => 'Required Steps:';
+
+  @override
+  String get formValidationError =>
+      'Please check your form inputs and try again.';
+
+  @override
+  String get countryServiceErrorTitle => 'Unable to Load Countries';
+
+  @override
+  String get countryServiceErrorMessage =>
+      'We\'re having trouble loading the list of countries. Please check your internet connection and try again.';
+
+  @override
+  String get tryAgainButton => 'Try Again';
+
+  @override
+  String get serviceUnavailableError =>
+      'This feature is temporarily unavailable. Please try again later.';
+
+  @override
+  String get preparingTravelPlan => 'Preparing travel plan...';
+
+  @override
+  String shareText(String destination, String dates) {
+    return 'Check out my travel plan for $destination$dates!';
+  }
+
+  @override
+  String shareSubject(String destination, String dates) {
+    return 'Travel Plan: $destination$dates';
+  }
+
+  @override
+  String errorSharingTravelPlan(String error) {
+    return 'Error sharing travel plan: $error';
+  }
+
+  @override
+  String get pdfShareFallback =>
+      'PDF could not be shared, but travel details were shared as text';
+
+  @override
+  String get copiedToClipboard =>
+      'Travel plan copied to clipboard! You can paste it anywhere to share.';
+
+  @override
+  String get clipboardError => 'Could not copy to clipboard. Please try again.';
+
+  @override
+  String get sharingFallbackClipboard =>
+      'Sharing failed, but travel plan was copied to clipboard';
 }

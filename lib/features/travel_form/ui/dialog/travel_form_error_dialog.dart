@@ -18,7 +18,12 @@ class TravelFormErrorDialog extends StatelessWidget {
       contentTextStyle: Theme.of(context).textTheme.bodyMedium,
       contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.ok))],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.ok),
+        ),
+      ],
     );
   }
 
@@ -29,10 +34,23 @@ class TravelFormErrorDialog extends StatelessWidget {
     DateRangeMissingError() => l10n.validationErrorDateRangeMissing,
     DateRangeInvalidError() => l10n.errorInvalidDateRange,
     NationalityMissingError() => l10n.validationErrorNationalityMissing,
-    TravelPurposeMissingError(selectedTravelPurposes: final selectedTravelPurposes, minimumTravelPurposes: final minimumTravelPurposes) =>
-        l10n.validationErrorTravelPurposeMissing(selectedTravelPurposes, minimumTravelPurposes),
-    TravelPurposeTooManyError(selectedTravelPurposes: final selectedTravelPurposes, maximumTravelPurposes: final maximumTravelPurposes) =>
-        l10n.validationErrorTravelPurposeTooMany(selectedTravelPurposes, maximumTravelPurposes),
+    TravelPurposeMissingError(
+      selectedTravelPurposes: final selectedTravelPurposes,
+      minimumTravelPurposes: final minimumTravelPurposes,
+    ) =>
+      l10n.validationErrorTravelPurposeMissing(
+        selectedTravelPurposes,
+        minimumTravelPurposes,
+      ),
+    TravelPurposeTooManyError(
+      selectedTravelPurposes: final selectedTravelPurposes,
+      maximumTravelPurposes: final maximumTravelPurposes,
+    ) =>
+      l10n.validationErrorTravelPurposeTooMany(
+        selectedTravelPurposes,
+        maximumTravelPurposes,
+      ),
+    CountryServiceError() => l10n.countryServiceErrorMessage,
     ServerError() => l10n.errorServer,
   };
 }
