@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/services/travel_purpose_service.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -26,16 +27,13 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final maximumTravelPurposesCount =
-        context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
+    final maximumTravelPurposesCount = context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       buildWhen:
           (previous, current) =>
-              previous.isTravelPurposesLoading !=
-                  current.isTravelPurposesLoading ||
-              previous.availableTravelPurposes !=
-                  current.availableTravelPurposes ||
+              previous.isTravelPurposesLoading != current.isTravelPurposesLoading ||
+              previous.availableTravelPurposes != current.availableTravelPurposes ||
               previous.selectedTravelPurposes != current.selectedTravelPurposes,
       builder: (context, state) {
         if (state.isTravelPurposesLoading) {
@@ -46,8 +44,7 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
           return Center(child: Text(l10n.noPurposesAvailable));
         }
 
-        final isSelectable =
-            state.selectedTravelPurposes.length < maximumTravelPurposesCount;
+        final isSelectable = state.selectedTravelPurposes.length < maximumTravelPurposesCount;
 
         return TravelFormStepLayout(
           children: [
@@ -82,6 +79,12 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
                           !isSelected && !isSelectable
                               ? null
                               : (selected) {
+                                if (selected) {
+                                  context.read<AnalyticsFacade>().logSelectTravelPurpose(purpose.name);
+                                } else {
+                                  context.read<AnalyticsFacade>().logUnselectTravelPurpose(purpose.name);
+                                }
+
                                 context.read<TravelFormBloc>().add(
                                   ToggleTravelPurposeEvent(
                                     purpose: purpose,
@@ -89,9 +92,7 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
                                   ),
                                 );
                               },
-                      selectedColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withAlpha(160),
+                      selectedColor: Theme.of(context).colorScheme.primary.withAlpha(160),
                     );
                   }).toList(),
             ),

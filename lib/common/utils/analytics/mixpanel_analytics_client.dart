@@ -36,7 +36,7 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  void setAnalyticsCollectionEnabled(bool enabled) async {
+  void setAnalyticsCollectionEnabled(bool enabled) {
     if (enabled) {
       _mixpanel.optInTracking();
     } else {

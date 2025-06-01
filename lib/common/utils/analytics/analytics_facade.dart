@@ -6,106 +6,106 @@ class AnalyticsFacade implements AnalyticsClient {
   final List<AnalyticsClient> _clients;
 
   @override
-  void identifyUser(String userId) async {
-    await _dispatch(
+  void identifyUser(String userId) {
+    _dispatch(
       (client) async => client.identifyUser(userId),
     );
   }
 
   @override
-  void setAnalyticsCollectionEnabled(bool enabled) async {
-    await _dispatch(
+  void setAnalyticsCollectionEnabled(bool enabled) {
+    _dispatch(
       (client) async => client.setAnalyticsCollectionEnabled(enabled),
     );
   }
 
   @override
-  void logSearchDepartureAirport(String query) async {
-    await _dispatch(
-      (client) async => client.logSearchDepartureAirport(query),
+  void logSearchDepartureAirport(String query) {
+    _dispatch(
+      (client) async => client.logSearchDepartureAirport(query.trim()),
     );
   }
 
   @override
-  void logChooseDepartureAirport(String airport) async {
-    await _dispatch(
+  void logChooseDepartureAirport(String airport) {
+    _dispatch(
       (client) async => client.logChooseDepartureAirport(airport),
     );
   }
 
   @override
-  void logSearchArrivalAirport(String query) async {
-    await _dispatch(
-      (client) async => client.logSearchArrivalAirport(query),
+  void logSearchArrivalAirport(String query) {
+    _dispatch(
+      (client) async => client.logSearchArrivalAirport(query.trim()),
     );
   }
 
   @override
-  void logChooseArrivalAirport(String airport) async {
-    await _dispatch(
+  void logChooseArrivalAirport(String airport) {
+    _dispatch(
       (client) async => client.logChooseArrivalAirport(airport),
     );
   }
 
   @override
-  void logChooseTravelDates(String departureDate, String returnDate) async {
-    await _dispatch(
+  void logChooseTravelDates(String departureDate, String returnDate) {
+    _dispatch(
       (client) async => client.logChooseTravelDates(departureDate, returnDate),
     );
   }
 
   @override
-  void logSearchNationality(String query) async {
-    await _dispatch(
-      (client) async => client.logSearchNationality(query),
+  void logSearchNationality(String query) {
+    _dispatch(
+      (client) async => client.logSearchNationality(query.trim()),
     );
   }
 
   @override
-  void logChooseNationality(String nationality) async {
-    await _dispatch(
+  void logChooseNationality(String nationality) {
+    _dispatch(
       (client) async => client.logChooseNationality(nationality),
     );
   }
 
   @override
-  void logSelectTravelPurpose(String purpose) async {
-    await _dispatch(
+  void logSelectTravelPurpose(String purpose) {
+    _dispatch(
       (client) async => client.logSelectTravelPurpose(purpose),
     );
   }
 
   @override
-  void logUnselectTravelPurpose(String purpose) async {
-    await _dispatch(
+  void logUnselectTravelPurpose(String purpose) {
+    _dispatch(
       (client) async => client.logUnselectTravelPurpose(purpose),
     );
   }
 
   @override
-  void logSubmitTravelDetails() async {
-    await _dispatch(
+  void logSubmitTravelDetails() {
+    _dispatch(
       (client) async => client.logSubmitTravelDetails(),
     );
   }
 
   @override
-  void logMoveToNextStep(String step) async {
-    await _dispatch(
+  void logMoveToNextStep(String step) {
+    _dispatch(
       (client) async => client.logMoveToNextStep(step),
     );
   }
 
   @override
-  void logMoveToPreviousStep(String step) async {
-    await _dispatch(
+  void logMoveToPreviousStep(String step) {
+    _dispatch(
       (client) async => client.logMoveToPreviousStep(step),
     );
   }
 
   @override
-  void logPlanAnotherTrip() async {
-    await _dispatch(
+  void logPlanAnotherTrip() {
+    _dispatch(
       (client) async => client.logPlanAnotherTrip(),
     );
   }

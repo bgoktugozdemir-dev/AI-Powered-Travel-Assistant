@@ -150,8 +150,17 @@ Future<List<AnalyticsClient>> _getAnalyticsClients(
     ];
   }
 
+  final mixpanelProjectToken = firebaseRemoteConfigRepository.mixpanelProjectToken;
+  if (mixpanelProjectToken.isEmpty) {
+    return [
+      FirebaseAnalyticsClient(
+        analytics: FirebaseAnalytics.instance,
+      ),
+    ];
+  }
+
   final mixpanel = await Mixpanel.init(
-    firebaseRemoteConfigRepository.mixpanelProjectToken,
+    mixpanelProjectToken,
     trackAutomaticEvents: true,
   );
 

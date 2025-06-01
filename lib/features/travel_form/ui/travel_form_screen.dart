@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/constants/app_assets.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
@@ -110,6 +111,7 @@ class _TravelFormScreenState extends State<TravelFormScreen>
                 previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
           if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
+            context.read<AnalyticsFacade>().logSubmitTravelDetails();
             showLoadingOverlay(
               context,
               loadingAsset: AppAssets.flightSearchIndicatorLottie,

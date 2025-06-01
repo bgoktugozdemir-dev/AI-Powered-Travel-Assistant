@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/ui/disclaimer_card.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/results/ui/widgets/city_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/currency_card.dart';
 import 'package:travel_assistant/features/results/ui/widgets/flight_options_card.dart';
@@ -120,8 +120,7 @@ class ResultsScreen extends StatelessWidget {
                   Center(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        appLogger.i("New trip button pressed.");
-                        // Reset the form and navigate back to the first step
+                        context.read<AnalyticsFacade>().logPlanAnotherTrip();
                         context.read<TravelFormBloc>().add(TravelFormStarted());
                         Navigator.of(context).pushReplacementNamed('/');
                       },

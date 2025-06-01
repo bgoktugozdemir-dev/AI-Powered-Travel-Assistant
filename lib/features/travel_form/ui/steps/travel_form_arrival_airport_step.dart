@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -25,10 +25,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.isArrivalAirportLoading !=
-                  current.isArrivalAirportLoading,
+          buildWhen: (previous, current) => previous.isArrivalAirportLoading != current.isArrivalAirportLoading,
           builder: (context, state) {
             return TextField(
               controller: arrivalAirportController,
@@ -43,7 +40,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
                         : null,
               ),
               onChanged: (query) {
-                appLogger.d("Arrival airport search changed: $query");
+                context.read<AnalyticsFacade>().logSearchArrivalAirport(query);
                 context.read<TravelFormBloc>().add(
                   TravelFormArrivalAirportSearchTermChanged(query),
                 );
@@ -52,10 +49,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.arrivalAirportSuggestions !=
-                  current.arrivalAirportSuggestions,
+          buildWhen: (previous, current) => previous.arrivalAirportSuggestions != current.arrivalAirportSuggestions,
           builder: (context, state) {
             if (state.arrivalAirportSuggestions.isEmpty) {
               return const SizedBox.shrink();
@@ -74,9 +68,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
                     title: Text("${airport.name} (${airport.iataCode})"),
                     subtitle: Text(airport.cityAndCountry),
                     onTap: () {
-                      appLogger.i(
-                        "Arrival airport selected: ${airport.name} (${airport.iataCode})",
-                      );
+                      context.read<AnalyticsFacade>().logChooseArrivalAirport(airport.iataCode);
                       context.read<TravelFormBloc>().add(
                         TravelFormArrivalAirportSelected(airport),
                       );
@@ -88,10 +80,7 @@ class TravelFormArrivalAirportStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.selectedArrivalAirport !=
-                  current.selectedArrivalAirport,
+          buildWhen: (previous, current) => previous.selectedArrivalAirport != current.selectedArrivalAirport,
           builder: (context, state) {
             if (state.selectedArrivalAirport == null) {
               return const SizedBox.shrink();
