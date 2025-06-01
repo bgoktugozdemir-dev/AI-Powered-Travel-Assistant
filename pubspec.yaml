@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.2+3
+version: 1.0.3+4
 
 environment:
   sdk: ^3.7.2
@@ -89,7 +89,6 @@ dev_dependencies:
   json_serializable: ^6.9.5
   sentry_dart_plugin: ^2.4.1
 
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -139,3 +138,15 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+sentry:
+  project: travel-assistant
+  org: bgoktugozdemir
+  auth_token: # Generate Token from Sentry and hide it
+  # Disable automatic upload of debug symbols
+  # upload_debug_symbols: false
+  # Enable source context
+  upload_source_context: true
+  # Enable source maps with ignore missing flag for first releases
+  upload_source_maps: true
+  # Add ignore-missing flag to handle first release or missing git history
+  ignore_missing: true

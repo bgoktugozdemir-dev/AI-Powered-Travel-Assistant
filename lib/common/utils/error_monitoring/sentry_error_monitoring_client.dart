@@ -70,7 +70,7 @@ class SentryErrorMonitoringClient {
             // By this code, 3rd party code will be collapsed and greyed out
             // when viewing stack traces on the Sentry dashboard
             ..considerInAppFramesByDefault = considerInAppFramesByDefault ?? _Constants.considerInAppFramesByDefault
-            ..addInAppInclude('cluedo_notepad')
+            ..addInAppInclude('travel_assistant')
             //! [attachScreenshot] and [attachViewHierarchy] are expensive and should be enabled only if needed
             // Attach a screenshot to the event
             ..attachScreenshot = attachScreenshot ?? _Constants.attachScreenshot
