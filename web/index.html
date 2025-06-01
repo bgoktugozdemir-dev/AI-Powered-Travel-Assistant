@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <!--
@@ -19,26 +19,113 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights.">
+  <meta name="keywords"
+    content="travel assistant, AI travel planner, travel recommendations, visa requirements, trip planning, travel guide">
+  <meta name="author" content="Travel Assistant">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph Meta Tags for Social Sharing -->
+  <meta property="og:title" content="Travel Assistant - AI-Powered Travel Planning">
+  <meta property="og:description"
+    content="Plan your perfect trip with AI-powered recommendations, visa requirements, and personalized travel insights.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://travel.bgoktugozdemir.net">
+  <meta property="og:image" content="http://travel.bgoktugozdemir.net/icons/Icon-512.png">
+  <meta property="og:site_name" content="Travel Assistant">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Travel Assistant - AI-Powered Travel Planning">
+  <meta name="twitter:description"
+    content="Plan your perfect trip with AI-powered recommendations, visa requirements, and personalized travel insights.">
+  <meta name="twitter:image" content="http://travel.bgoktugozdemir.net/icons/Icon-512.png">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="travel_assistant">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Travel Assistant">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/Icon-512.png">
 
+  <!-- Preload critical resources -->
+  <link rel="preload" href="flutter_bootstrap.js" as="script">
+
+  <!-- Mixpanel Analytics -->
   <script src="./assets/packages/mixpanel_flutter/assets/mixpanel.js"></script>
 
-  <title>travel_assistant</title>
+  <title>Travel Assistant - AI-Powered Travel Planning</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Theme color for browser UI -->
+  <meta name="theme-color" content="#2196F3">
+  <meta name="msapplication-TileColor" content="#2196F3">
 </head>
 
 <body>
+  <!-- Loading indicator -->
+  <div id="loading" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  ">
+    <div style="text-align: center; color: white;">
+      <div style="
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin: 0 auto 20px;
+      "></div>
+      <div style="font-size: 18px; font-weight: 500;">Travel Assistant</div>
+      <div style="font-size: 14px; opacity: 0.8; margin-top: 8px;">Loading your travel companion...</div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+      min-height: 100vh;
+    }
+  </style>
+
   <script>
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    // Hide loading indicator when Flutter app loads
+    window.addEventListener('flutter-first-frame', function () {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.opacity = '0';
+        loading.style.transition = 'opacity 0.3s ease-out';
+        setTimeout(() => loading.remove(), 300);
+      }
+    });
   </script>
 
   <script src="flutter_bootstrap.js" async></script>

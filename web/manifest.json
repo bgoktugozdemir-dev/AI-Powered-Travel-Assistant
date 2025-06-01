@@ -1,13 +1,24 @@
 {
-    "name": "travel_assistant",
-    "short_name": "travel_assistant",
+    "name": "Travel Assistant - AI-Powered Travel Planning",
+    "short_name": "Travel Assistant",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#2196F3",
+    "theme_color": "#2196F3",
+    "description": "AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "scope": "/",
+    "lang": "en",
+    "categories": ["travel", "productivity", "lifestyle"],
+    "screenshots": [
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -30,6 +41,20 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Plan New Trip",
+            "short_name": "New Trip",
+            "description": "Start planning a new travel adventure",
+            "url": "/",
+            "icons": [
+                {
+                    "src": "icons/Icon-192.png",
+                    "sizes": "192x192"
+                }
+            ]
         }
     ]
 }

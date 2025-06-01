@@ -5,7 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   firebase_auth
   firebase_core
-  share_plus
+  sentry_flutter
   url_launcher_windows
 )
 
