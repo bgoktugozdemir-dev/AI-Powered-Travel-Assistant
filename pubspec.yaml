@@ -72,6 +72,11 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_to_pdf: ^0.4.0
   share_plus: ^11.0.0
+  firebase_analytics: ^11.4.6
+  sentry: ^8.14.2
+  firebase_crashlytics: ^4.3.6
+  firebase_auth: ^5.5.4
+  mixpanel_flutter: ^2.4.3
 
 # Add dependency override to fix flutter_math_fork compatibility issue
 dependency_overrides:
