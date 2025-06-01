@@ -71,7 +71,6 @@ dependencies:
   gpt_markdown: ^1.0.19
   url_launcher: ^6.3.1
   firebase_analytics: ^11.4.6
-  firebase_auth: ^5.5.4
   mixpanel_flutter: ^2.4.3
   sentry_flutter: ^8.14.2
 
@@ -88,6 +87,8 @@ dev_dependencies:
   freezed: ^3.0.6
   retrofit_generator: ^9.2.0
   json_serializable: ^6.9.5
+  sentry_dart_plugin: ^2.4.1
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
