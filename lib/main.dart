@@ -139,7 +139,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
         RepositoryProvider(
           create: (_) {
-            return AnalyticsFacade(analyticsClients);
+            return AnalyticsFacade(analyticsClients)..setAnalyticsCollectionEnabled(true);
           },
         ),
         RepositoryProvider(
