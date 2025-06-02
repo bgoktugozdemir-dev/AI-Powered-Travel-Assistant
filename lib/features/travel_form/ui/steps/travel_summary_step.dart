@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/ui/disclaimer_card.dart';
@@ -8,9 +9,41 @@ import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
-class TravelSummaryStep extends StatelessWidget {
+abstract class _Constants {
+  static const int helpDelay = 15; // seconds
+}
+
+class TravelSummaryStep extends StatefulWidget {
   /// Creates a [TravelSummaryStep].
   const TravelSummaryStep({super.key});
+
+  @override
+  State<TravelSummaryStep> createState() => _TravelSummaryStepState();
+}
+
+class _TravelSummaryStepState extends State<TravelSummaryStep> {
+  Timer? _helpTimer;
+  bool _showHelpCard = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start the timer to show help card after 15 seconds
+    _helpTimer = Timer(const Duration(seconds: _Constants.helpDelay), () {
+      if (mounted) {
+        setState(() {
+          _showHelpCard = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _helpTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +53,12 @@ class TravelSummaryStep extends StatelessWidget {
       builder: (context, state) {
         return TravelFormStepLayout(
           children: [
-            AlertCard.info(
-              content: Text(l10n.summaryStepIntroduction),
-            ),
-            const SizedBox(height: 24),
+            if (_showHelpCard) ...[
+              AlertCard.info(
+                content: Text(l10n.summaryStepIntroduction),
+              ),
+              const SizedBox(height: 24),
+            ],
             _buildTravelSummaryCard(context, state, l10n),
             const SizedBox(height: 24),
             DisclaimerCard(
