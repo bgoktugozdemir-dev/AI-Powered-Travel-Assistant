@@ -7,6 +7,11 @@ import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  // Button Keys
+  static const String buttonSelectDates = 'button_select_dates';
+}
+
 class TravelFormTravelDatesStep extends StatelessWidget {
   const TravelFormTravelDatesStep({super.key});
 
@@ -29,6 +34,7 @@ class TravelFormTravelDatesStep extends StatelessWidget {
             final today = DateTime.now();
             return Center(
               child: ElevatedButton.icon(
+                key: const Key(_Constants.buttonSelectDates),
                 icon: const Icon(Icons.calendar_month),
                 label: Text(l10n.selectDatesButtonLabel),
                 style: ElevatedButton.styleFrom(

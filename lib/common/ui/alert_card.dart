@@ -6,6 +6,9 @@ abstract class _Constants {
   static const double iconSize = 20.0;
   static const double dismissButtonSize = 24.0;
   static const Duration fadeAnimationDuration = Duration(milliseconds: 300);
+  
+  // Button Keys
+  static const String buttonDismissAlert = 'button_dismiss_alert';
 }
 
 /// Alert types that correspond to Bootstrap's contextual classes
@@ -269,6 +272,7 @@ class _AlertCardState extends State<AlertCard> with TickerProviderStateMixin {
           ),
         if (widget.isDismissible)
           InkWell(
+            key: const Key(_Constants.buttonDismissAlert),
             onTap: _dismissAlert,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(

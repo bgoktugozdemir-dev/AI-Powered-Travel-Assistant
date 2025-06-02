@@ -7,6 +7,9 @@ abstract class _Constants {
   static const double iconSize = 80.0;
   static const double spacing = 24.0;
   static const double buttonPadding = 16.0;
+
+  // Button Keys
+  static const String buttonTryAgainCountryService = 'button_try_again_country_service';
 }
 
 /// A widget that displays an error screen when the country service fails to initialize.
@@ -47,18 +50,16 @@ class CountryServiceErrorScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: _Constants.spacing * 2),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    context.read<TravelFormBloc>().add(const RetryCountryServiceEvent());
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.tryAgainButton),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(_Constants.buttonPadding),
-                    textStyle: theme.textTheme.labelLarge,
-                  ),
+              ElevatedButton.icon(
+                key: const Key(_Constants.buttonTryAgainCountryService),
+                onPressed: () {
+                  context.read<TravelFormBloc>().add(const RetryCountryServiceEvent());
+                },
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.tryAgainButton),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(_Constants.buttonPadding),
+                  textStyle: theme.textTheme.labelLarge,
                 ),
               ),
             ],
@@ -67,4 +68,4 @@ class CountryServiceErrorScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

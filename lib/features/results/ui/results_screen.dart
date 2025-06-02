@@ -15,6 +15,13 @@ import 'package:travel_assistant/features/results/ui/widgets/tax_info_card.dart'
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  // Button Keys
+  static const String buttonBackResults = 'button_back_results';
+  static const String buttonShareResults = 'button_share_results';
+  static const String buttonPlanAnotherTrip = 'button_plan_another_trip';
+}
+
 /// Screen to display the generated travel plan results after form submission.
 class ResultsScreen extends StatelessWidget {
   /// Creates a [ResultsScreen].
@@ -31,16 +38,18 @@ class ResultsScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(l10n.appTitle),
-            automaticallyImplyLeading: false, // Disable back button
+            leading: IconButton(
+              key: const Key(_Constants.buttonBackResults),
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(l10n.yourTravelPlan),
             actions: [
-              IconButton(
-                onPressed: () {
-                  // TODO: Implement share functionality for mobile platforms
-                  // TODO: Implement download functionality for other platforms
-                },
-                icon: const Icon(Icons.share),
-              ),
+              // IconButton(
+              //   key: const Key(_Constants.buttonShareResults),
+              //   icon: const Icon(Icons.share),
+              //   onPressed: () => _handleShare(context),
+              // ),
             ],
           ),
           body: SafeArea(
@@ -119,6 +128,7 @@ class ResultsScreen extends StatelessWidget {
                   // Plan Another Trip Button
                   Center(
                     child: ElevatedButton.icon(
+                      key: const Key(_Constants.buttonPlanAnotherTrip),
                       onPressed: () {
                         context.read<AnalyticsFacade>().logPlanAnotherTrip();
                         context.read<TravelFormBloc>().add(TravelFormStarted());
@@ -141,5 +151,10 @@ class ResultsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _handleShare(BuildContext context) {
+    // TODO: Implement share functionality for mobile platforms
+    // TODO: Implement download functionality for other platforms
   }
 }

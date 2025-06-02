@@ -3,6 +3,12 @@ import 'package:travel_assistant/common/models/response/travel_spot.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  // Button Keys
+  static const String buttonSpotInfoPrefix = 'button_spot_info';
+  static const String buttonCloseSpotDialog = 'button_close_spot_dialog';
+}
+
 class TopSpotsCard extends StatelessWidget {
   const TopSpotsCard({
     required this.spots,
@@ -36,6 +42,7 @@ class TopSpotsCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               trailing: IconButton(
+                key: Key('${_Constants.buttonSpotInfoPrefix}_$index'),
                 icon: const Icon(Icons.info_outline),
                 onPressed: () => _showSpotDetails(context, spot),
               ),
@@ -78,6 +85,7 @@ class TopSpotsCard extends StatelessWidget {
             ),
             actions: [
               TextButton(
+                key: const Key(_Constants.buttonCloseSpotDialog),
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(l10n.closeLabel),
               ),

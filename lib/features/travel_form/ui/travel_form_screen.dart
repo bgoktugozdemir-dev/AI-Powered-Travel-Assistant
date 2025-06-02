@@ -14,6 +14,12 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 abstract class _Constants {
   static const pageTransitionDuration = Duration(milliseconds: 300);
   static const pageTransitionCurve = Curves.easeInOut;
+  
+  // Button Keys
+  static const String buttonPreviousStep = 'button_previous_step';
+  static const String buttonNextStep = 'button_next_step';
+  static const String buttonSubmitAppbar = 'button_submit_appbar';
+  static const String buttonSubmitFab = 'button_submit_fab';
 }
 
 /// Screen for users to input their travel details using a multi-step form.
@@ -155,6 +161,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 leading:
                     state.currentStep > 0
                         ? IconButton(
+                          key: const Key(_Constants.buttonPreviousStep),
                           tooltip: l10n.navigationPrevious,
                           onPressed:
                               isSubmitting
@@ -174,12 +181,14 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 actions: [
                   if (state.currentStep < state.totalSteps - 1)
                     IconButton(
+                      key: const Key(_Constants.buttonNextStep),
                       tooltip: l10n.navigationNext,
                       onPressed: _onNextButtonPressed(context, state, l10n),
                       icon: const Icon(Icons.arrow_forward),
                     )
                   // else if (state.currentStep == state.totalSteps - 1)
                   //   IconButton(
+                  //     key: const Key(_Constants.buttonSubmitAppbar),
                   //     tooltip: l10n.navigationSubmit,
                   //     onPressed:
                   //         isSubmitting
@@ -254,6 +263,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
     }
 
     return FloatingActionButton.extended(
+      key: const Key(_Constants.buttonSubmitFab),
       onPressed:
           isSubmitting
               ? null

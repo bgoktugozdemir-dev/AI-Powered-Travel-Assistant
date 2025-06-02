@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
+abstract class _Constants {
+  // Button Keys
+  static const String buttonOkErrorDialog = 'button_ok_error_dialog';
+}
+
 class TravelFormErrorDialog extends StatelessWidget {
   const TravelFormErrorDialog({required this.error, super.key});
 
@@ -20,6 +25,7 @@ class TravelFormErrorDialog extends StatelessWidget {
       actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       actions: [
         TextButton(
+          key: const Key(_Constants.buttonOkErrorDialog),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.ok),
         ),
