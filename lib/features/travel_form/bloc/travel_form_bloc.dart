@@ -118,10 +118,6 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     // Country Service Retry
     on<RetryCountryServiceEvent>(_onRetryCountryService);
-
-    // Initialize services
-    add(const TravelFormInitializeServices());
-    add(const LoadTravelPurposesEvent());
   }
 
   /// Initialize all required services
@@ -146,6 +142,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
   void _onStarted(TravelFormStarted event, Emitter<TravelFormState> emit) {
     emit(const TravelFormState());
+    add(const TravelFormInitializeServices());
+    add(const LoadTravelPurposesEvent());
   }
 
   void _onNextStepRequested(
@@ -439,10 +437,6 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     LoadTravelPurposesEvent event,
     Emitter<TravelFormState> emit,
   ) async {
-    if (state.availableTravelPurposes.isNotEmpty) {
-      return;
-    }
-
     emit(state.copyWith(isTravelPurposesLoading: true));
 
     try {
