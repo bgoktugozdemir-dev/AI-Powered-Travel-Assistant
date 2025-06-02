@@ -221,7 +221,6 @@ class MyApp extends StatelessWidget {
         onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('tr'),
         theme: AppTheme.lightTheme,
         home: const TravelFormScreen(),
         routes: {'/results': (context) => const ResultsScreen()},

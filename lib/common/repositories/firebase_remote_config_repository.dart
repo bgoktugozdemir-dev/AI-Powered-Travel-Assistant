@@ -104,7 +104,10 @@ enum RemoteConfigs {
   /// This should contain a JSON array of travel purpose objects.
   /// Each object should have: id, name, localizationKey, icon
   /// If empty, defaults will be used.
-  travelPurposes(key: 'travel_purposes', defaultValue: _Constants.travelPurposes);
+  travelPurposes(key: 'travel_purposes', defaultValue: _Constants.travelPurposes),
+
+  /// Travel summary help card delay.
+  travelSummaryHelpCardDelay(key: 'travel_summary_help_card_delay', defaultValue: 15);
 
   const RemoteConfigs({required this.key, required this.defaultValue});
 
@@ -285,4 +288,9 @@ class FirebaseRemoteConfigRepository {
       return (parsed['data'] as List).cast<Map<String, dynamic>>();
     }
   }
+
+  /// Fetches the travel summary help card delay from Firebase Remote Config.
+  ///
+  /// Returns the travel summary help card delay in seconds if available, otherwise 15.
+  int get travelSummaryHelpCardDelay => _firebaseRemoteConfig.getInt(RemoteConfigs.travelSummaryHelpCardDelay.key);
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/ui/disclaimer_card.dart';
 import 'package:travel_assistant/common/ui/alert_card.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
@@ -8,10 +9,6 @@ import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
-
-abstract class _Constants {
-  static const int helpDelay = 15; // seconds
-}
 
 class TravelSummaryStep extends StatefulWidget {
   /// Creates a [TravelSummaryStep].
@@ -29,14 +26,19 @@ class _TravelSummaryStepState extends State<TravelSummaryStep> {
   void initState() {
     super.initState();
 
+    final delay = context.read<FirebaseRemoteConfigRepository>().travelSummaryHelpCardDelay;
+
     // Start the timer to show help card after 15 seconds
-    _helpTimer = Timer(const Duration(seconds: _Constants.helpDelay), () {
-      if (mounted) {
-        setState(() {
-          _showHelpCard = true;
-        });
-      }
-    });
+    _helpTimer = Timer(
+      Duration(seconds: delay),
+      () {
+        if (mounted) {
+          setState(() {
+            _showHelpCard = true;
+          });
+        }
+      },
+    );
   }
 
   @override
