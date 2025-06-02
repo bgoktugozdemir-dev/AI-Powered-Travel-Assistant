@@ -2,6 +2,11 @@ import 'package:travel_assistant/common/repositories/firebase_remote_config_repo
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 
+abstract class _Constants {
+  static const String cityKey = '{city}';
+  static const String countryKey = '{country}';
+}
+
 class UnsplashRepository {
   UnsplashRepository({
     required UnsplashService unsplashService,
@@ -19,7 +24,9 @@ class UnsplashRepository {
     try {
       final clientId = _firebaseRemoteConfigRepository.unsplashClientId;
       final response = await _unsplashService.searchPhotos(
-        query: '$cityName $countryName City View',
+        query: _firebaseRemoteConfigRepository.unsplashCityImageSearchQuery
+            .replaceFirst(_Constants.cityKey, cityName)
+            .replaceFirst(_Constants.countryKey, countryName),
         clientId: clientId,
         perPage: 1,
       );

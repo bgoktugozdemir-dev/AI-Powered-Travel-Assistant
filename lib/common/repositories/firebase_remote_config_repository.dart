@@ -39,6 +39,9 @@ enum RemoteConfigs {
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
+  /// Key for the Unsplash city image search query.
+  unsplashCityImageSearchQuery(key: 'unsplash_city_image_search_query', defaultValue: '{city} {country} City View'),
+
   /// Key for the Free Currency API key.
   freeCurrencyApiKey(key: 'free_currency_api_key', defaultValue: ''),
 
@@ -178,6 +181,12 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns true if the cache free currency api data should be cached, otherwise true.
   bool get cacheFreeCurrencyApiData => _firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
+
+  /// Fetches the Unsplash city image search query from Firebase Remote Config.
+  ///
+  /// Returns the search query string if available, otherwise an empty string.
+  /// * Arguments: city, country
+  String get unsplashCityImageSearchQuery => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashCityImageSearchQuery.key);
 
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///
