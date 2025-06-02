@@ -155,7 +155,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get navigationSubmit => 'Seyahat Planı Al';
 
   @override
-  String get submittingForm => 'Mükemmel maceranızı hazırlıyorum...';
+  String get submitTravelPlan => 'Seyahat Planımı Al';
+
+  @override
+  String get summaryStepIntroduction =>
+      'Seyahat detaylarınızı inceleyin ve kişiselleştirilmiş öneriler almak için \'Seyahat Planımı Al\' butonuna tıklayın.';
+
+  @override
+  String get submittingForm => 'Mükemmel maceranız hazırlanıyor...';
 
   @override
   String get yourTravelPlan => 'Seyahat Planınız';

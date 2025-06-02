@@ -18,14 +18,24 @@ class _ReleaseFilter extends LogFilter {
 
 /// Global logger instance for the application.
 final appLogger = Logger(
-  printer: PrettyPrinter(
-    methodCount: _Constants.methodCount, // Number of method calls to be displayed
-    errorMethodCount: _Constants.errorMethodCount, // Number of method calls if stacktrace is provided
-    lineLength: _Constants.lineLength, // Width of the output
-    colors: true, // Colorful log messages
-    printEmojis: true, // Print an emoji for each log message
-    dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart, // Print timestamp
+  printer: HybridPrinter(
+    _simplePrinter,
+    error: _prettierPrinter,
+    fatal: _prettierPrinter,
+    warning: _prettierPrinter,
   ),
   // Custom filter that completely disables logs in release mode
   filter: _ReleaseFilter(),
+);
+
+final _simplePrinter = SimplePrinter(
+  colors: true,
+);
+
+final _prettierPrinter = PrettyPrinter(
+  methodCount: _Constants.methodCount, // Number of method calls to be displayed
+  errorMethodCount: _Constants.errorMethodCount, // Number of method calls if stacktrace is provided
+  lineLength: _Constants.lineLength, // Width of the output
+  printEmojis: true, // Print an emoji for each log message
+  dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart, // Print timestamp
 );

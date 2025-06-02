@@ -188,7 +188,15 @@
   "@navigationSubmit": {
     "description": "Button text to submit the form and get travel plan"
   },
-  "submittingForm": "Mükemmel maceranızı hazırlıyorum...",
+  "submitTravelPlan": "Seyahat Planımı Al",
+  "@submitTravelPlan": {
+    "description": "Primary submit button text for the prominent submit button"
+  },
+  "summaryStepIntroduction": "Seyahat detaylarınızı inceleyin ve kişiselleştirilmiş öneriler almak için 'Seyahat Planımı Al' butonuna tıklayın.",
+  "@summaryStepIntroduction": {
+    "description": "Introduction text for the summary step explaining what to do next"
+  },
+  "submittingForm": "Mükemmel maceranız hazırlanıyor...",
   "@submittingForm": {
     "description": "Message shown when the form is being submitted"
   },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/ui/disclaimer_card.dart';
+import 'package:travel_assistant/common/ui/alert_card.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/features/results/ui/widgets/info_row.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
@@ -19,6 +20,10 @@ class TravelSummaryStep extends StatelessWidget {
       builder: (context, state) {
         return TravelFormStepLayout(
           children: [
+            AlertCard.info(
+              content: Text(l10n.summaryStepIntroduction),
+            ),
+            const SizedBox(height: 24),
             _buildTravelSummaryCard(context, state, l10n),
             const SizedBox(height: 24),
             DisclaimerCard(

@@ -188,6 +188,14 @@
   "@navigationSubmit": {
     "description": "Button text to submit the form and get travel plan"
   },
+  "submitTravelPlan": "Get My Travel Plan",
+  "@submitTravelPlan": {
+    "description": "Primary submit button text for the prominent submit button"
+  },
+  "summaryStepIntroduction": "Review your travel details and click 'Get My Travel Plan' to receive personalized recommendations.",
+  "@summaryStepIntroduction": {
+    "description": "Introduction text for the summary step explaining what to do next"
+  },
   "submittingForm": "Crafting your perfect adventure...",
   "@submittingForm": {
     "description": "Message shown when the form is being submitted"

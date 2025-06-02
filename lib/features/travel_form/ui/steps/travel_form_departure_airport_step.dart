@@ -19,6 +19,7 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
 
     return TravelFormStepLayout(
       children: <Widget>[
+        const SizedBox(height: 16),
         Text(
           l10n.departureAirportStepTitle,
           style: Theme.of(context).textTheme.titleLarge,

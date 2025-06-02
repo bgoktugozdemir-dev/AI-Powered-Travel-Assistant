@@ -308,6 +308,18 @@ abstract class AppLocalizations {
   /// **'Get Travel Plan'**
   String get navigationSubmit;
 
+  /// Primary submit button text for the prominent submit button
+  ///
+  /// In en, this message translates to:
+  /// **'Get My Travel Plan'**
+  String get submitTravelPlan;
+
+  /// Introduction text for the summary step explaining what to do next
+  ///
+  /// In en, this message translates to:
+  /// **'Review your travel details and click \'Get My Travel Plan\' to receive personalized recommendations.'**
+  String get summaryStepIntroduction;
+
   /// Message shown when the form is being submitted
   ///
   /// In en, this message translates to:

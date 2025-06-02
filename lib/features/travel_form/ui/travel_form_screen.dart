@@ -178,34 +178,34 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                       onPressed: _onNextButtonPressed(context, state, l10n),
                       icon: const Icon(Icons.arrow_forward),
                     )
-                  else if (state.currentStep == state.totalSteps - 1)
-                    IconButton(
-                      tooltip: l10n.navigationSubmit,
-                      onPressed:
-                          isSubmitting
-                              ? null
-                              : () {
-                                appLogger.i(
-                                  "'Get Travel Plan' (Submit) button pressed.",
-                                );
-                                // Check form validity one more time before submission
-                                if (state.isFormValid) {
-                                  context.read<TravelFormBloc>().add(
-                                    const SubmitTravelFormEvent(),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.formValidationError),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                              },
-                      icon: const Icon(Icons.search),
-                    ),
+                  // else if (state.currentStep == state.totalSteps - 1)
+                  //   IconButton(
+                  //     tooltip: l10n.navigationSubmit,
+                  //     onPressed:
+                  //         isSubmitting
+                  //             ? null
+                  //             : () {
+                  //               appLogger.i(
+                  //                 "'Get Travel Plan' (Submit) button pressed.",
+                  //               );
+                  //               // Check form validity one more time before submission
+                  //               if (state.isFormValid) {
+                  //                 context.read<TravelFormBloc>().add(
+                  //                   const SubmitTravelFormEvent(),
+                  //                 );
+                  //               } else {
+                  //                 ScaffoldMessenger.of(
+                  //                   context,
+                  //                 ).showSnackBar(
+                  //                   SnackBar(
+                  //                     content: Text(l10n.formValidationError),
+                  //                     backgroundColor: Colors.red,
+                  //                   ),
+                  //                 );
+                  //               }
+                  //             },
+                  //     icon: const Icon(Icons.send),
+                  //   ),
                 ],
               ),
               resizeToAvoidBottomInset: true,
@@ -218,56 +218,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 },
                 children: _travelFormSteps,
               ),
-              /*
-                        Stack(
-                          children: [
-                            SafeArea(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            if (state.currentStep == 0)
-                                              TravelFormDepartureAirportStep(departureAirportController: _departureAirportController),
-                                            if (state.currentStep == 1)
-                                              TravelFormArrivalAirportStep(arrivalAirportController: _arrivalAirportController),
-                                            if (state.currentStep == 2) const TravelFormTravelDatesStep(),
-                                            if (state.currentStep == 3) const TravelFormNationalityStep(),
-                                            if (state.currentStep == 4) const TravelPurposeStep(),
-                                            if (state.currentStep == 5) const TravelSummaryStep(),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    _buildNavigationButtons(context, state, l10n),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (isSubmitting)
-                              Container(
-                                color: Colors.black.withOpacity(0.3),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const CircularProgressIndicator(),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        l10n.submittingForm,
-                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        */
+              floatingActionButton: _buildFloatingActionButton(context, state, l10n, isSubmitting),
             );
           },
         ),
@@ -290,5 +241,44 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
           );
           context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
         };
+  }
+
+  Widget? _buildFloatingActionButton(
+    BuildContext context,
+    TravelFormState state,
+    AppLocalizations l10n,
+    bool isSubmitting,
+  ) {
+    if (state.currentStep != state.totalSteps - 1) {
+      return null;
+    }
+
+    return FloatingActionButton.extended(
+      onPressed:
+          isSubmitting
+              ? null
+              : () {
+                appLogger.i(
+                  "'Get My Travel Plan' (Submit) button pressed from FAB.",
+                );
+                // Check form validity one more time before submission
+                if (state.isFormValid) {
+                  context.read<TravelFormBloc>().add(
+                    const SubmitTravelFormEvent(),
+                  );
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.formValidationError),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+      icon: const Icon(Icons.send),
+      label: Text(l10n.submitTravelPlan),
+    );
   }
 }
