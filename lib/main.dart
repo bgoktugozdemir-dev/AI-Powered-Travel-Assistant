@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -6,6 +9,8 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
@@ -19,6 +24,13 @@ import 'package:travel_assistant/common/services/gemini_service.dart';
 import 'package:travel_assistant/common/services/image_to_base64_service.dart';
 import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
+import 'package:travel_assistant/common/utils/analytics/firebase_analytics_client.dart';
+import 'package:travel_assistant/common/utils/analytics/logger_analytics_client.dart';
+import 'package:travel_assistant/common/utils/analytics/mixpanel_analytics_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
@@ -26,29 +38,110 @@ import 'package:travel_assistant/firebase_options.dart';
 import 'package:travel_assistant/common/theme/app_theme.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+Future<void> main() async {
+  await runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
-    firebaseRemoteConfig: FirebaseRemoteConfig.instance,
+      final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
+        firebaseRemoteConfig: FirebaseRemoteConfig.instance,
+      );
+      await firebaseRemoteConfigRepository.initialize();
+
+      // Activate Firebase App Check
+      await FirebaseAppCheck.instance.activate(
+        webProvider: ReCaptchaV3Provider(
+          firebaseRemoteConfigRepository.recaptchaSiteKey,
+        ),
+        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
+      );
+
+      await SentryErrorMonitoringClient().init(
+        dsn: firebaseRemoteConfigRepository.sentryDsn,
+        debug: kDebugMode,
+        environment: kDebugMode ? 'dev' : 'prod',
+        considerInAppFramesByDefault: false,
+        attachScreenshot: true,
+        attachViewHierarchy: true,
+      );
+
+      final analyticsClients = await _getAnalyticsClients(firebaseRemoteConfigRepository);
+
+      runApp(
+        SentryWidget(
+          child: MyApp(
+            firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+            analyticsClients: analyticsClients,
+          ),
+        ),
+      );
+    },
+    (error, stackTrace) async {
+      try {
+        await Sentry.captureException(error, stackTrace: stackTrace);
+      } catch (e) {
+        appLogger.e('Failed to capture error: $e', stackTrace: stackTrace);
+      }
+    },
   );
-  await firebaseRemoteConfigRepository.initialize();
+}
 
-  // Activate Firebase App Check
-  await FirebaseAppCheck.instance.activate(
-    webProvider: ReCaptchaV3Provider(
-      firebaseRemoteConfigRepository.recaptchaSiteKey,
+Future<List<AnalyticsClient>> _getAnalyticsClients(
+  FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+) async {
+  if (kDebugMode) {
+    return [
+      LoggerAnalyticsClient(),
+    ];
+  }
+
+  final mixpanelProjectToken = firebaseRemoteConfigRepository.mixpanelProjectToken;
+  if (mixpanelProjectToken.isEmpty) {
+    return [
+      FirebaseAnalyticsClient(
+        analytics: FirebaseAnalytics.instance,
+      ),
+    ];
+  }
+
+  final mixpanel = await Mixpanel.init(
+    mixpanelProjectToken,
+    trackAutomaticEvents: true,
+  );
+
+  return [
+    MixpanelAnalyticsClient(
+      mixpanel: mixpanel,
     ),
-    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
-  );
+    FirebaseAnalyticsClient(
+      analytics: FirebaseAnalytics.instance,
+    ),
+  ];
+}
 
-  runApp(
-    MultiBlocProvider(
+class MyApp extends StatelessWidget {
+  const MyApp({
+    required this.firebaseRemoteConfigRepository,
+    required this.analyticsClients,
+    super.key,
+  });
+
+  final FirebaseRemoteConfigRepository firebaseRemoteConfigRepository;
+  final List<AnalyticsClient> analyticsClients;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
       providers: [
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
+        RepositoryProvider(
+          create: (_) {
+            return AnalyticsFacade(analyticsClients);
+          },
+        ),
         RepositoryProvider(
           create: (_) {
             final dio = Dio();
@@ -122,23 +215,14 @@ void main() async {
           },
         ),
       ],
-      child: MyApp(),
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.lightTheme,
-      home: const TravelFormScreen(),
-      routes: {'/results': (context) => const ResultsScreen()},
+      child: MaterialApp(
+        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.lightTheme,
+        home: const TravelFormScreen(),
+        routes: {'/results': (context) => const ResultsScreen()},
+      ),
     );
   }
 }

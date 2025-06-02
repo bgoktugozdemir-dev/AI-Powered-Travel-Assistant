@@ -1,8 +1,8 @@
 name: travel_assistant
-description: "A new Flutter project."
+description: "AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.3+4
 
 environment:
   sdk: ^3.7.2
@@ -70,8 +70,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   gpt_markdown: ^1.0.19
   url_launcher: ^6.3.1
-  flutter_to_pdf: ^0.4.0
-  share_plus: ^11.0.0
+  firebase_analytics: ^11.4.6
+  mixpanel_flutter: ^2.4.3
+  sentry_flutter: ^8.14.2
 
 # Add dependency override to fix flutter_math_fork compatibility issue
 dependency_overrides:
@@ -86,6 +87,7 @@ dev_dependencies:
   freezed: ^3.0.6
   retrofit_generator: ^9.2.0
   json_serializable: ^6.9.5
+  sentry_dart_plugin: ^2.4.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -136,3 +138,15 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+sentry:
+  project: travel-assistant
+  org: bgoktugozdemir
+  auth_token: # Generate Token from Sentry and hide it
+  # Disable automatic upload of debug symbols
+  # upload_debug_symbols: false
+  # Enable source context
+  upload_source_context: true
+  # Enable source maps with ignore missing flag for first releases
+  upload_source_maps: true
+  # Add ignore-missing flag to handle first release or missing git history
+  ignore_missing: true

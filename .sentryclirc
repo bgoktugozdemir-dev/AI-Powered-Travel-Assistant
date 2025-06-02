@@ -1,0 +1,9 @@
+[defaults]
+org=bgoktugozdemir
+project=travel-assistant
+
+[releases]
+ignore_missing=true
+
+[upload_source_maps]
+ignore_missing=true 

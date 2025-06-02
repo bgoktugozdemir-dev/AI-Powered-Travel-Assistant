@@ -1,25 +1,31 @@
 import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:logger/logger.dart';
 
+abstract class _Constants {
+  static const int methodCount = 1;
+  static const int errorMethodCount = 8;
+  static const int lineLength = 100;
+}
+
+/// Custom filter that completely disables logging in production
+class _ReleaseFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) {
+    // Only log in debug mode, completely disable in release
+    return kDebugMode;
+  }
+}
+
 /// Global logger instance for the application.
 final appLogger = Logger(
   printer: PrettyPrinter(
-    methodCount: 1, // Number of method calls to be displayed
-    errorMethodCount: 8, // Number of method calls if stacktrace is provided
-    lineLength: 100, // Width of the output
+    methodCount: _Constants.methodCount, // Number of method calls to be displayed
+    errorMethodCount: _Constants.errorMethodCount, // Number of method calls if stacktrace is provided
+    lineLength: _Constants.lineLength, // Width of the output
     colors: true, // Colorful log messages
     printEmojis: true, // Print an emoji for each log message
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart, // Print timestamp
   ),
-  // Optional: Filter logs in release mode
-  filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
-  // By default, DevelopmentFilter logs all levels in debug mode,
-  // and ProductionFilter logs nothing in release mode.
-  // You can customize further if needed, e.g., ProductionFilter(level: Level.warning)
+  // Custom filter that completely disables logs in release mode
+  filter: _ReleaseFilter(),
 );
-
-// To make it even more concise, you can define simple log functions:
-// void logD(dynamic message) => appLogger.d(message);
-// void logI(dynamic message) => appLogger.i(message);
-// void logW(dynamic message, [dynamic error, StackTrace? stackTrace]) => appLogger.w(message, error: error, stackTrace: stackTrace);
-// void logE(dynamic message, [dynamic error, StackTrace? stackTrace]) => appLogger.e(message, error: error, stackTrace: stackTrace);

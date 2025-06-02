@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
@@ -53,8 +54,9 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                   }
 
                   if (pickedDateRange != null) {
-                    appLogger.i(
-                      "Date range selected: ${Formatters.logDate(pickedDateRange.start)} - ${Formatters.logDate(pickedDateRange.end)}",
+                    context.read<AnalyticsFacade>().logChooseTravelDates(
+                      Formatters.logDate(pickedDateRange.start),
+                      Formatters.logDate(pickedDateRange.end),
                     );
                     bloc.add(TravelFormDateRangeSelected(pickedDateRange));
                   } else {

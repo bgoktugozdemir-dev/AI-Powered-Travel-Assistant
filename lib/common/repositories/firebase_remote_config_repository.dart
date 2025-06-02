@@ -30,6 +30,12 @@ enum RemoteConfigs {
   /// Key for the Recaptcha site key.
   recaptchaSiteKey(key: 'recaptcha_site_key', defaultValue: ''),
 
+  /// Key for the Mixpanel project token.
+  mixpanelProjectToken(key: 'mixpanel_project_token', defaultValue: ''),
+
+  /// Key for the Sentry DSN.
+  sentryDsn(key: 'sentry_dsn', defaultValue: ''),
+
   /// Key for the Unsplash Client ID.
   unsplashClientId(key: 'unsplash_client_id', defaultValue: ''),
 
@@ -147,6 +153,16 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns the Recaptcha site key string if available, otherwise an empty string.
   String get recaptchaSiteKey => _firebaseRemoteConfig.getString(RemoteConfigs.recaptchaSiteKey.key);
+
+  /// Fetches the Mixpanel project token from Firebase Remote Config.
+  ///
+  /// Returns the Mixpanel project token string if available, otherwise an empty string.
+  String get mixpanelProjectToken => _firebaseRemoteConfig.getString(RemoteConfigs.mixpanelProjectToken.key);
+
+  /// Fetches the Sentry DSN from Firebase Remote Config.
+  ///
+  /// Returns the Sentry DSN string if available, otherwise an empty string.
+  String get sentryDsn => _firebaseRemoteConfig.getString(RemoteConfigs.sentryDsn.key);
 
   /// Fetches the Unsplash Client ID from Firebase Remote Config.
   ///

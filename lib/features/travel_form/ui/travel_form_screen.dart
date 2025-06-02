@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/constants/app_assets.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
@@ -24,8 +25,7 @@ class TravelFormScreen extends StatefulWidget {
   State<TravelFormScreen> createState() => _TravelFormScreenState();
 }
 
-class _TravelFormScreenState extends State<TravelFormScreen>
-    with LoadingOverlayHelper {
+class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlayHelper {
   final _departureAirportController = TextEditingController();
   final _arrivalAirportController = TextEditingController();
   final _pageController = PageController();
@@ -55,16 +55,14 @@ class _TravelFormScreenState extends State<TravelFormScreen>
     context.read<TravelFormBloc>().stream.listen((state) {
       // Departure airport controller update
       if (state.selectedDepartureAirport != null &&
-          _departureAirportController.text !=
-              state.departureAirportSearchTerm) {
+          _departureAirportController.text != state.departureAirportSearchTerm) {
         _departureAirportController.text = state.departureAirportSearchTerm;
         _departureAirportController.selection = TextSelection.fromPosition(
           TextPosition(offset: _departureAirportController.text.length),
         );
       }
       // Arrival airport controller update
-      if (state.selectedArrivalAirport != null &&
-          _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
+      if (state.selectedArrivalAirport != null && _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
         _arrivalAirportController.text = state.arrivalAirportSearchTerm;
         _arrivalAirportController.selection = TextSelection.fromPosition(
           TextPosition(offset: _arrivalAirportController.text.length),
@@ -72,8 +70,7 @@ class _TravelFormScreenState extends State<TravelFormScreen>
       }
 
       // Navigate to results screen if form submission is successful
-      if (state.formSubmissionStatus == FormSubmissionStatus.success &&
-          mounted) {
+      if (state.formSubmissionStatus == FormSubmissionStatus.success && mounted) {
         appLogger.i("Form submission successful, navigating to results screen");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const ResultsScreen()),
@@ -95,8 +92,7 @@ class _TravelFormScreenState extends State<TravelFormScreen>
     final l10n = AppLocalizations.of(context);
 
     return BlocListener<TravelFormBloc, TravelFormState>(
-      listenWhen:
-          (previous, current) => previous.currentStep != current.currentStep,
+      listenWhen: (previous, current) => previous.currentStep != current.currentStep,
       listener: (context, state) {
         _pageController.animateToPage(
           state.currentStep,
@@ -105,11 +101,10 @@ class _TravelFormScreenState extends State<TravelFormScreen>
         );
       },
       child: BlocListener<TravelFormBloc, TravelFormState>(
-        listenWhen:
-            (previous, current) =>
-                previous.formSubmissionStatus != current.formSubmissionStatus,
+        listenWhen: (previous, current) => previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
           if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
+            context.read<AnalyticsFacade>().logSubmitTravelDetails();
             showLoadingOverlay(
               context,
               loadingAsset: AppAssets.flightSearchIndicatorLottie,
@@ -122,11 +117,11 @@ class _TravelFormScreenState extends State<TravelFormScreen>
         child: BlocConsumer<TravelFormBloc, TravelFormState>(
           listenWhen: (previous, current) => previous.error != current.error,
           listener: (context, state) {
+            context.read<AnalyticsFacade>().logTravelFormError(
+              state.error?.toString() ?? "Error occurred",
+              state.currentStep.toString(),
+            );
             if (state.error != null) {
-              appLogger.w(
-                "Validation failed for step ${state.currentStep}: ${state.error}",
-              );
-
               showGeneralDialog(
                 context: context,
                 pageBuilder: (context, animation, secondaryAnimation) {
@@ -147,17 +142,14 @@ class _TravelFormScreenState extends State<TravelFormScreen>
 
             // Update text controller if search term changed from outside (e.g. after selection)
             // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
-            if (_departureAirportController.text !=
-                    state.departureAirportSearchTerm &&
-                state.currentStep == 0) {
+            if (_departureAirportController.text != state.departureAirportSearchTerm && state.currentStep == 0) {
               // To avoid listener loop if typing, only update if it's different and relevant
               // A more robust way might be to only set this when an item is *selected*.
               // For now, this is a simplified sync.
             }
 
             // Show loading indicator when submitting
-            final bool isSubmitting =
-                state.formSubmissionStatus == FormSubmissionStatus.submitting;
+            final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
             return Scaffold(
               appBar: AppBar(
                 leading:
@@ -288,8 +280,7 @@ class _TravelFormScreenState extends State<TravelFormScreen>
     TravelFormState state,
     AppLocalizations l10n,
   ) {
-    final bool isSubmitting =
-        state.formSubmissionStatus == FormSubmissionStatus.submitting;
+    final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
 
     return isSubmitting
         ? null
