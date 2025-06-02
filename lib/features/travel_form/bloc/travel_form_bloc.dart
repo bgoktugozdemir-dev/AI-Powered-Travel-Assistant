@@ -121,6 +121,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     // Initialize services
     add(const TravelFormInitializeServices());
+    add(const LoadTravelPurposesEvent());
   }
 
   /// Initialize all required services
@@ -445,7 +446,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     emit(state.copyWith(isTravelPurposesLoading: true));
 
     try {
-      final purposes = await _travelPurposeService.getTravelPurposes(event.l10n);
+      final purposes = _travelPurposeService.getTravelPurposes();
       emit(
         state.copyWith(
           availableTravelPurposes: purposes,

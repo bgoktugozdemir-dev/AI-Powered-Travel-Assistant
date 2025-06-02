@@ -13,7 +13,7 @@ class TravelPurposeService {
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
 
   /// Returns all available travel purposes with localized names.
-  Future<List<TravelPurpose>> getTravelPurposes(AppLocalizations l10n) async {
+  List<TravelPurpose> getTravelPurposes() {
     try {
       // Get travel purposes from Firebase Remote Config (already decoded)
       final travelPurposesData = _firebaseRemoteConfigRepository.travelPurposes;

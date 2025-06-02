@@ -111,14 +111,11 @@ class TravelFormNationalitySelected extends TravelFormEvent {
 
 /// Event triggered to load available travel purposes.
 class LoadTravelPurposesEvent extends TravelFormEvent {
-  /// The localization object for getting localized strings.
-  final AppLocalizations l10n;
-
   /// Creates a [LoadTravelPurposesEvent] event.
-  const LoadTravelPurposesEvent(this.l10n);
+  const LoadTravelPurposesEvent();
 
   @override
-  List<Object?> get props => [l10n];
+  List<Object?> get props => [];
 }
 
 /// Event triggered when a travel purpose is toggled (selected or unselected).

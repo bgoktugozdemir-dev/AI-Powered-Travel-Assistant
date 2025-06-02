@@ -8,27 +8,9 @@ import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_ste
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 /// A step in the travel form that allows users to select their travel purposes.
-class TravelPurposeStep extends StatefulWidget {
+class TravelPurposeStep extends StatelessWidget {
   /// Creates a [TravelPurposeStep] widget.
   const TravelPurposeStep({super.key});
-
-  @override
-  State<TravelPurposeStep> createState() => _TravelPurposeStepState();
-}
-
-class _TravelPurposeStepState extends State<TravelPurposeStep> {
-  bool _hasLoadedPurposes = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Load travel purposes when dependencies are available
-    if (!_hasLoadedPurposes) {
-      final l10n = AppLocalizations.of(context);
-      context.read<TravelFormBloc>().add(LoadTravelPurposesEvent(l10n));
-      _hasLoadedPurposes = true;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
