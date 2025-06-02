@@ -1,31 +1,25 @@
-import 'dart:async'; // For Future
+import 'dart:async';
 
-// Added
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// For Dio and DioError
-import 'package:equatable/equatable.dart'; // For ValueGetter
-import 'package:flutter/material.dart'; // For DateTimeRange
+import 'package:rxdart/rxdart.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
-import 'package:travel_assistant/common/models/airport.dart'; // Import Airport model
-import 'package:travel_assistant/common/models/country.dart'; // Import Country model
+import 'package:travel_assistant/common/models/airport.dart';
+import 'package:travel_assistant/common/models/country.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
-import 'package:travel_assistant/common/models/travel_purpose.dart'; // Import TravelPurpose model
-import 'package:travel_assistant/common/repositories/airport_repository.dart'; // Import repository
+import 'package:travel_assistant/common/models/travel_purpose.dart';
+import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/gemini_repository.dart';
 import 'package:travel_assistant/common/repositories/image_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
-// Import service for direct instantiation (temp)
-// Import the interceptor
-import 'package:travel_assistant/common/services/country_service.dart'; // Import CountryService
-import 'package:travel_assistant/common/services/travel_purpose_service.dart'; // Import TravelPurposeService
-import 'package:rxdart/rxdart.dart';
+import 'package:travel_assistant/common/services/country_service.dart';
+import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
-import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart'; // Added
-import 'package:travel_assistant/l10n/app_localizations.dart';
+import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 
 part 'travel_form_event.dart';
 part 'travel_form_state.dart';
