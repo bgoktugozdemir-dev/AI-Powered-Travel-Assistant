@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
@@ -75,7 +74,7 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
                     );
 
                     return FilterChip(
-                      label: Text(purpose.name),
+                      label: Text(purpose.getLocalizedName(l10n)),
                       selected: isSelected,
                       avatar: Icon(
                         purpose.getIconData(),

@@ -18,9 +18,9 @@ class GeminiRepository {
 
   /// Generates text based on the provided prompt using Gemini AI.
   ///
-  /// [prompt] The text prompt to send to the Gemini model.
+  /// [travelInformation] The travel information to send to the Gemini model.
   ///
-  /// Returns the generated text response.
+  /// Returns the generated travel details response.
   /// Throws an exception if text generation fails.
   Future<TravelDetails> generateTravelPlan(
     TravelInformation travelInformation,

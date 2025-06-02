@@ -10,16 +10,13 @@ part 'travel_information.freezed.dart';
 abstract class TravelInformation with _$TravelInformation {
   const TravelInformation._();
 
-  @Assert(
-    'travelPurposes.length > 0',
-    'Travel purposes must be a non-empty list',
-  )
   const factory TravelInformation({
     required Airport departureAirport,
     required Airport arrivalAirport,
     required DateTimeRange dateRange,
     required Country nationality,
     required List<TravelPurpose> travelPurposes,
+    required String locale,
   }) = _TravelInformation;
 
   /// Custom JSON conversion for Airport to JSON
@@ -47,6 +44,7 @@ abstract class TravelInformation with _$TravelInformation {
       'travel_date_range': _dateRangeToJson(dateRange),
       'nationality': _countryToJson(nationality),
       'travel_purposes': _travelPurposesToJson(travelPurposes),
+      'locale': locale,
     };
   }
 }

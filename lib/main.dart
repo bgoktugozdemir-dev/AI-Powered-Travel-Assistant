@@ -50,15 +50,6 @@ Future<void> main() async {
       );
       await firebaseRemoteConfigRepository.initialize();
 
-      // Activate Firebase App Check
-      await FirebaseAppCheck.instance.activate(
-        webProvider: ReCaptchaV3Provider(
-          firebaseRemoteConfigRepository.recaptchaSiteKey,
-        ),
-        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
-      );
-
       await SentryErrorMonitoringClient().init(
         dsn: firebaseRemoteConfigRepository.sentryDsn,
         debug: kDebugMode,
@@ -66,6 +57,15 @@ Future<void> main() async {
         considerInAppFramesByDefault: false,
         attachScreenshot: true,
         attachViewHierarchy: true,
+      );
+
+      // Activate Firebase App Check
+      await FirebaseAppCheck.instance.activate(
+        webProvider: ReCaptchaV3Provider(
+          firebaseRemoteConfigRepository.recaptchaSiteKey,
+        ),
+        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
       );
 
       final analyticsClients = await _getAnalyticsClients(firebaseRemoteConfigRepository);
@@ -221,6 +221,7 @@ class MyApp extends StatelessWidget {
         onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('tr'),
         theme: AppTheme.lightTheme,
         home: const TravelFormScreen(),
         routes: {'/results': (context) => const ResultsScreen()},

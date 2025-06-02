@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TravelInformation {
 
- Airport get departureAirport; Airport get arrivalAirport; DateTimeRange get dateRange; Country get nationality; List<TravelPurpose> get travelPurposes;
+ Airport get departureAirport; Airport get arrivalAirport; DateTimeRange get dateRange; Country get nationality; List<TravelPurpose> get travelPurposes; String get locale;
 /// Create a copy of TravelInformation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $TravelInformationCopyWith<TravelInformation> get copyWith => _$TravelInformatio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TravelInformation&&(identical(other.departureAirport, departureAirport) || other.departureAirport == departureAirport)&&(identical(other.arrivalAirport, arrivalAirport) || other.arrivalAirport == arrivalAirport)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.nationality, nationality) || other.nationality == nationality)&&const DeepCollectionEquality().equals(other.travelPurposes, travelPurposes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TravelInformation&&(identical(other.departureAirport, departureAirport) || other.departureAirport == departureAirport)&&(identical(other.arrivalAirport, arrivalAirport) || other.arrivalAirport == arrivalAirport)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.nationality, nationality) || other.nationality == nationality)&&const DeepCollectionEquality().equals(other.travelPurposes, travelPurposes)&&(identical(other.locale, locale) || other.locale == locale));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,departureAirport,arrivalAirport,dateRange,nationality,const DeepCollectionEquality().hash(travelPurposes));
+int get hashCode => Object.hash(runtimeType,departureAirport,arrivalAirport,dateRange,nationality,const DeepCollectionEquality().hash(travelPurposes),locale);
 
 @override
 String toString() {
-  return 'TravelInformation(departureAirport: $departureAirport, arrivalAirport: $arrivalAirport, dateRange: $dateRange, nationality: $nationality, travelPurposes: $travelPurposes)';
+  return 'TravelInformation(departureAirport: $departureAirport, arrivalAirport: $arrivalAirport, dateRange: $dateRange, nationality: $nationality, travelPurposes: $travelPurposes, locale: $locale)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $TravelInformationCopyWith<$Res>  {
   factory $TravelInformationCopyWith(TravelInformation value, $Res Function(TravelInformation) _then) = _$TravelInformationCopyWithImpl;
 @useResult
 $Res call({
- Airport departureAirport, Airport arrivalAirport, DateTimeRange dateRange, Country nationality, List<TravelPurpose> travelPurposes
+ Airport departureAirport, Airport arrivalAirport, DateTimeRange dateRange, Country nationality, List<TravelPurpose> travelPurposes, String locale
 });
 
 
@@ -63,14 +63,15 @@ class _$TravelInformationCopyWithImpl<$Res>
 
 /// Create a copy of TravelInformation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? departureAirport = null,Object? arrivalAirport = null,Object? dateRange = null,Object? nationality = null,Object? travelPurposes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? departureAirport = null,Object? arrivalAirport = null,Object? dateRange = null,Object? nationality = null,Object? travelPurposes = null,Object? locale = null,}) {
   return _then(_self.copyWith(
 departureAirport: null == departureAirport ? _self.departureAirport : departureAirport // ignore: cast_nullable_to_non_nullable
 as Airport,arrivalAirport: null == arrivalAirport ? _self.arrivalAirport : arrivalAirport // ignore: cast_nullable_to_non_nullable
 as Airport,dateRange: null == dateRange ? _self.dateRange : dateRange // ignore: cast_nullable_to_non_nullable
 as DateTimeRange,nationality: null == nationality ? _self.nationality : nationality // ignore: cast_nullable_to_non_nullable
 as Country,travelPurposes: null == travelPurposes ? _self.travelPurposes : travelPurposes // ignore: cast_nullable_to_non_nullable
-as List<TravelPurpose>,
+as List<TravelPurpose>,locale: null == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 /// Create a copy of TravelInformation
@@ -108,7 +109,7 @@ $CountryCopyWith<$Res> get nationality {
 
 
 class _TravelInformation extends TravelInformation {
-  const _TravelInformation({required this.departureAirport, required this.arrivalAirport, required this.dateRange, required this.nationality, required final  List<TravelPurpose> travelPurposes}): assert(travelPurposes.length > 0, 'Travel purposes must be a non-empty list'),_travelPurposes = travelPurposes,super._();
+  const _TravelInformation({required this.departureAirport, required this.arrivalAirport, required this.dateRange, required this.nationality, required final  List<TravelPurpose> travelPurposes, required this.locale}): _travelPurposes = travelPurposes,super._();
   
 
 @override final  Airport departureAirport;
@@ -122,6 +123,7 @@ class _TravelInformation extends TravelInformation {
   return EqualUnmodifiableListView(_travelPurposes);
 }
 
+@override final  String locale;
 
 /// Create a copy of TravelInformation
 /// with the given fields replaced by the non-null parameter values.
@@ -133,16 +135,16 @@ _$TravelInformationCopyWith<_TravelInformation> get copyWith => __$TravelInforma
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TravelInformation&&(identical(other.departureAirport, departureAirport) || other.departureAirport == departureAirport)&&(identical(other.arrivalAirport, arrivalAirport) || other.arrivalAirport == arrivalAirport)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.nationality, nationality) || other.nationality == nationality)&&const DeepCollectionEquality().equals(other._travelPurposes, _travelPurposes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TravelInformation&&(identical(other.departureAirport, departureAirport) || other.departureAirport == departureAirport)&&(identical(other.arrivalAirport, arrivalAirport) || other.arrivalAirport == arrivalAirport)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.nationality, nationality) || other.nationality == nationality)&&const DeepCollectionEquality().equals(other._travelPurposes, _travelPurposes)&&(identical(other.locale, locale) || other.locale == locale));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,departureAirport,arrivalAirport,dateRange,nationality,const DeepCollectionEquality().hash(_travelPurposes));
+int get hashCode => Object.hash(runtimeType,departureAirport,arrivalAirport,dateRange,nationality,const DeepCollectionEquality().hash(_travelPurposes),locale);
 
 @override
 String toString() {
-  return 'TravelInformation(departureAirport: $departureAirport, arrivalAirport: $arrivalAirport, dateRange: $dateRange, nationality: $nationality, travelPurposes: $travelPurposes)';
+  return 'TravelInformation(departureAirport: $departureAirport, arrivalAirport: $arrivalAirport, dateRange: $dateRange, nationality: $nationality, travelPurposes: $travelPurposes, locale: $locale)';
 }
 
 
@@ -153,7 +155,7 @@ abstract mixin class _$TravelInformationCopyWith<$Res> implements $TravelInforma
   factory _$TravelInformationCopyWith(_TravelInformation value, $Res Function(_TravelInformation) _then) = __$TravelInformationCopyWithImpl;
 @override @useResult
 $Res call({
- Airport departureAirport, Airport arrivalAirport, DateTimeRange dateRange, Country nationality, List<TravelPurpose> travelPurposes
+ Airport departureAirport, Airport arrivalAirport, DateTimeRange dateRange, Country nationality, List<TravelPurpose> travelPurposes, String locale
 });
 
 
@@ -170,14 +172,15 @@ class __$TravelInformationCopyWithImpl<$Res>
 
 /// Create a copy of TravelInformation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? departureAirport = null,Object? arrivalAirport = null,Object? dateRange = null,Object? nationality = null,Object? travelPurposes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? departureAirport = null,Object? arrivalAirport = null,Object? dateRange = null,Object? nationality = null,Object? travelPurposes = null,Object? locale = null,}) {
   return _then(_TravelInformation(
 departureAirport: null == departureAirport ? _self.departureAirport : departureAirport // ignore: cast_nullable_to_non_nullable
 as Airport,arrivalAirport: null == arrivalAirport ? _self.arrivalAirport : arrivalAirport // ignore: cast_nullable_to_non_nullable
 as Airport,dateRange: null == dateRange ? _self.dateRange : dateRange // ignore: cast_nullable_to_non_nullable
 as DateTimeRange,nationality: null == nationality ? _self.nationality : nationality // ignore: cast_nullable_to_non_nullable
 as Country,travelPurposes: null == travelPurposes ? _self._travelPurposes : travelPurposes // ignore: cast_nullable_to_non_nullable
-as List<TravelPurpose>,
+as List<TravelPurpose>,locale: null == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

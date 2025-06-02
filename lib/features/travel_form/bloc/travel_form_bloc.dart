@@ -517,6 +517,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         dateRange: state.selectedDateRange!,
         nationality: state.selectedNationality!,
         travelPurposes: state.selectedTravelPurposes,
+        locale: event.locale,
       );
 
       // Simulate API call with delay
