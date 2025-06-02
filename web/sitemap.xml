@@ -6,7 +6,7 @@
 
     <!-- Homepage / Travel Form -->
     <url>
-        <loc>http://travel.bgoktugozdemir.net/</loc>
+        <loc>https://travel.bgoktugozdemir.net/</loc>
         <lastmod>2024-01-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
@@ -14,7 +14,7 @@
     
     <!-- Travel Planning -->
     <url>
-        <loc>http://travel.bgoktugozdemir.net/travel-form</loc>
+        <loc>https://travel.bgoktugozdemir.net/travel-form</loc>
         <lastmod>2024-01-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
@@ -22,7 +22,7 @@
     
     <!-- Travel Results -->
     <url>
-        <loc>http://travel.bgoktugozdemir.net/results</loc>
+        <loc>https://travel.bgoktugozdemir.net/results</loc>
         <lastmod>2024-01-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -30,7 +30,7 @@
     
     <!-- Confirmation -->
     <url>
-        <loc>http://travel.bgoktugozdemir.net/confirmation</loc>
+        <loc>https://travel.bgoktugozdemir.net/confirmation</loc>
         <lastmod>2024-01-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
