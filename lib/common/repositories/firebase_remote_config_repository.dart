@@ -275,15 +275,14 @@ class FirebaseRemoteConfigRepository {
     try {
       final jsonString = _firebaseRemoteConfig.getString(RemoteConfigs.travelPurposes.key);
       if (jsonString.isEmpty) {
-        final parsed = jsonDecode(_Constants.travelPurposes);
-        return parsed['data'] as List<Map<String, dynamic>>;
+        throw Exception('Travel purposes are empty');
       }
-      final List<dynamic> parsed = jsonDecode(jsonString);
-      return parsed.cast<Map<String, dynamic>>();
+      final parsed = jsonDecode(jsonString);
+      return (parsed['data'] as List).cast<Map<String, dynamic>>();
     } catch (e) {
       appLogger.e('Error parsing travel purposes from Firebase Remote Config', error: e);
       final parsed = jsonDecode(_Constants.travelPurposes);
-      return parsed['data'] as List<Map<String, dynamic>>;
+      return (parsed['data'] as List).cast<Map<String, dynamic>>();
     }
   }
 }
