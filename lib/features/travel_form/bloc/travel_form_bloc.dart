@@ -25,6 +25,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart'; // Added
+import 'package:travel_assistant/l10n/app_localizations.dart';
 
 part 'travel_form_event.dart';
 part 'travel_form_state.dart';
@@ -437,10 +438,14 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     LoadTravelPurposesEvent event,
     Emitter<TravelFormState> emit,
   ) async {
+    if (state.availableTravelPurposes.isNotEmpty) {
+      return;
+    }
+
     emit(state.copyWith(isTravelPurposesLoading: true));
 
     try {
-      final purposes = await _travelPurposeService.getTravelPurposes();
+      final purposes = await _travelPurposeService.getTravelPurposes(event.l10n);
       emit(
         state.copyWith(
           availableTravelPurposes: purposes,

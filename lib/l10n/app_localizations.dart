@@ -745,6 +745,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sharing failed, but travel plan was copied to clipboard'**
   String get sharingFallbackClipboard;
+
+  /// Call to action text to discover recommendations
+  ///
+  /// In en, this message translates to:
+  /// **'See what others recommend in this destination!'**
+  String get discoverRecommendations;
+
+  /// Button text to edit the travel plan
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Travel Plan'**
+  String get editTravelPlan;
+
+  /// Button text to generate recommendations
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Recommendations'**
+  String get generateRecommendations;
+
+  /// Travel purpose: Sightseeing
+  ///
+  /// In en, this message translates to:
+  /// **'Sightseeing'**
+  String get travelPurposeSightseeing;
+
+  /// Travel purpose: Local Food
+  ///
+  /// In en, this message translates to:
+  /// **'Local Food'**
+  String get travelPurposeFood;
+
+  /// Travel purpose: Business
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get travelPurposeBusiness;
+
+  /// Travel purpose: Visiting Friends
+  ///
+  /// In en, this message translates to:
+  /// **'Visiting Friends'**
+  String get travelPurposeFriends;
+
+  /// Travel purpose: Family Visit
+  ///
+  /// In en, this message translates to:
+  /// **'Family Visit'**
+  String get travelPurposeFamily;
+
+  /// Travel purpose: Adventure
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure'**
+  String get travelPurposeAdventure;
+
+  /// Travel purpose: Relaxation
+  ///
+  /// In en, this message translates to:
+  /// **'Relaxation'**
+  String get travelPurposeRelaxation;
+
+  /// Travel purpose: Cultural Experience
+  ///
+  /// In en, this message translates to:
+  /// **'Cultural Experience'**
+  String get travelPurposeCultural;
+
+  /// Travel purpose: Shopping
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get travelPurposeShopping;
+
+  /// Travel purpose: Education
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get travelPurposeEducation;
+
+  /// Travel purpose: Sports & Activities
+  ///
+  /// In en, this message translates to:
+  /// **'Sports & Activities'**
+  String get travelPurposeSports;
+
+  /// Travel purpose: Medical Tourism
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Tourism'**
+  String get travelPurposeMedical;
+
+  /// Travel purpose: Honeymoon
+  ///
+  /// In en, this message translates to:
+  /// **'Honeymoon'**
+  String get travelPurposeHoneymoon;
+
+  /// Travel purpose: Religious Pilgrimage
+  ///
+  /// In en, this message translates to:
+  /// **'Religious Pilgrimage'**
+  String get travelPurposeReligious;
+
+  /// Travel purpose: Photo Spots
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Spots'**
+  String get travelPurposePhotoSpots;
+
+  /// Travel purpose: Nightlife
+  ///
+  /// In en, this message translates to:
+  /// **'Nightlife'**
+  String get travelPurposeNightlife;
+
+  /// Travel purpose: Nature & Wildlife
+  ///
+  /// In en, this message translates to:
+  /// **'Nature & Wildlife'**
+  String get travelPurposeNature;
+
+  /// Travel purpose: Festivals & Events
+  ///
+  /// In en, this message translates to:
+  /// **'Festivals & Events'**
+  String get travelPurposeFestivals;
 }
 
 class _AppLocalizationsDelegate

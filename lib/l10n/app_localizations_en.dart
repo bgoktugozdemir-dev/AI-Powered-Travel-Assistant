@@ -406,4 +406,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sharingFallbackClipboard =>
       'Sharing failed, but travel plan was copied to clipboard';
+
+  @override
+  String get discoverRecommendations =>
+      'See what others recommend in this destination!';
+
+  @override
+  String get editTravelPlan => 'Edit Travel Plan';
+
+  @override
+  String get generateRecommendations => 'Generate Recommendations';
+
+  @override
+  String get travelPurposeSightseeing => 'Sightseeing';
+
+  @override
+  String get travelPurposeFood => 'Local Food';
+
+  @override
+  String get travelPurposeBusiness => 'Business';
+
+  @override
+  String get travelPurposeFriends => 'Visiting Friends';
+
+  @override
+  String get travelPurposeFamily => 'Family Visit';
+
+  @override
+  String get travelPurposeAdventure => 'Adventure';
+
+  @override
+  String get travelPurposeRelaxation => 'Relaxation';
+
+  @override
+  String get travelPurposeCultural => 'Cultural Experience';
+
+  @override
+  String get travelPurposeShopping => 'Shopping';
+
+  @override
+  String get travelPurposeEducation => 'Education';
+
+  @override
+  String get travelPurposeSports => 'Sports & Activities';
+
+  @override
+  String get travelPurposeMedical => 'Medical Tourism';
+
+  @override
+  String get travelPurposeHoneymoon => 'Honeymoon';
+
+  @override
+  String get travelPurposeReligious => 'Religious Pilgrimage';
+
+  @override
+  String get travelPurposePhotoSpots => 'Photo Spots';
+
+  @override
+  String get travelPurposeNightlife => 'Nightlife';
+
+  @override
+  String get travelPurposeNature => 'Nature & Wildlife';
+
+  @override
+  String get travelPurposeFestivals => 'Festivals & Events';
 }

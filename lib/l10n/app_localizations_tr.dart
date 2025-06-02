@@ -407,4 +407,68 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get sharingFallbackClipboard =>
       'Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı';
+
+  @override
+  String get discoverRecommendations =>
+      'Bu destinasyonda diğerlerinin önerdiklerini görün!';
+
+  @override
+  String get editTravelPlan => 'Seyahat Planını Düzenle';
+
+  @override
+  String get generateRecommendations => 'Öneriler Oluştur';
+
+  @override
+  String get travelPurposeSightseeing => 'Gezme';
+
+  @override
+  String get travelPurposeFood => 'Yerel Yemekler';
+
+  @override
+  String get travelPurposeBusiness => 'İş';
+
+  @override
+  String get travelPurposeFriends => 'Arkadaş Ziyareti';
+
+  @override
+  String get travelPurposeFamily => 'Aile Ziyareti';
+
+  @override
+  String get travelPurposeAdventure => 'Macera';
+
+  @override
+  String get travelPurposeRelaxation => 'Dinlenme';
+
+  @override
+  String get travelPurposeCultural => 'Kültürel Deneyim';
+
+  @override
+  String get travelPurposeShopping => 'Alışveriş';
+
+  @override
+  String get travelPurposeEducation => 'Eğitim';
+
+  @override
+  String get travelPurposeSports => 'Spor ve Aktiviteler';
+
+  @override
+  String get travelPurposeMedical => 'Medikal Turizm';
+
+  @override
+  String get travelPurposeHoneymoon => 'Balayı';
+
+  @override
+  String get travelPurposeReligious => 'Dini Hac';
+
+  @override
+  String get travelPurposePhotoSpots => 'Fotoğraf Çekimi';
+
+  @override
+  String get travelPurposeNightlife => 'Gece Hayatı';
+
+  @override
+  String get travelPurposeNature => 'Doğa ve Vahşi Yaşam';
+
+  @override
+  String get travelPurposeFestivals => 'Festival ve Etkinlikler';
 }

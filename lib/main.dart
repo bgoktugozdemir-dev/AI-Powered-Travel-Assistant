@@ -202,7 +202,9 @@ class MyApp extends StatelessWidget {
             final currencyRepository = context.read<CurrencyRepository>();
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
-            final travelPurposeService = TravelPurposeService();
+            final travelPurposeService = TravelPurposeService(
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+            );
             return TravelFormBloc(
               geminiRepository: geminiRepository,
               airportRepository: airportRepository,

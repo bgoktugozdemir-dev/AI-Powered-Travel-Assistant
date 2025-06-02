@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
@@ -17,11 +18,17 @@ class TravelPurposeStep extends StatefulWidget {
 }
 
 class _TravelPurposeStepState extends State<TravelPurposeStep> {
+  bool _hasLoadedPurposes = false;
+
   @override
-  void initState() {
-    super.initState();
-    // Load travel purposes when the step is initialized
-    context.read<TravelFormBloc>().add(const LoadTravelPurposesEvent());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Load travel purposes when dependencies are available
+    if (!_hasLoadedPurposes) {
+      final l10n = AppLocalizations.of(context);
+      context.read<TravelFormBloc>().add(LoadTravelPurposesEvent(l10n));
+      _hasLoadedPurposes = true;
+    }
   }
 
   @override
@@ -71,7 +78,7 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
                       label: Text(purpose.name),
                       selected: isSelected,
                       avatar: Icon(
-                        TravelPurposeService.getIconForPurpose(purpose.icon),
+                        purpose.getIconData(),
                         size: 18,
                       ),
                       showCheckmark: false,
