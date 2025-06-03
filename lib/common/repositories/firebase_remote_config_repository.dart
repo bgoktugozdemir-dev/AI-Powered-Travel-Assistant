@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,9 @@ abstract class _Constants {
   static final Map<String, dynamic> defaults = Map.fromEntries(
     RemoteConfigs.values.map((e) => MapEntry(e.key, e.defaultValue)),
   );
+
+  static const String travelPurposes =
+      "{\"data\":[{\"id\":\"sightseeing\",\"name\":\"Sightseeing\",\"localizationKey\":\"travelPurposeSightseeing\",\"icon\":\"photo_camera\"},{\"id\":\"food\",\"name\":\"Local Food\",\"localizationKey\":\"travelPurposeFood\",\"icon\":\"restaurant\"},{\"id\":\"business\",\"name\":\"Business\",\"localizationKey\":\"travelPurposeBusiness\",\"icon\":\"business_center\"},{\"id\":\"friends\",\"name\":\"Visiting Friends\",\"localizationKey\":\"travelPurposeFriends\",\"icon\":\"people\"},{\"id\":\"family\",\"name\":\"Family Visit\",\"localizationKey\":\"travelPurposeFamily\",\"icon\":\"family_restroom\"},{\"id\":\"adventure\",\"name\":\"Adventure\",\"localizationKey\":\"travelPurposeAdventure\",\"icon\":\"hiking\"},{\"id\":\"relaxation\",\"name\":\"Relaxation\",\"localizationKey\":\"travelPurposeRelaxation\",\"icon\":\"beach_access\"},{\"id\":\"cultural\",\"name\":\"Cultural Experience\",\"localizationKey\":\"travelPurposeCultural\",\"icon\":\"museum\"},{\"id\":\"shopping\",\"name\":\"Shopping\",\"localizationKey\":\"travelPurposeShopping\",\"icon\":\"shopping_bag\"},{\"id\":\"education\",\"name\":\"Education\",\"localizationKey\":\"travelPurposeEducation\",\"icon\":\"school\"},{\"id\":\"sports\",\"name\":\"Sports & Activities\",\"localizationKey\":\"travelPurposeSports\",\"icon\":\"sports\"},{\"id\":\"medical\",\"name\":\"Medical Tourism\",\"localizationKey\":\"travelPurposeMedical\",\"icon\":\"medical_services\"},{\"id\":\"honeymoon\",\"name\":\"Honeymoon\",\"localizationKey\":\"travelPurposeHoneymoon\",\"icon\":\"favorite\"},{\"id\":\"religious\",\"name\":\"Religious Pilgrimage\",\"localizationKey\":\"travelPurposeReligious\",\"icon\":\"church\"}]}";
 }
 
 enum RemoteConfigs {
@@ -94,7 +98,16 @@ enum RemoteConfigs {
   showTravelPlanCard(key: 'show_travel_plan_card', defaultValue: true),
 
   /// Show recommendations card.
-  showRecommendationsCard(key: 'show_recommendations_card', defaultValue: true);
+  showRecommendationsCard(key: 'show_recommendations_card', defaultValue: true),
+
+  /// Travel purposes configuration.
+  /// This should contain a JSON array of travel purpose objects.
+  /// Each object should have: id, name, localizationKey, icon
+  /// If empty, defaults will be used.
+  travelPurposes(key: 'travel_purposes', defaultValue: _Constants.travelPurposes),
+
+  /// Travel summary help card delay.
+  travelSummaryHelpCardDelay(key: 'travel_summary_help_card_delay', defaultValue: 15);
 
   const RemoteConfigs({required this.key, required this.defaultValue});
 
@@ -186,7 +199,8 @@ class FirebaseRemoteConfigRepository {
   ///
   /// Returns the search query string if available, otherwise an empty string.
   /// * Arguments: city, country
-  String get unsplashCityImageSearchQuery => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashCityImageSearchQuery.key);
+  String get unsplashCityImageSearchQuery =>
+      _firebaseRemoteConfig.getString(RemoteConfigs.unsplashCityImageSearchQuery.key);
 
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///
@@ -256,4 +270,27 @@ class FirebaseRemoteConfigRepository {
   bool get navigateToNextStepAfterSelectingTravelPurpose => _firebaseRemoteConfig.getBool(
     RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,
   );
+
+  /// Fetches the travel purposes configuration from Firebase Remote Config.
+  ///
+  /// Returns the travel purposes configuration as a list of maps if available, otherwise empty list.
+  List<Map<String, dynamic>> get travelPurposes {
+    try {
+      final jsonString = _firebaseRemoteConfig.getString(RemoteConfigs.travelPurposes.key);
+      if (jsonString.isEmpty) {
+        throw Exception('Travel purposes are empty');
+      }
+      final parsed = jsonDecode(jsonString);
+      return (parsed['data'] as List).cast<Map<String, dynamic>>();
+    } catch (e) {
+      appLogger.e('Error parsing travel purposes from Firebase Remote Config', error: e);
+      final parsed = jsonDecode(_Constants.travelPurposes);
+      return (parsed['data'] as List).cast<Map<String, dynamic>>();
+    }
+  }
+
+  /// Fetches the travel summary help card delay from Firebase Remote Config.
+  ///
+  /// Returns the travel summary help card delay in seconds if available, otherwise 15.
+  int get travelSummaryHelpCardDelay => _firebaseRemoteConfig.getInt(RemoteConfigs.travelSummaryHelpCardDelay.key);
 }

@@ -274,7 +274,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 // Check form validity one more time before submission
                 if (state.isFormValid) {
                   context.read<TravelFormBloc>().add(
-                    const SubmitTravelFormEvent(),
+                    SubmitTravelFormEvent(locale: l10n.localeName),
                   );
                 } else {
                   ScaffoldMessenger.of(

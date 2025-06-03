@@ -50,15 +50,6 @@ Future<void> main() async {
       );
       await firebaseRemoteConfigRepository.initialize();
 
-      // Activate Firebase App Check
-      await FirebaseAppCheck.instance.activate(
-        webProvider: ReCaptchaV3Provider(
-          firebaseRemoteConfigRepository.recaptchaSiteKey,
-        ),
-        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
-      );
-
       await SentryErrorMonitoringClient().init(
         dsn: firebaseRemoteConfigRepository.sentryDsn,
         debug: kDebugMode,
@@ -66,6 +57,15 @@ Future<void> main() async {
         considerInAppFramesByDefault: false,
         attachScreenshot: true,
         attachViewHierarchy: true,
+      );
+
+      // Activate Firebase App Check
+      await FirebaseAppCheck.instance.activate(
+        webProvider: ReCaptchaV3Provider(
+          firebaseRemoteConfigRepository.recaptchaSiteKey,
+        ),
+        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
       );
 
       final analyticsClients = await _getAnalyticsClients(firebaseRemoteConfigRepository);
@@ -139,7 +139,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider.value(value: firebaseRemoteConfigRepository),
         RepositoryProvider(
           create: (_) {
-            return AnalyticsFacade(analyticsClients);
+            return AnalyticsFacade(analyticsClients)..setAnalyticsCollectionEnabled(true);
           },
         ),
         RepositoryProvider(
@@ -202,7 +202,9 @@ class MyApp extends StatelessWidget {
             final currencyRepository = context.read<CurrencyRepository>();
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
-            final travelPurposeService = TravelPurposeService();
+            final travelPurposeService = TravelPurposeService(
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+            );
             return TravelFormBloc(
               geminiRepository: geminiRepository,
               airportRepository: airportRepository,

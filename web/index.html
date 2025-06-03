@@ -102,7 +102,16 @@
   </div>
 
   <script>
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    // Only enable Firebase App Check debug token in development/debug environments
+    const isDebug = window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1' ||
+                   window.location.hostname.includes('local') ||
+                   window.location.protocol === 'file:' ||
+                   window.location.port !== '';
+    
+    if (isDebug) {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
   </script>
 
   <style>

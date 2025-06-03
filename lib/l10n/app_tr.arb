@@ -548,5 +548,89 @@
   "sharingFallbackClipboard": "Paylaşım başarısız oldu, ancak seyahat planı panoya kopyalandı",
   "@sharingFallbackClipboard": {
     "description": "Message when all sharing methods fail but clipboard succeeds"
+  },
+  "discoverRecommendations": "Bu destinasyonda diğerlerinin önerdiklerini görün!",
+  "@discoverRecommendations": {
+    "description": "Call to action text to discover recommendations"
+  },
+  "editTravelPlan": "Seyahat Planını Düzenle",
+  "@editTravelPlan": {
+    "description": "Button text to edit the travel plan"
+  },
+  "generateRecommendations": "Öneriler Oluştur",
+  "@generateRecommendations": {
+    "description": "Button text to generate recommendations"
+  },
+  "travelPurposeSightseeing": "Gezme",
+  "@travelPurposeSightseeing": {
+    "description": "Travel purpose: Sightseeing"
+  },
+  "travelPurposeFood": "Yerel Yemekler",
+  "@travelPurposeFood": {
+    "description": "Travel purpose: Local Food"
+  },
+  "travelPurposeBusiness": "İş",
+  "@travelPurposeBusiness": {
+    "description": "Travel purpose: Business"
+  },
+  "travelPurposeFriends": "Arkadaş Ziyareti",
+  "@travelPurposeFriends": {
+    "description": "Travel purpose: Visiting Friends"
+  },
+  "travelPurposeFamily": "Aile Ziyareti",
+  "@travelPurposeFamily": {
+    "description": "Travel purpose: Family Visit"
+  },
+  "travelPurposeAdventure": "Macera",
+  "@travelPurposeAdventure": {
+    "description": "Travel purpose: Adventure"
+  },
+  "travelPurposeRelaxation": "Dinlenme",
+  "@travelPurposeRelaxation": {
+    "description": "Travel purpose: Relaxation"
+  },
+  "travelPurposeCultural": "Kültürel Deneyim",
+  "@travelPurposeCultural": {
+    "description": "Travel purpose: Cultural Experience"
+  },
+  "travelPurposeShopping": "Alışveriş",
+  "@travelPurposeShopping": {
+    "description": "Travel purpose: Shopping"
+  },
+  "travelPurposeEducation": "Eğitim",
+  "@travelPurposeEducation": {
+    "description": "Travel purpose: Education"
+  },
+  "travelPurposeSports": "Spor ve Aktiviteler",
+  "@travelPurposeSports": {
+    "description": "Travel purpose: Sports & Activities"
+  },
+  "travelPurposeMedical": "Medikal Turizm",
+  "@travelPurposeMedical": {
+    "description": "Travel purpose: Medical Tourism"
+  },
+  "travelPurposeHoneymoon": "Balayı",
+  "@travelPurposeHoneymoon": {
+    "description": "Travel purpose: Honeymoon"
+  },
+  "travelPurposeReligious": "Dini Hac",
+  "@travelPurposeReligious": {
+    "description": "Travel purpose: Religious Pilgrimage"
+  },
+  "travelPurposePhotoSpots": "Fotoğraf Çekimi",
+  "@travelPurposePhotoSpots": {
+    "description": "Travel purpose: Photo Spots"
+  },
+  "travelPurposeNightlife": "Gece Hayatı",
+  "@travelPurposeNightlife": {
+    "description": "Travel purpose: Nightlife"
+  },
+  "travelPurposeNature": "Doğa ve Vahşi Yaşam",
+  "@travelPurposeNature": {
+    "description": "Travel purpose: Nature & Wildlife"
+  },
+  "travelPurposeFestivals": "Festival ve Etkinlikler",
+  "@travelPurposeFestivals": {
+    "description": "Travel purpose: Festivals & Events"
   }
 }

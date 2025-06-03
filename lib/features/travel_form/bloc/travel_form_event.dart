@@ -113,6 +113,9 @@ class TravelFormNationalitySelected extends TravelFormEvent {
 class LoadTravelPurposesEvent extends TravelFormEvent {
   /// Creates a [LoadTravelPurposesEvent] event.
   const LoadTravelPurposesEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Event triggered when a travel purpose is toggled (selected or unselected).
@@ -135,8 +138,14 @@ class ToggleTravelPurposeEvent extends TravelFormEvent {
 
 /// Event triggered when the form is submitted to generate a travel plan.
 class SubmitTravelFormEvent extends TravelFormEvent {
+  /// The locale for the response language.
+  final String locale;
+
   /// Creates a [SubmitTravelFormEvent] event.
-  const SubmitTravelFormEvent();
+  const SubmitTravelFormEvent({required this.locale});
+
+  @override
+  List<Object?> get props => [locale];
 }
 
 /// Event triggered to retry country service initialization.

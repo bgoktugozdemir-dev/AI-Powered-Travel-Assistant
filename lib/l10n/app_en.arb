@@ -551,5 +551,89 @@
   "sharingFallbackClipboard": "Sharing failed, but travel plan was copied to clipboard",
   "@sharingFallbackClipboard": {
     "description": "Message when all sharing methods fail but clipboard succeeds"
+  },
+  "discoverRecommendations": "See what others recommend in this destination!",
+  "@discoverRecommendations": {
+    "description": "Call to action text to discover recommendations"
+  },
+  "editTravelPlan": "Edit Travel Plan",
+  "@editTravelPlan": {
+    "description": "Button text to edit the travel plan"
+  },
+  "generateRecommendations": "Generate Recommendations",
+  "@generateRecommendations": {
+    "description": "Button text to generate recommendations"
+  },
+  "travelPurposeSightseeing": "Sightseeing",
+  "@travelPurposeSightseeing": {
+    "description": "Travel purpose: Sightseeing"
+  },
+  "travelPurposeFood": "Local Food",
+  "@travelPurposeFood": {
+    "description": "Travel purpose: Local Food"
+  },
+  "travelPurposeBusiness": "Business",
+  "@travelPurposeBusiness": {
+    "description": "Travel purpose: Business"
+  },
+  "travelPurposeFriends": "Visiting Friends",
+  "@travelPurposeFriends": {
+    "description": "Travel purpose: Visiting Friends"
+  },
+  "travelPurposeFamily": "Family Visit",
+  "@travelPurposeFamily": {
+    "description": "Travel purpose: Family Visit"
+  },
+  "travelPurposeAdventure": "Adventure",
+  "@travelPurposeAdventure": {
+    "description": "Travel purpose: Adventure"
+  },
+  "travelPurposeRelaxation": "Relaxation",
+  "@travelPurposeRelaxation": {
+    "description": "Travel purpose: Relaxation"
+  },
+  "travelPurposeCultural": "Cultural Experience",
+  "@travelPurposeCultural": {
+    "description": "Travel purpose: Cultural Experience"
+  },
+  "travelPurposeShopping": "Shopping",
+  "@travelPurposeShopping": {
+    "description": "Travel purpose: Shopping"
+  },
+  "travelPurposeEducation": "Education",
+  "@travelPurposeEducation": {
+    "description": "Travel purpose: Education"
+  },
+  "travelPurposeSports": "Sports & Activities",
+  "@travelPurposeSports": {
+    "description": "Travel purpose: Sports & Activities"
+  },
+  "travelPurposeMedical": "Medical Tourism",
+  "@travelPurposeMedical": {
+    "description": "Travel purpose: Medical Tourism"
+  },
+  "travelPurposeHoneymoon": "Honeymoon",
+  "@travelPurposeHoneymoon": {
+    "description": "Travel purpose: Honeymoon"
+  },
+  "travelPurposeReligious": "Religious Pilgrimage",
+  "@travelPurposeReligious": {
+    "description": "Travel purpose: Religious Pilgrimage"
+  },
+  "travelPurposePhotoSpots": "Photo Spots",
+  "@travelPurposePhotoSpots": {
+    "description": "Travel purpose: Photo Spots"
+  },
+  "travelPurposeNightlife": "Nightlife",
+  "@travelPurposeNightlife": {
+    "description": "Travel purpose: Nightlife"
+  },
+  "travelPurposeNature": "Nature & Wildlife",
+  "@travelPurposeNature": {
+    "description": "Travel purpose: Nature & Wildlife"
+  },
+  "travelPurposeFestivals": "Festivals & Events",
+  "@travelPurposeFestivals": {
+    "description": "Travel purpose: Festivals & Events"
   }
 }

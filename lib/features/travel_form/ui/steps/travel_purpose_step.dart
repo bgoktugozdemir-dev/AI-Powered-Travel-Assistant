@@ -1,28 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 /// A step in the travel form that allows users to select their travel purposes.
-class TravelPurposeStep extends StatefulWidget {
+class TravelPurposeStep extends StatelessWidget {
   /// Creates a [TravelPurposeStep] widget.
   const TravelPurposeStep({super.key});
-
-  @override
-  State<TravelPurposeStep> createState() => _TravelPurposeStepState();
-}
-
-class _TravelPurposeStepState extends State<TravelPurposeStep> {
-  @override
-  void initState() {
-    super.initState();
-    // Load travel purposes when the step is initialized
-    context.read<TravelFormBloc>().add(const LoadTravelPurposesEvent());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +56,10 @@ class _TravelPurposeStepState extends State<TravelPurposeStep> {
                     );
 
                     return FilterChip(
-                      label: Text(purpose.name),
+                      label: Text(purpose.getLocalizedName(l10n)),
                       selected: isSelected,
                       avatar: Icon(
-                        TravelPurposeService.getIconForPurpose(purpose.icon),
+                        purpose.getIconData(),
                         size: 18,
                       ),
                       showCheckmark: false,

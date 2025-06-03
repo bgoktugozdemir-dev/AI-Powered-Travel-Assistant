@@ -65,6 +65,7 @@ api_keys.dart
 secrets.dart
 keys.dart
 assets/ai/
+assets/firebase/
 **/constants/api_keys.dart
 **/constants/secrets.dart
 
