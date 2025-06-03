@@ -51,9 +51,7 @@ class Flight {
     required this.price,
     required this.currency,
     required this.stops,
-    required this.stopDurations,
-    required this.layovers,
-    required this.layoverDurations,
+    required this.layoverDetails,
     required this.moreInformation,
   });
 
@@ -89,20 +87,27 @@ class Flight {
   @JsonKey(name: 'stops')
   final int stops;
 
-  @JsonKey(name: 'stop_durations', fromJson: _durationListFromJson)
-  final List<Duration>? stopDurations;
-
-  @JsonKey(name: 'layovers')
-  final int layovers;
-
-  @JsonKey(name: 'layover_durations', fromJson: _durationListFromJson)
-  final List<Duration>? layoverDurations;
+  @JsonKey(name: 'layover_details')
+  final List<LayoverDetail> layoverDetails;
 
   @JsonKey(name: 'more_information')
   final String moreInformation;
 
   static Duration _durationFromJson(int duration) => Duration(minutes: duration);
+}
 
-  static List<Duration>? _durationListFromJson(List<dynamic>? durations) =>
-      durations?.map((duration) => _durationFromJson(int.parse(duration.toString()))).toList();
+@JsonSerializable(createToJson: false)
+class LayoverDetail {
+  const LayoverDetail({
+    required this.airport,
+    required this.durationMinutes,
+  });
+
+  factory LayoverDetail.fromJson(Map<String, dynamic> json) => _$LayoverDetailFromJson(json);
+
+  @JsonKey(name: 'airport')
+  final String airport;
+
+  @JsonKey(name: 'duration_minutes')
+  final int durationMinutes;
 }

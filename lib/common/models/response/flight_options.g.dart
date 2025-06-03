@@ -31,10 +31,15 @@ Flight _$FlightFromJson(Map<String, dynamic> json) => Flight(
   price: (json['price'] as num).toDouble(),
   currency: json['currency'] as String,
   stops: (json['stops'] as num).toInt(),
-  stopDurations: Flight._durationListFromJson(json['stop_durations'] as List?),
-  layovers: (json['layovers'] as num).toInt(),
-  layoverDurations: Flight._durationListFromJson(
-    json['layover_durations'] as List?,
-  ),
+  layoverDetails:
+      (json['layover_details'] as List<dynamic>)
+          .map((e) => LayoverDetail.fromJson(e as Map<String, dynamic>))
+          .toList(),
   moreInformation: json['more_information'] as String,
 );
+
+LayoverDetail _$LayoverDetailFromJson(Map<String, dynamic> json) =>
+    LayoverDetail(
+      airport: json['airport'] as String,
+      durationMinutes: (json['duration_minutes'] as num).toInt(),
+    );
