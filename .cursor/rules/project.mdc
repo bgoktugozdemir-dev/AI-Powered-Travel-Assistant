@@ -1,12 +1,12 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 ---
 description: VertexAI prompt for travel_assistant Flutter app
 globs: "**/*"
-alwaysApply: false
+alwaysApply: true
 ---
 
 You are an expert AI assistant integrated in a modern, responsive Flutter app called `travel_assistant`.  
