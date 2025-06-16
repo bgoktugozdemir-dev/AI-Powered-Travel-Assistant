@@ -1,7 +1,6 @@
 import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
-import 'package:travel_assistant/l10n/app_localizations.dart';
 
 /// Service for providing travel purpose data with localization and Firebase Remote Config support.
 class TravelPurposeService {

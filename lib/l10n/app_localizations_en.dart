@@ -470,4 +470,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get travelPurposeFestivals => 'Festivals & Events';
+
+  @override
+  String get errorPlatformOrBrowser =>
+      'A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.';
 }

@@ -632,5 +632,9 @@
   "travelPurposeFestivals": "Festival ve Etkinlikler",
   "@travelPurposeFestivals": {
     "description": "Travel purpose: Festivals & Events"
+  },
+  "errorPlatformOrBrowser": "Bir tarayıcı veya platform hatası oluştu. Bu, bir tarayıcı eklentisinden veya desteklenmeyen bir ortamdan kaynaklanıyor olabilir. Lütfen eklentileri devre dışı bırakmayı veya başka bir tarayıcı kullanmayı deneyin.",
+  "@errorPlatformOrBrowser": {
+    "description": "Tarayıcı veya platform ile ilgili sorunlar için hata mesajı."
   }
 }

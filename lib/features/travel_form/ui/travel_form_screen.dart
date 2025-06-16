@@ -14,7 +14,7 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 abstract class _Constants {
   static const pageTransitionDuration = Duration(milliseconds: 300);
   static const pageTransitionCurve = Curves.easeInOut;
-  
+
   // Button Keys
   static const String buttonPreviousStep = 'button_previous_step';
   static const String buttonNextStep = 'button_next_step';
@@ -186,35 +186,22 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                       onPressed: _onNextButtonPressed(context, state, l10n),
                       icon: const Icon(Icons.arrow_forward),
                     )
-                  // else if (state.currentStep == state.totalSteps - 1)
-                  //   IconButton(
-                  //     key: const Key(_Constants.buttonSubmitAppbar),
-                  //     tooltip: l10n.navigationSubmit,
-                  //     onPressed:
-                  //         isSubmitting
-                  //             ? null
-                  //             : () {
-                  //               appLogger.i(
-                  //                 "'Get Travel Plan' (Submit) button pressed.",
-                  //               );
-                  //               // Check form validity one more time before submission
-                  //               if (state.isFormValid) {
-                  //                 context.read<TravelFormBloc>().add(
-                  //                   const SubmitTravelFormEvent(),
-                  //                 );
-                  //               } else {
-                  //                 ScaffoldMessenger.of(
-                  //                   context,
-                  //                 ).showSnackBar(
-                  //                   SnackBar(
-                  //                     content: Text(l10n.formValidationError),
-                  //                     backgroundColor: Colors.red,
-                  //                   ),
-                  //                 );
-                  //               }
-                  //             },
-                  //     icon: const Icon(Icons.send),
-                  //   ),
+                  else if (state.currentStep == state.totalSteps - 1)
+                    IconButton(
+                      key: const Key(_Constants.buttonSubmitAppbar),
+                      tooltip: l10n.navigationSubmit,
+                      onPressed:
+                          isSubmitting
+                              ? null
+                              : () {
+                                appLogger.i(
+                                  "'Get Travel Plan' (Submit) button pressed from AppBar.",
+                                );
+                                // Check form validity one more time before submission
+                                _onSubmitButtonPressed(context, state, l10n);
+                              },
+                      icon: const Icon(Icons.send),
+                    ),
                 ],
               ),
               resizeToAvoidBottomInset: true,
@@ -272,23 +259,27 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                   "'Get My Travel Plan' (Submit) button pressed from FAB.",
                 );
                 // Check form validity one more time before submission
-                if (state.isFormValid) {
-                  context.read<TravelFormBloc>().add(
-                    SubmitTravelFormEvent(locale: l10n.localeName),
-                  );
-                } else {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.formValidationError),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                _onSubmitButtonPressed(context, state, l10n);
               },
       icon: const Icon(Icons.send),
       label: Text(l10n.submitTravelPlan),
     );
+  }
+
+  void _onSubmitButtonPressed(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+    if (state.isFormValid) {
+      context.read<TravelFormBloc>().add(
+        SubmitTravelFormEvent(locale: l10n.localeName),
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        SnackBar(
+          content: Text(l10n.formValidationError),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

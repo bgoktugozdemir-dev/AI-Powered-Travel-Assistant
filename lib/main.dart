@@ -37,6 +37,9 @@ import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart
 import 'package:travel_assistant/firebase_options.dart';
 import 'package:travel_assistant/common/theme/app_theme.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
+import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 
 Future<void> main() async {
   await runZonedGuarded(
@@ -78,6 +81,21 @@ Future<void> main() async {
           ),
         ),
       );
+
+      // Global error handler for web platform/browser errors
+      if (kIsWeb) {
+        FlutterError.onError = (FlutterErrorDetails details) {
+          final errorString = details.exceptionAsString();
+          if (errorString.contains('Illegal invocation') || errorString.contains('document.createEvent')) {
+            showDialog(
+              context: navigatorKey.currentContext!,
+              builder: (context) => const TravelFormErrorDialog(error: PlatformOrBrowserError()),
+            );
+          } else {
+            FlutterError.dumpErrorToConsole(details);
+          }
+        };
+      }
     },
     (error, stackTrace) async {
       try {
@@ -121,6 +139,8 @@ Future<List<AnalyticsClient>> _getAnalyticsClients(
     ),
   ];
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -218,6 +238,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

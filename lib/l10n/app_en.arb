@@ -635,5 +635,9 @@
   "travelPurposeFestivals": "Festivals & Events",
   "@travelPurposeFestivals": {
     "description": "Travel purpose: Festivals & Events"
+  },
+  "errorPlatformOrBrowser": "A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.",
+  "@errorPlatformOrBrowser": {
+    "description": "Error message for platform or browser-related issues."
   }
 }

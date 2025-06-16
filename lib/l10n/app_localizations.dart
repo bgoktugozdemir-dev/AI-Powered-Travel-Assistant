@@ -871,6 +871,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Festivals & Events'**
   String get travelPurposeFestivals;
+
+  /// Error message for platform or browser-related issues.
+  ///
+  /// In en, this message translates to:
+  /// **'A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.'**
+  String get errorPlatformOrBrowser;
 }
 
 class _AppLocalizationsDelegate

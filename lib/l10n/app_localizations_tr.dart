@@ -471,4 +471,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelPurposeFestivals => 'Festival ve Etkinlikler';
+
+  @override
+  String get errorPlatformOrBrowser =>
+      'Bir tarayıcı veya platform hatası oluştu. Bu, bir tarayıcı eklentisinden veya desteklenmeyen bir ortamdan kaynaklanıyor olabilir. Lütfen eklentileri devre dışı bırakmayı veya başka bir tarayıcı kullanmayı deneyin.';
 }

@@ -53,3 +53,7 @@ class ServerError extends TravelFormError {
 class CountryServiceError extends TravelFormError {
   const CountryServiceError();
 }
+
+class PlatformOrBrowserError extends TravelFormError {
+  const PlatformOrBrowserError();
+}

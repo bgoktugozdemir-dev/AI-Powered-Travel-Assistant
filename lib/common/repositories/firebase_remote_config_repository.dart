@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
+import 'package:travel_assistant/common/models/firebase_ai_generation_config.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 abstract class _Constants {
@@ -53,6 +55,12 @@ enum RemoteConfigs {
   cacheFreeCurrencyApiData(
     key: 'cache_free_currency_api_data',
     defaultValue: true,
+  ),
+
+  /// Key for the Firebase AI Logic `GenerationConfig`.
+  generationConfig(
+    key: 'generation_config',
+    defaultValue: '{"response_mime_type":"application/json"}',
   ),
 
   /// Navigate to next step after selecting travel purpose.
@@ -185,6 +193,13 @@ class FirebaseRemoteConfigRepository {
   /// Returns the client ID string if available, otherwise an empty string.
   String get unsplashClientId => _firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
 
+  /// Fetches the Unsplash city image search query from Firebase Remote Config.
+  ///
+  /// Returns the search query string if available, otherwise an empty string.
+  /// * Arguments: city, country
+  String get unsplashCityImageSearchQuery =>
+      _firebaseRemoteConfig.getString(RemoteConfigs.unsplashCityImageSearchQuery.key);
+
   /// Fetches the Free Currency API key from Firebase Remote Config.
   ///
   /// Returns the API key string if available, otherwise an empty string.
@@ -195,12 +210,22 @@ class FirebaseRemoteConfigRepository {
   /// Returns true if the cache free currency api data should be cached, otherwise true.
   bool get cacheFreeCurrencyApiData => _firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
 
-  /// Fetches the Unsplash city image search query from Firebase Remote Config.
+  /// Fetches the generation config from Firebase Remote Config.
   ///
-  /// Returns the search query string if available, otherwise an empty string.
-  /// * Arguments: city, country
-  String get unsplashCityImageSearchQuery =>
-      _firebaseRemoteConfig.getString(RemoteConfigs.unsplashCityImageSearchQuery.key);
+  /// Returns the generation config if available, otherwise null.
+  Map<String, dynamic>? get generationConfig {
+    try {
+      final jsonString = _firebaseRemoteConfig.getString(RemoteConfigs.generationConfig.key);
+      if (jsonString.isEmpty) {
+        return null;
+      }
+      final json = jsonDecode(jsonString);
+      return FirebaseAIGenerationConfig.fromJson(json);
+    } catch (e) {
+      appLogger.e('Error parsing generation config from Firebase Remote Config', error: e);
+      return null;
+    }
+  }
 
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///
