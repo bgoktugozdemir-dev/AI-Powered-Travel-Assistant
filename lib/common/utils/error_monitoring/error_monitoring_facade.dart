@@ -7,6 +7,13 @@ class ErrorMonitoringFacade implements ErrorMonitoringClient {
   final List<ErrorMonitoringClient> _clients;
 
   @override
+  Future<void> init() async {
+    await _dispatch(
+      (client) async => client.init(),
+    );
+  }
+
+  @override
   void setErrorMonitoringEnabled(bool enabled) {
     _dispatch(
       (client) async => client.setErrorMonitoringEnabled(enabled),

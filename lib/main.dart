@@ -29,6 +29,9 @@ import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/analytics/firebase_analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/logger_analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/mixpanel_analytics_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/logger_error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
@@ -53,15 +56,6 @@ Future<void> main() async {
       );
       await firebaseRemoteConfigRepository.initialize();
 
-      await SentryErrorMonitoringClient().init(
-        dsn: firebaseRemoteConfigRepository.sentryDsn,
-        debug: kDebugMode,
-        environment: kDebugMode ? 'dev' : 'prod',
-        considerInAppFramesByDefault: false,
-        attachScreenshot: true,
-        attachViewHierarchy: true,
-      );
-
       // Activate Firebase App Check
       await FirebaseAppCheck.instance.activate(
         webProvider: ReCaptchaV3Provider(
@@ -72,12 +66,14 @@ Future<void> main() async {
       );
 
       final analyticsClients = await _getAnalyticsClients(firebaseRemoteConfigRepository);
+      final errorMonitoringClients = await _getErrorMonitoringClients(firebaseRemoteConfigRepository);
 
       runApp(
         SentryWidget(
           child: MyApp(
             firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
             analyticsClients: analyticsClients,
+            errorMonitoringClients: errorMonitoringClients,
           ),
         ),
       );
@@ -99,7 +95,7 @@ Future<void> main() async {
     },
     (error, stackTrace) async {
       try {
-        await Sentry.captureException(error, stackTrace: stackTrace);
+        appLogger.e('Failed to capture error: $error', stackTrace: stackTrace);
       } catch (e) {
         appLogger.e('Failed to capture error: $e', stackTrace: stackTrace);
       }
@@ -140,27 +136,59 @@ Future<List<AnalyticsClient>> _getAnalyticsClients(
   ];
 }
 
+Future<List<ErrorMonitoringClient>> _getErrorMonitoringClients(
+  FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+) async {
+  late final List<ErrorMonitoringClient> clients;
+
+  if (kDebugMode) {
+    clients = [
+      LoggerErrorMonitoringClient(),
+    ];
+  } else {
+    final sentryClient = SentryErrorMonitoringClient();
+    await sentryClient.init(
+      dsn: firebaseRemoteConfigRepository.sentryDsn,
+      debug: kDebugMode,
+      environment: kDebugMode ? 'dev' : 'prod',
+      considerInAppFramesByDefault: false,
+      attachScreenshot: true,
+      attachViewHierarchy: true,
+    );
+    clients = [
+      sentryClient,
+    ];
+  }
+
+  return clients;
+}
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({
     required this.firebaseRemoteConfigRepository,
     required this.analyticsClients,
+    required this.errorMonitoringClients,
     super.key,
   });
 
   final FirebaseRemoteConfigRepository firebaseRemoteConfigRepository;
   final List<AnalyticsClient> analyticsClients;
+  final List<ErrorMonitoringClient> errorMonitoringClients;
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        RepositoryProvider.value(value: firebaseRemoteConfigRepository),
+        RepositoryProvider.value(
+          value: firebaseRemoteConfigRepository,
+        ),
         RepositoryProvider(
-          create: (_) {
-            return AnalyticsFacade(analyticsClients)..setAnalyticsCollectionEnabled(true);
-          },
+          create: (_) => AnalyticsFacade(analyticsClients)..setAnalyticsCollectionEnabled(true),
+        ),
+        RepositoryProvider(
+          create: (_) => ErrorMonitoringFacade(errorMonitoringClients),
         ),
         RepositoryProvider(
           create: (_) {

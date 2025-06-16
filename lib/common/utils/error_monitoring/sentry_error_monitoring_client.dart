@@ -43,6 +43,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   bool _enabled;
 
   /// Initializes Sentry with the provided configuration.
+  @override
   Future<void> init({
     AppRunner? appRunner,
     String? dsn,

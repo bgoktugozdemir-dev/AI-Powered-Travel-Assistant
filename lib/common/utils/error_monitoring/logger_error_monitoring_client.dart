@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 
@@ -16,24 +14,27 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   final Map<String, dynamic> _customData = {};
 
   @override
-  FutureOr<void> setErrorMonitoringEnabled(bool enabled) {
+  void init() {}
+
+  @override
+  void setErrorMonitoringEnabled(bool enabled) {
     _enabled = enabled;
     appLogger.i('Error monitoring ${enabled ? 'enabled' : 'disabled'}');
   }
 
   @override
-  FutureOr<void> setUser(String userId) {
+  void setUser(String userId) {
     _userId = userId;
     appLogger.i('Error monitoring user set: $userId');
   }
 
   @override
-  FutureOr<void> reportError(
+  void reportError(
     Object error, {
     StackTrace? stackTrace,
     Map<String, dynamic>? context,
   }) {
-    if (!_enabled) return Future<void>.value();
+    if (!_enabled) return;
 
     final combinedContext = _buildContext(context);
     appLogger.e(
@@ -47,12 +48,12 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> reportException(
+  void reportException(
     Exception exception, {
     StackTrace? stackTrace,
     Map<String, dynamic>? context,
   }) {
-    if (!_enabled) return Future<void>.value();
+    if (!_enabled) return;
 
     final combinedContext = _buildContext(context);
     appLogger.e(
@@ -66,12 +67,12 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> addBreadcrumb(
+  void addBreadcrumb(
     String message, {
     String? category,
     Map<String, dynamic>? data,
   }) {
-    if (!_enabled) return Future<void>.value();
+    if (!_enabled) return;
 
     final breadcrumbCategory = category ?? _Constants.defaultCategory;
     final breadcrumbData = data ?? {};
@@ -83,24 +84,24 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> setCustomData(String key, dynamic value) {
+  void setCustomData(String key, dynamic value) {
     _customData[key] = value;
     appLogger.d('Custom data set: $key = $value');
   }
 
   @override
-  FutureOr<void> setCustomContext(Map<String, dynamic> context) {
+  void setCustomContext(Map<String, dynamic> context) {
     _customData.addAll(context);
     appLogger.d('Custom context set: $context');
   }
 
   @override
-  FutureOr<void> captureMessage(
+  void captureMessage(
     String message, {
     String? level,
     Map<String, dynamic>? context,
   }) {
-    if (!_enabled) return Future<void>.value();
+    if (!_enabled) return;
 
     final messageLevel = level ?? _Constants.defaultLevel;
     final combinedContext = _buildContext(context);
@@ -112,13 +113,13 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> clearUser() {
+  void clearUser() {
     _userId = null;
     appLogger.i('Error monitoring user cleared');
   }
 
   @override
-  FutureOr<void> clearCustomData() {
+  void clearCustomData() {
     _customData.clear();
     appLogger.i('Error monitoring custom data cleared');
   }

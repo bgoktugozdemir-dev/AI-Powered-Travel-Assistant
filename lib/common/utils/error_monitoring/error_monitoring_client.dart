@@ -1,6 +1,9 @@
 import 'dart:async';
 
 abstract class ErrorMonitoringClient {
+  /// Initializes the error monitoring client.
+  FutureOr<void> init();
+
   /// Sets the error monitoring collection enabled flag.
   FutureOr<void> setErrorMonitoringEnabled(bool enabled);
 
