@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:travel_assistant/common/models/firebase_ai_generation_config.dart';
@@ -213,7 +212,7 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the generation config from Firebase Remote Config.
   ///
   /// Returns the generation config if available, otherwise null.
-  Map<String, dynamic>? get generationConfig {
+  FirebaseAIGenerationConfig? get generationConfig {
     try {
       final jsonString = _firebaseRemoteConfig.getString(RemoteConfigs.generationConfig.key);
       if (jsonString.isEmpty) {
