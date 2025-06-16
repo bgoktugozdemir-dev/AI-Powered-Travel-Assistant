@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 abstract class _Constants {
@@ -34,7 +37,12 @@ abstract class _Constants {
   static bool attachViewHierarchy = false;
 }
 
-class SentryErrorMonitoringClient {
+class SentryErrorMonitoringClient implements ErrorMonitoringClient {
+  SentryErrorMonitoringClient() : _enabled = true;
+
+  bool _enabled;
+
+  /// Initializes Sentry with the provided configuration.
   Future<void> init({
     AppRunner? appRunner,
     String? dsn,
@@ -99,6 +107,160 @@ class SentryErrorMonitoringClient {
       }
       // Return normally in production to avoid crashing the app
       return Future.value();
+    }
+  }
+
+  @override
+  FutureOr<void> setErrorMonitoringEnabled(bool enabled) {
+    _enabled = enabled;
+    // Note: Sentry doesn't support runtime enabling/disabling in this version
+    // This would need to be handled at initialization time
+  }
+
+  @override
+  FutureOr<void> setUser(String userId) async {
+    if (!_enabled) return;
+
+    await Sentry.configureScope((scope) {
+      scope.setUser(SentryUser(id: userId));
+    });
+  }
+
+  @override
+  FutureOr<void> reportError(
+    Object error, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) async {
+    if (!_enabled) return;
+
+    await Sentry.captureException(
+      error,
+      stackTrace: stackTrace,
+      withScope: (scope) {
+        if (context != null) {
+          for (final entry in context.entries) {
+            scope.setContexts(entry.key, entry.value);
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  FutureOr<void> reportException(
+    Exception exception, {
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) async {
+    if (!_enabled) return;
+
+    await Sentry.captureException(
+      exception,
+      stackTrace: stackTrace,
+      withScope: (scope) {
+        if (context != null) {
+          for (final entry in context.entries) {
+            scope.setContexts(entry.key, entry.value);
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  FutureOr<void> addBreadcrumb(
+    String message, {
+    String? category,
+    Map<String, dynamic>? data,
+  }) async {
+    if (!_enabled) return;
+
+    await Sentry.addBreadcrumb(
+      Breadcrumb(
+        message: message,
+        category: category,
+        data: data,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  FutureOr<void> setCustomData(String key, dynamic value) async {
+    if (!_enabled) return;
+
+    await Sentry.configureScope((scope) {
+      scope.setTag(key, value.toString());
+    });
+  }
+
+  @override
+  FutureOr<void> setCustomContext(Map<String, dynamic> context) async {
+    if (!_enabled) return;
+
+    await Sentry.configureScope((scope) {
+      for (final entry in context.entries) {
+        scope.setContexts(entry.key, entry.value);
+      }
+    });
+  }
+
+  @override
+  FutureOr<void> captureMessage(
+    String message, {
+    String? level,
+    Map<String, dynamic>? context,
+  }) async {
+    if (!_enabled) return;
+
+    final sentryLevel = _parseSentryLevel(level);
+
+    await Sentry.captureMessage(
+      message,
+      level: sentryLevel,
+      withScope: (scope) {
+        if (context != null) {
+          for (final entry in context.entries) {
+            scope.setContexts(entry.key, entry.value);
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  FutureOr<void> clearUser() async {
+    if (!_enabled) return;
+
+    await Sentry.configureScope((scope) {
+      scope.setUser(null);
+    });
+  }
+
+  @override
+  FutureOr<void> clearCustomData() async {
+    if (!_enabled) return;
+
+    await Sentry.configureScope((scope) {
+      scope.clear();
+    });
+  }
+
+  SentryLevel _parseSentryLevel(String? level) {
+    switch (level?.toLowerCase()) {
+      case 'debug':
+        return SentryLevel.debug;
+      case 'info':
+        return SentryLevel.info;
+      case 'warning':
+        return SentryLevel.warning;
+      case 'error':
+        return SentryLevel.error;
+      case 'fatal':
+        return SentryLevel.fatal;
+      default:
+        return SentryLevel.error;
     }
   }
 }
