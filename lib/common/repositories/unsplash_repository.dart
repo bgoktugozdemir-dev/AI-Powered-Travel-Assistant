@@ -1,6 +1,6 @@
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
 abstract class _Constants {
   static const String cityKey = '{city}';
@@ -11,11 +11,14 @@ class UnsplashRepository {
   UnsplashRepository({
     required UnsplashService unsplashService,
     required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+    required ErrorMonitoringFacade errorMonitoringFacade,
   }) : _unsplashService = unsplashService,
-       _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository;
+       _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
+       _errorMonitoringFacade = errorMonitoringFacade;
 
   final UnsplashService _unsplashService;
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
+  final ErrorMonitoringFacade _errorMonitoringFacade;
 
   Future<UnsplashPhoto?> getCityView({
     required String cityName,
@@ -32,8 +35,16 @@ class UnsplashRepository {
       );
 
       return response.results.first;
-    } catch (e) {
-      appLogger.e('Error getting city view from Unsplash', error: e);
+    } catch (e, stackTrace) {
+      _errorMonitoringFacade.reportError(
+        'Error getting city view from Unsplash',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+          'cityName': cityName,
+          'countryName': countryName,
+        },
+      );
       return null;
     }
   }

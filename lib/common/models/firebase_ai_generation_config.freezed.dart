@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FirebaseAIGenerationConfig {
 
- double? get temperature;@JsonKey(name: 'top_p') double? get topP;@JsonKey(name: 'max_output_tokens') int? get maxOutputTokens;@JsonKey(name: 'response_mime_type') String? get responseMimeType;
+ double? get temperature; double? get topP; int? get maxOutputTokens; String? get responseMimeType;
 /// Create a copy of FirebaseAIGenerationConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $FirebaseAIGenerationConfigCopyWith<$Res>  {
   factory $FirebaseAIGenerationConfigCopyWith(FirebaseAIGenerationConfig value, $Res Function(FirebaseAIGenerationConfig) _then) = _$FirebaseAIGenerationConfigCopyWithImpl;
 @useResult
 $Res call({
- double? temperature,@JsonKey(name: 'top_p') double? topP,@JsonKey(name: 'max_output_tokens') int? maxOutputTokens,@JsonKey(name: 'response_mime_type') String? responseMimeType
+ double? temperature, double? topP, int? maxOutputTokens, String? responseMimeType
 });
 
 
@@ -83,13 +83,13 @@ as String?,
 @JsonSerializable()
 
 class _FirebaseAIGenerationConfig extends FirebaseAIGenerationConfig {
-  const _FirebaseAIGenerationConfig({this.temperature, @JsonKey(name: 'top_p') this.topP, @JsonKey(name: 'max_output_tokens') this.maxOutputTokens, @JsonKey(name: 'response_mime_type') this.responseMimeType}): super._();
+  const _FirebaseAIGenerationConfig({required this.temperature, required this.topP, required this.maxOutputTokens, required this.responseMimeType}): super._();
   factory _FirebaseAIGenerationConfig.fromJson(Map<String, dynamic> json) => _$FirebaseAIGenerationConfigFromJson(json);
 
 @override final  double? temperature;
-@override@JsonKey(name: 'top_p') final  double? topP;
-@override@JsonKey(name: 'max_output_tokens') final  int? maxOutputTokens;
-@override@JsonKey(name: 'response_mime_type') final  String? responseMimeType;
+@override final  double? topP;
+@override final  int? maxOutputTokens;
+@override final  String? responseMimeType;
 
 /// Create a copy of FirebaseAIGenerationConfig
 /// with the given fields replaced by the non-null parameter values.
@@ -124,7 +124,7 @@ abstract mixin class _$FirebaseAIGenerationConfigCopyWith<$Res> implements $Fire
   factory _$FirebaseAIGenerationConfigCopyWith(_FirebaseAIGenerationConfig value, $Res Function(_FirebaseAIGenerationConfig) _then) = __$FirebaseAIGenerationConfigCopyWithImpl;
 @override @useResult
 $Res call({
- double? temperature,@JsonKey(name: 'top_p') double? topP,@JsonKey(name: 'max_output_tokens') int? maxOutputTokens,@JsonKey(name: 'response_mime_type') String? responseMimeType
+ double? temperature, double? topP, int? maxOutputTokens, String? responseMimeType
 });
 
 

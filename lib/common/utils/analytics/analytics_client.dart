@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
+
 abstract class AnalyticsClient {
   /// Identifies a user in analytics with the given [userId].
   FutureOr<void> identifyUser(String userId);
@@ -34,8 +36,8 @@ abstract class AnalyticsClient {
   /// Logs when a user unselects a travel [purpose].
   FutureOr<void> logUnselectTravelPurpose(String purpose);
 
-  /// Logs when a user submits their travel details.
-  FutureOr<void> logSubmitTravelDetails();
+  /// Logs when a user submits their travel details with the given [source].
+  FutureOr<void> logSubmitTravelDetails(SubmitTravelDetailsSource source);
 
   /// Logs when a user submits their travel details with an [error] on the given [step].
   FutureOr<void> logTravelFormError(String error, String step);
@@ -48,4 +50,10 @@ abstract class AnalyticsClient {
 
   /// Logs when a user chooses to plan another trip.
   FutureOr<void> logPlanAnotherTrip();
+
+  /// Logs when a user sends a [prompt] to the [model].
+  FutureOr<void> logLLMPrompt(String model, String prompt);
+
+  /// Logs when a user receives a [response] from the [model].
+  FutureOr<void> logLLMResponse(String model, String prompt, String response, int durationMs);
 }

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:travel_assistant/common/models/country.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 abstract class _Constants {
   static const String countryApiUrl =
@@ -25,30 +24,22 @@ class CountryService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    try {
-      final response = await _dio.get(_Constants.countryApiUrl);
-      final List<dynamic> jsonData = jsonDecode(response.data);
+    final response = await _dio.get(_Constants.countryApiUrl);
+    final List<dynamic> jsonData = jsonDecode(response.data);
 
-      _countries =
-          jsonData
-              .map(
-                (item) => Country(
-                  code: item['alpha_2_code'] as String,
-                  name: item['en_short_name'] as String,
-                  nationality: item['nationality'] as String?,
-                  flagEmoji: _getFlagEmoji(item['alpha_2_code'] as String),
-                ),
-              )
-              .toList();
+    _countries =
+        jsonData
+            .map(
+              (item) => Country(
+                code: item['alpha_2_code'] as String,
+                name: item['en_short_name'] as String,
+                nationality: item['nationality'] as String?,
+                flagEmoji: _getFlagEmoji(item['alpha_2_code'] as String),
+              ),
+            )
+            .toList();
 
-      _isInitialized = true;
-      appLogger.i(
-        'CountryService initialized with ${_countries.length} countries',
-      );
-    } catch (e) {
-      appLogger.e('Failed to initialize CountryService', error: e);
-      rethrow; // Rethrow the error instead of using fallback data
-    }
+    _isInitialized = true;
   }
 
   /// Convert country code to flag emoji
@@ -87,8 +78,7 @@ class CountryService {
     return _countries.where((country) {
       return country.name.toLowerCase().contains(lowercaseQuery) ||
           country.code.toLowerCase().contains(lowercaseQuery) ||
-          (country.nationality?.toLowerCase().contains(lowercaseQuery) ??
-              false);
+          (country.nationality?.toLowerCase().contains(lowercaseQuery) ?? false);
     }).toList();
   }
 

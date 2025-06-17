@@ -23,7 +23,16 @@ class TravelFormStarted extends TravelFormEvent {}
 class TravelFormNextStepRequested extends TravelFormEvent {}
 
 /// Event triggered when the user wants to go to the previous step.
-class TravelFormPreviousStepRequested extends TravelFormEvent {}
+class TravelFormPreviousStepRequested extends TravelFormEvent {
+  /// The source of the event.
+  final SubmitTravelDetailsSource source;
+
+  /// Creates a [TravelFormPreviousStepRequested] event.
+  const TravelFormPreviousStepRequested({required this.source});
+
+  @override
+  List<Object?> get props => [source];
+}
 
 /// Event triggered when the departure airport search term changes.
 class TravelFormDepartureAirportSearchTermChanged extends TravelFormEvent {
@@ -141,11 +150,14 @@ class SubmitTravelFormEvent extends TravelFormEvent {
   /// The locale for the response language.
   final String locale;
 
+  /// The source of the event.
+  final SubmitTravelDetailsSource source;
+
   /// Creates a [SubmitTravelFormEvent] event.
-  const SubmitTravelFormEvent({required this.locale});
+  const SubmitTravelFormEvent({required this.locale, required this.source});
 
   @override
-  List<Object?> get props => [locale];
+  List<Object?> get props => [locale, source];
 }
 
 /// Event triggered to retry country service initialization.

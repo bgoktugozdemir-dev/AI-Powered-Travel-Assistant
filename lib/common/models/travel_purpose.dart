@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 part 'travel_purpose.freezed.dart';
@@ -68,11 +67,9 @@ extension TravelPurposeExtension on TravelPurpose {
         case 'travelPurposeFestivals':
           return l10n.travelPurposeFestivals;
         default:
-          appLogger.w('Unknown localization key: $localizationKey, using fallback: $name');
           return name;
       }
-    } catch (e) {
-      appLogger.e('Error getting localized name for $localizationKey', error: e);
+    } catch (_) {
       return name;
     }
   }

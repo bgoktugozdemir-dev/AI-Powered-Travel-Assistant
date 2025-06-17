@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/constants/app_assets.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
+import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 import 'package:travel_assistant/features/travel_form/ui/steps/steps.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/country_service_error_screen.dart';
@@ -52,9 +52,6 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
   @override
   void initState() {
     super.initState();
-    appLogger.i(
-      "TravelFormScreen initialized. Current step: ${context.read<TravelFormBloc>().state.currentStep}",
-    );
     // context.read<TravelFormBloc>().add(TravelFormStarted()); // Moved to MyApp
 
     // Listen to BLoC state changes to update TextEditingControllers and handle navigation
@@ -77,7 +74,6 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
 
       // Navigate to results screen if form submission is successful
       if (state.formSubmissionStatus == FormSubmissionStatus.success && mounted) {
-        appLogger.i("Form submission successful, navigating to results screen");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const ResultsScreen()),
         );
@@ -110,7 +106,6 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
         listenWhen: (previous, current) => previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
           if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
-            context.read<AnalyticsFacade>().logSubmitTravelDetails();
             showLoadingOverlay(
               context,
               loadingAsset: AppAssets.flightSearchIndicatorLottie,
@@ -167,11 +162,10 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                               isSubmitting
                                   ? null
                                   : () {
-                                    appLogger.i(
-                                      "'Previous' button pressed. Current step: ${state.currentStep}, moving to ${state.currentStep - 1}",
-                                    );
                                     context.read<TravelFormBloc>().add(
-                                      TravelFormPreviousStepRequested(),
+                                      TravelFormPreviousStepRequested(
+                                        source: SubmitTravelDetailsSource.appBar,
+                                      ),
                                     );
                                   },
                           icon: const Icon(Icons.arrow_back),
@@ -193,13 +187,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                       onPressed:
                           isSubmitting
                               ? null
-                              : () {
-                                appLogger.i(
-                                  "'Get Travel Plan' (Submit) button pressed from AppBar.",
-                                );
-                                // Check form validity one more time before submission
-                                _onSubmitButtonPressed(context, state, l10n);
-                              },
+                              : () => _onSubmitButtonPressed(context, state, l10n, SubmitTravelDetailsSource.appBar),
                       icon: const Icon(Icons.send),
                     ),
                 ],
@@ -209,9 +197,6 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 controller: _pageController,
                 pageSnapping: false,
                 physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  appLogger.i("Page changed to $index");
-                },
                 children: _travelFormSteps,
               ),
               floatingActionButton: _buildFloatingActionButton(context, state, l10n, isSubmitting),
@@ -231,12 +216,7 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
 
     return isSubmitting
         ? null
-        : () {
-          appLogger.i(
-            "'Next' button pressed. Current step: ${state.currentStep}, attempting to move to ${state.currentStep + 1}",
-          );
-          context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
-        };
+        : () => context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
   }
 
   Widget? _buildFloatingActionButton(
@@ -254,22 +234,16 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
       onPressed:
           isSubmitting
               ? null
-              : () {
-                appLogger.i(
-                  "'Get My Travel Plan' (Submit) button pressed from FAB.",
-                );
-                // Check form validity one more time before submission
-                _onSubmitButtonPressed(context, state, l10n);
-              },
+              : () => _onSubmitButtonPressed(context, state, l10n, SubmitTravelDetailsSource.fab),
       icon: const Icon(Icons.send),
       label: Text(l10n.submitTravelPlan),
     );
   }
 
-  void _onSubmitButtonPressed(BuildContext context, TravelFormState state, AppLocalizations l10n) {
+  void _onSubmitButtonPressed(BuildContext context, TravelFormState state, AppLocalizations l10n, SubmitTravelDetailsSource source) {
     if (state.isFormValid) {
       context.read<TravelFormBloc>().add(
-        SubmitTravelFormEvent(locale: l10n.localeName),
+        SubmitTravelFormEvent(locale: l10n.localeName, source: source),
       );
     } else {
       ScaffoldMessenger.of(

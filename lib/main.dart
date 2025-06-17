@@ -6,7 +6,6 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_ai/firebase_ai.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -18,7 +17,6 @@ import 'package:travel_assistant/common/repositories/gemini_repository.dart';
 import 'package:travel_assistant/common/repositories/image_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/airport_api_service.dart';
-import 'package:travel_assistant/common/services/api_logger_interceptor.dart';
 import 'package:travel_assistant/common/services/free_currency_api_service.dart';
 import 'package:travel_assistant/common/services/gemini_service.dart';
 import 'package:travel_assistant/common/services/image_to_base64_service.dart';
@@ -33,14 +31,13 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/logger_error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_monitoring_client.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
 import 'package:travel_assistant/firebase_options.dart';
 import 'package:travel_assistant/common/theme/app_theme.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 
@@ -94,11 +91,9 @@ Future<void> main() async {
       }
     },
     (error, stackTrace) async {
-      try {
-        appLogger.e('Failed to capture error: $error', stackTrace: stackTrace);
-      } catch (e) {
-        appLogger.e('Failed to capture error: $e', stackTrace: stackTrace);
-      }
+      // Error monitoring is handled by the facade in the app
+      // This is just a fallback for catastrophic failures
+      debugPrint('Global error handler: $error');
     },
   );
 }
@@ -194,7 +189,12 @@ class MyApp extends StatelessWidget {
           create: (_) {
             final dio = Dio();
             final imageService = ImageToBase64Service(dio: dio);
-            return ImageRepository(imageService: imageService);
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+
+            return ImageRepository(
+              imageService: imageService,
+              errorMonitoringFacade: errorMonitoringFacade,
+            );
           },
         ),
         RepositoryProvider(
@@ -207,38 +207,52 @@ class MyApp extends StatelessWidget {
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               firebaseAI: vertexAI,
             );
-            return GeminiRepository(geminiService: geminiService);
+            final analyticsFacade = context.read<AnalyticsFacade>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+            return GeminiRepository(
+              geminiService: geminiService,
+              analyticsFacade: analyticsFacade,
+              errorMonitoringFacade: errorMonitoringFacade,
+            );
           },
         ),
         RepositoryProvider(
           create: (_) {
             final apiService = AirportApiService(
-              Dio()..interceptors.add(ApiLoggerInterceptor()),
+              Dio(),
             );
-            return AirportRepository(apiService: apiService);
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+            return AirportRepository(
+              apiService: apiService,
+              errorMonitoringFacade: errorMonitoringFacade,
+            );
           },
         ),
         RepositoryProvider(
           create: (context) {
             final unsplashService = UnsplashService(
-              Dio()..interceptors.add(ApiLoggerInterceptor()),
+              Dio(),
             );
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return UnsplashRepository(
               unsplashService: unsplashService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              errorMonitoringFacade: errorMonitoringFacade,
             );
           },
         ),
         RepositoryProvider(
           create: (context) {
             final freeCurrencyApiService = FreeCurrencyApiService(
-              Dio()..interceptors.add(ApiLoggerInterceptor()),
+              Dio(),
             );
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return CurrencyRepository(
               freeCurrencyApiService: freeCurrencyApiService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              errorMonitoringFacade: errorMonitoringFacade,
             );
           },
         ),
@@ -250,10 +264,14 @@ class MyApp extends StatelessWidget {
             final currencyRepository = context.read<CurrencyRepository>();
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
+            final analyticsFacade = context.read<AnalyticsFacade>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             final travelPurposeService = TravelPurposeService(
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
             );
             return TravelFormBloc(
+              analyticsFacade: analyticsFacade,
+              errorMonitoringFacade: errorMonitoringFacade,
               geminiRepository: geminiRepository,
               airportRepository: airportRepository,
               unsplashRepository: unsplashRepository,

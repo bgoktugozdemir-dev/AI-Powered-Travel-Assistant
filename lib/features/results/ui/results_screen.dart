@@ -18,7 +18,7 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 abstract class _Constants {
   // Button Keys
   static const String buttonBackResults = 'button_back_results';
-  static const String buttonShareResults = 'button_share_results';
+  // static const String buttonShareResults = 'button_share_results';
   static const String buttonPlanAnotherTrip = 'button_plan_another_trip';
 }
 
@@ -153,8 +153,8 @@ class ResultsScreen extends StatelessWidget {
     );
   }
 
-  void _handleShare(BuildContext context) {
-    // TODO: Implement share functionality for mobile platforms
-    // TODO: Implement download functionality for other platforms
-  }
+  // void _handleShare(BuildContext context) {
+  //   // TODO: Implement share functionality for mobile platforms
+  //   // TODO: Implement download functionality for other platforms
+  // }
 }

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 part 'firebase_ai_generation_config.freezed.dart';
 part 'firebase_ai_generation_config.g.dart';
@@ -47,7 +46,8 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
     } else if (model.contains('gemini-2.5')) {
       return _Constants._availableGemini25MaxOutputTokens;
     }
-    appLogger.e('Unknown model: $model, using default max output tokens: ${_Constants._defaultMaxOutputTokens}');
+
+
     return _Constants._defaultMaxOutputTokens;
   }
 

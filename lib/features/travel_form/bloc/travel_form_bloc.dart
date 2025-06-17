@@ -19,7 +19,9 @@ import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/country_service.dart';
 import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
+import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 
 part 'travel_form_event.dart';
@@ -29,6 +31,8 @@ part 'travel_form_state.dart';
 /// Manages the state for the travel input form.
 /// {@endtemplate}
 class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
+  final AnalyticsFacade _analyticsFacade;
+  final ErrorMonitoringFacade _errorMonitoringFacade;
   final CountryService _countryService;
   final TravelPurposeService _travelPurposeService;
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
@@ -39,6 +43,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final ImageRepository _imageRepository;
 
   TravelFormBloc({
+    required AnalyticsFacade analyticsFacade,
+    required ErrorMonitoringFacade errorMonitoringFacade,
     required AirportRepository airportRepository,
     required TravelPurposeService travelPurposeService,
     required GeminiRepository geminiRepository,
@@ -47,7 +53,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     required CurrencyRepository currencyRepository,
     required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
     CountryService? countryService,
-  }) : _airportRepository = airportRepository,
+  }) : _analyticsFacade = analyticsFacade,
+       _errorMonitoringFacade = errorMonitoringFacade,
+       _airportRepository = airportRepository,
        _travelPurposeService = travelPurposeService,
        _geminiRepository = geminiRepository,
        _unsplashRepository = unsplashRepository,
@@ -124,8 +132,14 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     try {
       await _countryService.initialize();
       emit(state.copyWith(countryServiceStatus: CountryServiceStatus.success));
-    } catch (e) {
-      appLogger.e('Failed to initialize CountryService', error: e);
+    } catch (e, stackTrace) {
+      _errorMonitoringFacade.reportError(
+        'Failed to initialize CountryService.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+        },
+      );
       emit(
         state.copyWith(
           countryServiceStatus: CountryServiceStatus.failure,
@@ -147,15 +161,31 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   ) {
     if (state.currentStep == 0 && state.selectedDepartureAirport == null) {
       emit(state.copyWith(error: () => DepartureAirportMissingError()));
+      _analyticsFacade.logTravelFormError(
+        'Departure airport missing.',
+        '${state.currentStep}',
+      );
       return;
     } else if (state.currentStep == 1 && state.selectedArrivalAirport == null) {
       emit(state.copyWith(error: () => ArrivalAirportMissingError()));
+      _analyticsFacade.logTravelFormError(
+        'Arrival airport missing.',
+        '${state.currentStep}',
+      );
       return;
     } else if (state.currentStep == 2 && state.selectedDateRange == null) {
       emit(state.copyWith(error: () => DateRangeMissingError()));
+      _analyticsFacade.logTravelFormError(
+        'Date range missing.',
+        '${state.currentStep}',
+      );
       return;
     } else if (state.currentStep == 3 && state.selectedNationality == null) {
       emit(state.copyWith(error: () => NationalityMissingError()));
+      _analyticsFacade.logTravelFormError(
+        'Nationality missing.',
+        '${state.currentStep}',
+      );
       return;
     } else if (state.currentStep == 4) {
       final selectedTravelPurposes = state.selectedTravelPurposes.length;
@@ -171,6 +201,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
                 ),
           ),
         );
+        _analyticsFacade.logTravelFormError(
+          'Travel purpose missing.',
+          '${state.currentStep}',
+        );
         return;
       } else if (selectedTravelPurposes > maximumTravelPurposes) {
         emit(
@@ -182,12 +216,18 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
                 ),
           ),
         );
+        _analyticsFacade.logTravelFormError(
+          'Travel purpose too many.',
+          '${state.currentStep}',
+        );
         return;
       }
     }
 
     if (state.currentStep < state.totalSteps - 1) {
-      appLogger.i("Validation passed, moving to next step.");
+      _analyticsFacade.logMoveToNextStep(
+        '${state.currentStep + 1}',
+      );
       emit(
         state.copyWith(currentStep: state.currentStep + 1, error: () => null),
       );
@@ -199,6 +239,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     Emitter<TravelFormState> emit,
   ) {
     if (state.currentStep > 0) {
+      _analyticsFacade.logMoveToPreviousStep(
+        '${state.currentStep - 1}',
+      );
       emit(
         state.copyWith(currentStep: state.currentStep - 1, error: () => null),
       );
@@ -242,7 +285,16 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => null,
         ),
       );
-    } catch (e) {
+      _analyticsFacade.logSearchDepartureAirport(event.searchTerm);
+    } catch (e, stackTrace) {
+      _errorMonitoringFacade.reportError(
+        'Failed to get departure airport suggestions.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+          'searchTerm': event.searchTerm,
+        },
+      );
       emit(
         state.copyWith(
           isDepartureAirportLoading: false,
@@ -264,6 +316,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         departureAirportSuggestions: [],
       ),
     );
+
+    _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
 
     if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
@@ -306,13 +360,22 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => null,
         ),
       );
-    } catch (e) {
+      _analyticsFacade.logSearchArrivalAirport(event.searchTerm);
+    } catch (e, stackTrace) {
       emit(
         state.copyWith(
           isArrivalAirportLoading: false,
           arrivalAirportSuggestions: [],
           error: () => GeneralTravelFormError(),
         ),
+      );
+      _errorMonitoringFacade.reportError(
+        'Failed to get arrival airport suggestions.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+          'searchTerm': event.searchTerm,
+        },
       );
     }
   }
@@ -329,6 +392,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
+    _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
+
     if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
@@ -341,6 +406,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   ) {
     if (event.dateRange.end.isBefore(event.dateRange.start)) {
       emit(state.copyWith(error: () => DateRangeInvalidError()));
+      _analyticsFacade.logTravelFormError(
+        'Date range invalid.',
+        '${state.currentStep}',
+      );
       return;
     }
     emit(
@@ -383,6 +452,13 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => CountryServiceError(),
         ),
       );
+      _errorMonitoringFacade.reportError(
+        'Country service not available.',
+        stackTrace: StackTrace.current,
+        context: {
+          'searchTerm': event.searchTerm,
+        },
+      );
       return;
     }
 
@@ -399,13 +475,22 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => null,
         ),
       );
-    } catch (e) {
+      _analyticsFacade.logSearchNationality(event.searchTerm);
+    } catch (e, stackTrace) {
       emit(
         state.copyWith(
           isNationalityLoading: false,
           nationalitySuggestions: [],
           error: () => CountryServiceError(),
         ),
+      );
+      _errorMonitoringFacade.reportError(
+        'Failed to get nationality suggestions.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+          'searchTerm': event.searchTerm,
+        },
       );
     }
   }
@@ -421,6 +506,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         nationalitySuggestions: [],
       ),
     );
+
+    _analyticsFacade.logChooseNationality(event.country.name);
 
     if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
@@ -443,12 +530,19 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => null,
         ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       emit(
         state.copyWith(
           isTravelPurposesLoading: false,
           error: () => GeneralTravelFormError(),
         ),
+      );
+      _errorMonitoringFacade.reportError(
+        'Failed to load travel purposes.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+        },
       );
     }
   }
@@ -465,10 +559,12 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       // Add purpose if not already in the list
       if (!currentPurposes.any((p) => p.id == event.purpose.id)) {
         currentPurposes.add(event.purpose);
+        _analyticsFacade.logSelectTravelPurpose(event.purpose.name);
       }
     } else {
       // Remove purpose if it exists in the list
       currentPurposes.removeWhere((p) => p.id == event.purpose.id);
+      _analyticsFacade.logUnselectTravelPurpose(event.purpose.name);
     }
 
     emit(state.copyWith(selectedTravelPurposes: currentPurposes));
@@ -486,6 +582,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           formSubmissionStatus: FormSubmissionStatus.failure,
           error: () => GeneralTravelFormError(),
         ),
+      );
+      _analyticsFacade.logTravelFormError(
+        'Form is not valid.',
+        '${state.currentStep}',
       );
       return;
     }
@@ -509,6 +609,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
         travelPurposes: state.selectedTravelPurposes,
         locale: event.locale,
       );
+
+      _analyticsFacade.logSubmitTravelDetails(event.source);
 
       // Simulate API call with delay
       final travelPlan = await _geminiRepository.generateTravelPlan(
@@ -547,13 +649,20 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => null,
         ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle submission error
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
           error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
         ),
+      );
+      _errorMonitoringFacade.reportError(
+        'Failed to submit travel form.',
+        stackTrace: stackTrace,
+        context: {
+          'error': e,
+        },
       );
     }
   }

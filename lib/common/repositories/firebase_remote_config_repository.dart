@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:travel_assistant/common/models/firebase_ai_generation_config.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 abstract class _Constants {
   /// Timeout for fetching the config.
@@ -140,8 +139,8 @@ class FirebaseRemoteConfigRepository {
 
       /// Fetch and activate the config.
       await _fetchAndActivate();
-    } catch (e) {
-      appLogger.e('Error initializing Firebase Remote Config', error: e);
+    } catch (_) {
+      // TODO: Show error page and retry button.
     }
   }
 
@@ -220,8 +219,7 @@ class FirebaseRemoteConfigRepository {
       }
       final json = jsonDecode(jsonString);
       return FirebaseAIGenerationConfig.fromJson(json);
-    } catch (e) {
-      appLogger.e('Error parsing generation config from Firebase Remote Config', error: e);
+    } catch (_) {
       return null;
     }
   }
@@ -306,8 +304,7 @@ class FirebaseRemoteConfigRepository {
       }
       final parsed = jsonDecode(jsonString);
       return (parsed['data'] as List).cast<Map<String, dynamic>>();
-    } catch (e) {
-      appLogger.e('Error parsing travel purposes from Firebase Remote Config', error: e);
+    } catch (_) {
       final parsed = jsonDecode(_Constants.travelPurposes);
       return (parsed['data'] as List).cast<Map<String, dynamic>>();
     }

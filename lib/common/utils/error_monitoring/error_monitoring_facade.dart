@@ -1,5 +1,4 @@
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 class ErrorMonitoringFacade implements ErrorMonitoringClient {
   const ErrorMonitoringFacade(this._clients);
@@ -119,11 +118,7 @@ class ErrorMonitoringFacade implements ErrorMonitoringClient {
     for (var client in _clients) {
       try {
         await work(client);
-      } catch (e) {
-        // Log error but continue with other clients to avoid cascading failures
-        // We can't use the error monitoring here to avoid infinite loops
-        appLogger.w('Error monitoring client failed: $e');
-      }
+      } catch (_) {}
     }
   }
 }

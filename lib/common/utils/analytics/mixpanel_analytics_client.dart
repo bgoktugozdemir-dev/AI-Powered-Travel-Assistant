@@ -1,5 +1,6 @@
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
+import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
 abstract class _Constants {
   static const String searchDepartureAirportEventName = 'Search Departure Airport';
@@ -16,6 +17,8 @@ abstract class _Constants {
   static const String moveToNextStepEventName = 'Move to Next Step';
   static const String moveToPreviousStepEventName = 'Move to Previous Step';
   static const String planAnotherTripEventName = 'Plan Another Trip';
+  static const String llmPromptEventName = 'LLM Prompt';
+  static const String llmResponseEventName = 'LLM Response';
 
   static const String searchQueryParameterName = 'search_query';
   static const String airportParameterName = 'airport';
@@ -25,6 +28,11 @@ abstract class _Constants {
   static const String purposeParameterName = 'purpose';
   static const String stepParameterName = 'step';
   static const String errorParameterName = 'error';
+  static const String sourceParameterName = 'source';
+  static const String modelParameterName = 'model';
+  static const String promptParameterName = 'prompt';
+  static const String responseParameterName = 'response';
+  static const String durationMsParameterName = 'duration_ms';
 }
 
 class MixpanelAnalyticsClient implements AnalyticsClient {
@@ -138,8 +146,13 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> logSubmitTravelDetails() async {
-    await _mixpanel.track(_Constants.submitTravelDetailsEventName);
+  Future<void> logSubmitTravelDetails(SubmitTravelDetailsSource source) async {
+    await _mixpanel.track(
+      _Constants.submitTravelDetailsEventName,
+      properties: {
+        _Constants.sourceParameterName: source.name,
+      },
+    );
   }
 
   @override
@@ -176,5 +189,29 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   @override
   Future<void> logPlanAnotherTrip() async {
     await _mixpanel.track(_Constants.planAnotherTripEventName);
+  }
+
+  @override
+  void logLLMPrompt(String model, String prompt) {
+    _mixpanel.track(
+      _Constants.llmPromptEventName,
+      properties: {
+        _Constants.modelParameterName: model,
+        _Constants.promptParameterName: prompt,
+      },
+    );
+  }
+
+  @override
+  void logLLMResponse(String model, String prompt, String response, int durationMs) {
+    _mixpanel.track(
+      _Constants.llmResponseEventName,
+      properties: {
+        _Constants.modelParameterName: model,
+        _Constants.promptParameterName: prompt,
+        _Constants.responseParameterName: response,
+        _Constants.durationMsParameterName: durationMs,
+      },
+    );
   }
 }

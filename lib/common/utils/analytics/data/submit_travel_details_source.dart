@@ -1,0 +1,4 @@
+enum SubmitTravelDetailsSource {
+  appBar,
+  fab,
+}

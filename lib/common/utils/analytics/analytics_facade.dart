@@ -1,4 +1,5 @@
 import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
+import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
 class AnalyticsFacade implements AnalyticsClient {
   const AnalyticsFacade(this._clients);
@@ -83,9 +84,9 @@ class AnalyticsFacade implements AnalyticsClient {
   }
 
   @override
-  void logSubmitTravelDetails() {
+  void logSubmitTravelDetails(SubmitTravelDetailsSource source) {
     _dispatch(
-      (client) async => client.logSubmitTravelDetails(),
+      (client) async => client.logSubmitTravelDetails(source),
     );
   }
 
@@ -114,6 +115,20 @@ class AnalyticsFacade implements AnalyticsClient {
   void logPlanAnotherTrip() {
     _dispatch(
       (client) async => client.logPlanAnotherTrip(),
+    );
+  }
+
+  @override
+  void logLLMPrompt(String model, String prompt) {
+    _dispatch(
+      (client) async => client.logLLMPrompt(model, prompt),
+    );
+  }
+
+  @override
+  void logLLMResponse(String model, String prompt, String response, int durationMs) {
+    _dispatch(
+      (client) async => client.logLLMResponse(model, prompt, response, durationMs),
     );
   }
 

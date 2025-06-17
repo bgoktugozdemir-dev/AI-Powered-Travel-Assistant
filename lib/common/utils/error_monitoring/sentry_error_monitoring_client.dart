@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 
 abstract class _Constants {
   /// Set sampleRate to 1.0 to capture 100% of transactions for error monitoring.
@@ -99,10 +98,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
         },
         appRunner: appRunner,
       );
-    } catch (e, stackTrace) {
-      // Log the error locally since Sentry isn't initialized yet
-      appLogger.e('Failed to initialize Sentry: $e', stackTrace: stackTrace);
-
+    } catch (e) {
       if (debug) {
         rethrow;
       }

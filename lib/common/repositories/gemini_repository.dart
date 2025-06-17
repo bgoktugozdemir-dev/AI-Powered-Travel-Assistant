@@ -5,16 +5,26 @@ import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/services/gemini_service.dart';
-import 'package:travel_assistant/common/utils/logger/error_logger.dart';
-import 'package:travel_assistant/common/utils/logger/llm_conversation_logger.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
 /// Repository for interacting with Gemini AI capabilities
 class GeminiRepository {
   /// Creates a [GeminiRepository].
-  const GeminiRepository({required this.geminiService});
+  const GeminiRepository({
+    required this.geminiService,
+    required this.analyticsFacade,
+    required this.errorMonitoringFacade,
+  });
 
   /// The Gemini service instance used by this repository
   final GeminiService geminiService;
+
+  /// The analytics facade instance used by this repository
+  final AnalyticsFacade analyticsFacade;
+
+  /// The error monitoring facade instance used by this repository
+  final ErrorMonitoringFacade errorMonitoringFacade;
 
   /// Generates text based on the provided prompt using Gemini AI.
   ///
@@ -27,67 +37,57 @@ class GeminiRepository {
   ) async {
     final prompt = jsonEncode(travelInformation.toJson());
     final content = Content.text(prompt);
+    final model = geminiService.getModel();
+    analyticsFacade.logLLMPrompt('${model.model}', prompt);
+    // Log the prompt being sent to Gemini
     final stopwatch = Stopwatch()..start();
 
-    // Log the prompt being sent to Gemini
-    LlmLogger.prompt('Gemini', prompt);
-
     try {
-      final chatSession = geminiService.chatSession();
+      final chatSession = model.startChat();
       final response = await chatSession.sendMessage(content);
+
       stopwatch.stop();
+
       var responseText = response.text;
 
       if (responseText == null || responseText.isEmpty) {
         final error = Exception('Empty response received from Gemini');
 
-        // Log the error
-        LlmLogger.error('Gemini', 'Empty response received from model', error);
-
-        // Also log with the error logger
-        ErrorLogger.logAIError(
-          'Failed to generate text for prompt',
-          error,
-          context: {'prompt': prompt, 'response': 'Empty or null'},
-        );
-
         throw error;
       }
 
       // Log the successful response
-      LlmLogger.response(
-        'Gemini',
-        responseText,
-        durationMs: stopwatch.elapsedMilliseconds,
-      );
-      responseText = responseText
-          .replaceAll('```json', '')
-          .replaceAll('```', '');
+      analyticsFacade.logLLMResponse('${model.model}', prompt, responseText, stopwatch.elapsedMilliseconds);
+      responseText = responseText.replaceAll('```json', '').replaceAll('```', '');
       final responseJson = jsonDecode(responseText);
 
       return TravelDetails.fromJson(responseJson);
     } catch (e, stackTrace) {
       stopwatch.stop();
 
-      // Log the error
-      LlmLogger.error(
-        'Gemini',
-        'Exception while generating text',
-        e,
-        stackTrace: stackTrace,
-      );
-
-      // Also log with the error logger
-      ErrorLogger.logAIError(
-        'Exception occurred while generating text with Gemini',
-        e,
-        stackTrace: stackTrace,
-        context: {'prompt': prompt},
-      );
-
       if (e is ServerException) {
+        errorMonitoringFacade.reportError(
+          'Firebase App Check error',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'prompt': prompt,
+            'model': model.model,
+            'durationMs': stopwatch.elapsedMilliseconds,
+          },
+        );
         throw FirebaseAppCheckError();
       } else {
+        errorMonitoringFacade.reportError(
+          'Exception occurred while generating text with Firebase AI',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'prompt': prompt,
+            'model': model.model,
+            'durationMs': stopwatch.elapsedMilliseconds,
+          },
+        );
         throw Exception('Failed to generate text: $e');
       }
     }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
-import 'package:travel_assistant/common/utils/logger/logger.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -44,7 +44,7 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                   ),
                 ),
                 onPressed: () async {
-                  appLogger.i("'Select Travel Dates' button pressed.");
+                  final errorMonitoring = context.read<ErrorMonitoringFacade>();
                   final pickedDateRange = await showDateRangePicker(
                     context: context,
                     locale: Locale(l10n.localeName),
@@ -55,7 +55,10 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                   );
 
                   if (!context.mounted) {
-                    appLogger.w("Widget not mounted after date picker closed");
+                    errorMonitoring.reportError(
+                      'Widget not mounted after date picker closed',
+                      stackTrace: StackTrace.current,
+                    );
                     return;
                   }
 
@@ -65,8 +68,6 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                       Formatters.logDate(pickedDateRange.end),
                     );
                     bloc.add(TravelFormDateRangeSelected(pickedDateRange));
-                  } else {
-                    appLogger.i("Date range picker cancelled.");
                   }
                 },
               ),
