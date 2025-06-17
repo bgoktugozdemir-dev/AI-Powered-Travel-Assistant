@@ -13,7 +13,7 @@ import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/repositories/gemini_repository.dart';
+import 'package:travel_assistant/common/repositories/firebase_ai_repository.dart';
 import 'package:travel_assistant/common/repositories/image_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
 import 'package:travel_assistant/common/services/country_service.dart';
@@ -36,7 +36,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   final CountryService _countryService;
   final TravelPurposeService _travelPurposeService;
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
-  final GeminiRepository _geminiRepository;
+  final FirebaseAIRepository _firebaseAIRepository;
   final AirportRepository _airportRepository;
   final UnsplashRepository _unsplashRepository;
   final CurrencyRepository _currencyRepository;
@@ -47,7 +47,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     required ErrorMonitoringFacade errorMonitoringFacade,
     required AirportRepository airportRepository,
     required TravelPurposeService travelPurposeService,
-    required GeminiRepository geminiRepository,
+    required FirebaseAIRepository firebaseAIRepository,
     required UnsplashRepository unsplashRepository,
     required ImageRepository imageRepository,
     required CurrencyRepository currencyRepository,
@@ -57,7 +57,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
        _errorMonitoringFacade = errorMonitoringFacade,
        _airportRepository = airportRepository,
        _travelPurposeService = travelPurposeService,
-       _geminiRepository = geminiRepository,
+       _firebaseAIRepository = firebaseAIRepository,
        _unsplashRepository = unsplashRepository,
        _imageRepository = imageRepository,
        _currencyRepository = currencyRepository,
@@ -189,8 +189,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       return;
     } else if (state.currentStep == 4) {
       final selectedTravelPurposes = state.selectedTravelPurposes.length;
-      final minimumTravelPurposes = _firebaseRemoteConfigRepository.minimumTravelPurposes;
-      final maximumTravelPurposes = _firebaseRemoteConfigRepository.maximumTravelPurposes;
+      final minimumTravelPurposes =
+          _firebaseRemoteConfigRepository.minimumTravelPurposes;
+      final maximumTravelPurposes =
+          _firebaseRemoteConfigRepository.maximumTravelPurposes;
       if (selectedTravelPurposes < minimumTravelPurposes) {
         emit(
           state.copyWith(
@@ -319,7 +321,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -394,7 +397,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -419,7 +423,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -509,7 +514,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     _analyticsFacade.logChooseNationality(event.country.name);
 
-    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository
+        .navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -613,7 +619,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       _analyticsFacade.logSubmitTravelDetails(event.source);
 
       // Simulate API call with delay
-      final travelPlan = await _geminiRepository.generateTravelPlan(
+      final travelPlan = await _firebaseAIRepository.generateTravelPlan(
         travelInformation,
       );
 
@@ -626,7 +632,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           ),
           // Get exchange rate from Currency API
           _currencyRepository.getExchangeRate(
-            travelPlan.currency.departureCurrencyCode ?? travelPlan.currency.code,
+            travelPlan.currency.departureCurrencyCode ??
+                travelPlan.currency.code,
             travelPlan.currency.code,
           ),
         ],
@@ -654,7 +661,10 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
+          error:
+              e is FirebaseError
+                  ? () => ServerError()
+                  : () => GeneralTravelFormError(),
         ),
       );
       _errorMonitoringFacade.reportError(

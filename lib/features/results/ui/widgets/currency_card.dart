@@ -37,11 +37,13 @@ class CurrencyCard extends StatelessWidget {
       currencyCode: currency.code,
       locale: l10n.localeName,
     );
-    final arrivalAverageLivingCostPerDayInDepartureCurrency = Formatters.currency(
-      amount: currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
-      currencyCode: currency.departureCurrencyCode ?? currency.code,
-      locale: l10n.localeName,
-    );
+    final arrivalAverageLivingCostPerDayInDepartureCurrency =
+        Formatters.currency(
+          amount:
+              currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
+          currencyCode: currency.departureCurrencyCode ?? currency.code,
+          locale: l10n.localeName,
+        );
 
     return TravelCard(
       icon: Icons.currency_exchange,
@@ -62,7 +64,8 @@ class CurrencyCard extends StatelessWidget {
         InfoRow(
           icon: Icons.price_change,
           label: l10n.averageDailyCostLabel,
-          value: '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
+          value:
+              '$arrivalAverageLivingCostPerDay ($arrivalAverageLivingCostPerDayInDepartureCurrency)',
         ),
       ],
     );

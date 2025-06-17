@@ -114,7 +114,9 @@ class ErrorMonitoringFacade implements ErrorMonitoringClient {
     );
   }
 
-  Future<void> _dispatch(Future<void> Function(ErrorMonitoringClient client) work) async {
+  Future<void> _dispatch(
+    Future<void> Function(ErrorMonitoringClient client) work,
+  ) async {
     for (var client in _clients) {
       try {
         await work(client);

@@ -68,7 +68,10 @@ class TravelPlanCard extends StatelessWidget {
     );
   }
 
-  Future<void> _showEventDetails(BuildContext context, TravelEvent event) async {
+  Future<void> _showEventDetails(
+    BuildContext context,
+    TravelEvent event,
+  ) async {
     // Show a dialog with full event details
     await showDialog(
       context: context,

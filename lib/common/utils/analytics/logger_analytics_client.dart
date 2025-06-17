@@ -96,7 +96,14 @@ class LoggerAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  void logLLMResponse(String model, String prompt, String response, int durationMs) {
-    _log('--> Model: $model\nPrompt: $prompt\nResponse: $response\nDuration: $durationMs <--');
+  void logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  ) {
+    _log(
+      '--> Model: $model\nPrompt: $prompt\nResponse: $response\nDuration: $durationMs <--',
+    );
   }
 }

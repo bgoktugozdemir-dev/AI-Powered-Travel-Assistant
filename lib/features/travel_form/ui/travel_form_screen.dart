@@ -31,7 +31,8 @@ class TravelFormScreen extends StatefulWidget {
   State<TravelFormScreen> createState() => _TravelFormScreenState();
 }
 
-class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlayHelper {
+class _TravelFormScreenState extends State<TravelFormScreen>
+    with LoadingOverlayHelper {
   final _departureAirportController = TextEditingController();
   final _arrivalAirportController = TextEditingController();
   final _pageController = PageController();
@@ -58,14 +59,16 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
     context.read<TravelFormBloc>().stream.listen((state) {
       // Departure airport controller update
       if (state.selectedDepartureAirport != null &&
-          _departureAirportController.text != state.departureAirportSearchTerm) {
+          _departureAirportController.text !=
+              state.departureAirportSearchTerm) {
         _departureAirportController.text = state.departureAirportSearchTerm;
         _departureAirportController.selection = TextSelection.fromPosition(
           TextPosition(offset: _departureAirportController.text.length),
         );
       }
       // Arrival airport controller update
-      if (state.selectedArrivalAirport != null && _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
+      if (state.selectedArrivalAirport != null &&
+          _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
         _arrivalAirportController.text = state.arrivalAirportSearchTerm;
         _arrivalAirportController.selection = TextSelection.fromPosition(
           TextPosition(offset: _arrivalAirportController.text.length),
@@ -73,7 +76,8 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
       }
 
       // Navigate to results screen if form submission is successful
-      if (state.formSubmissionStatus == FormSubmissionStatus.success && mounted) {
+      if (state.formSubmissionStatus == FormSubmissionStatus.success &&
+          mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const ResultsScreen()),
         );
@@ -94,7 +98,8 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
     final l10n = AppLocalizations.of(context);
 
     return BlocListener<TravelFormBloc, TravelFormState>(
-      listenWhen: (previous, current) => previous.currentStep != current.currentStep,
+      listenWhen:
+          (previous, current) => previous.currentStep != current.currentStep,
       listener: (context, state) {
         _pageController.animateToPage(
           state.currentStep,
@@ -103,7 +108,9 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
         );
       },
       child: BlocListener<TravelFormBloc, TravelFormState>(
-        listenWhen: (previous, current) => previous.formSubmissionStatus != current.formSubmissionStatus,
+        listenWhen:
+            (previous, current) =>
+                previous.formSubmissionStatus != current.formSubmissionStatus,
         listener: (context, state) {
           if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
             showLoadingOverlay(
@@ -143,14 +150,17 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
 
             // Update text controller if search term changed from outside (e.g. after selection)
             // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
-            if (_departureAirportController.text != state.departureAirportSearchTerm && state.currentStep == 0) {
+            if (_departureAirportController.text !=
+                    state.departureAirportSearchTerm &&
+                state.currentStep == 0) {
               // To avoid listener loop if typing, only update if it's different and relevant
               // A more robust way might be to only set this when an item is *selected*.
               // For now, this is a simplified sync.
             }
 
             // Show loading indicator when submitting
-            final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
+            final bool isSubmitting =
+                state.formSubmissionStatus == FormSubmissionStatus.submitting;
             return Scaffold(
               appBar: AppBar(
                 leading:
@@ -164,7 +174,8 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                                   : () {
                                     context.read<TravelFormBloc>().add(
                                       TravelFormPreviousStepRequested(
-                                        source: SubmitTravelDetailsSource.appBar,
+                                        source:
+                                            SubmitTravelDetailsSource.appBar,
                                       ),
                                     );
                                   },
@@ -187,7 +198,12 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                       onPressed:
                           isSubmitting
                               ? null
-                              : () => _onSubmitButtonPressed(context, state, l10n, SubmitTravelDetailsSource.appBar),
+                              : () => _onSubmitButtonPressed(
+                                context,
+                                state,
+                                l10n,
+                                SubmitTravelDetailsSource.appBar,
+                              ),
                       icon: const Icon(Icons.send),
                     ),
                 ],
@@ -199,7 +215,12 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
                 physics: const NeverScrollableScrollPhysics(),
                 children: _travelFormSteps,
               ),
-              floatingActionButton: _buildFloatingActionButton(context, state, l10n, isSubmitting),
+              floatingActionButton: _buildFloatingActionButton(
+                context,
+                state,
+                l10n,
+                isSubmitting,
+              ),
             );
           },
         ),
@@ -212,11 +233,13 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
     TravelFormState state,
     AppLocalizations l10n,
   ) {
-    final bool isSubmitting = state.formSubmissionStatus == FormSubmissionStatus.submitting;
+    final bool isSubmitting =
+        state.formSubmissionStatus == FormSubmissionStatus.submitting;
 
     return isSubmitting
         ? null
-        : () => context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
+        : () =>
+            context.read<TravelFormBloc>().add(TravelFormNextStepRequested());
   }
 
   Widget? _buildFloatingActionButton(
@@ -234,13 +257,23 @@ class _TravelFormScreenState extends State<TravelFormScreen> with LoadingOverlay
       onPressed:
           isSubmitting
               ? null
-              : () => _onSubmitButtonPressed(context, state, l10n, SubmitTravelDetailsSource.fab),
+              : () => _onSubmitButtonPressed(
+                context,
+                state,
+                l10n,
+                SubmitTravelDetailsSource.fab,
+              ),
       icon: const Icon(Icons.send),
       label: Text(l10n.submitTravelPlan),
     );
   }
 
-  void _onSubmitButtonPressed(BuildContext context, TravelFormState state, AppLocalizations l10n, SubmitTravelDetailsSource source) {
+  void _onSubmitButtonPressed(
+    BuildContext context,
+    TravelFormState state,
+    AppLocalizations l10n,
+    SubmitTravelDetailsSource source,
+  ) {
     if (state.isFormValid) {
       context.read<TravelFormBloc>().add(
         SubmitTravelFormEvent(locale: l10n.localeName, source: source),

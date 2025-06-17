@@ -24,21 +24,31 @@ class TaxInfoCard extends StatelessWidget {
         InfoRow(
           icon: Icons.percent,
           label: l10n.taxRateLabel,
-          value: Formatters.percentage(taxInformation.taxRate / 100, l10n.localeName),
+          value: Formatters.percentage(
+            taxInformation.taxRate / 100,
+            l10n.localeName,
+          ),
         ),
 
         InfoRow(
           icon: Icons.shopping_bag,
           label: l10n.taxFreeShoppingLabel,
-          value: taxInformation.hasTaxFreeOptions ? l10n.availableLabel : l10n.notAvailableLabel,
-          iconColor: taxInformation.hasTaxFreeOptions ? Colors.green : Colors.red,
+          value:
+              taxInformation.hasTaxFreeOptions
+                  ? l10n.availableLabel
+                  : l10n.notAvailableLabel,
+          iconColor:
+              taxInformation.hasTaxFreeOptions ? Colors.green : Colors.red,
         ),
 
         if (taxInformation.refundableTaxRate > 0)
           InfoRow(
             icon: Icons.percent,
             label: l10n.refundableTaxRateLabel,
-            value: Formatters.percentage(taxInformation.refundableTaxRate / 100, l10n.localeName),
+            value: Formatters.percentage(
+              taxInformation.refundableTaxRate / 100,
+              l10n.localeName,
+            ),
             iconColor: Colors.green,
           ),
 

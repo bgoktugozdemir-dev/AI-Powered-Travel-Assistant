@@ -27,8 +27,11 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   );
 
   final _prettierPrinter = PrettyPrinter(
-    methodCount: _Constants.methodCount, // Number of method calls to be displayed
-    errorMethodCount: _Constants.errorMethodCount, // Number of method calls if stacktrace is provided
+    methodCount:
+        _Constants.methodCount, // Number of method calls to be displayed
+    errorMethodCount:
+        _Constants
+            .errorMethodCount, // Number of method calls if stacktrace is provided
     lineLength: _Constants.lineLength, // Width of the output
     printEmojis: true, // Print an emoji for each log message
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart, // Print timestamp

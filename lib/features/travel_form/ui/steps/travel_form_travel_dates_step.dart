@@ -29,7 +29,9 @@ class TravelFormTravelDatesStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedDateRange != current.selectedDateRange,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedDateRange != current.selectedDateRange,
           builder: (context, state) {
             final today = DateTime.now();
             return Center(
@@ -76,7 +78,9 @@ class TravelFormTravelDatesStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedDateRange != current.selectedDateRange,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedDateRange != current.selectedDateRange,
           builder: (context, state) {
             if (bloc.state.selectedDateRange == null) {
               selectedDatesText = l10n.noDatesSelected;

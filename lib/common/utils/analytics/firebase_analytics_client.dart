@@ -3,17 +3,21 @@ import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
 abstract class _Constants {
-  static const String searchDepartureAirportEventName = 'search_departure_airport';
-  static const String chooseDepartureAirportEventName = 'choose_departure_airport';
+  static const String searchDepartureAirportEventName =
+      'search_departure_airport';
+  static const String chooseDepartureAirportEventName =
+      'choose_departure_airport';
   static const String searchArrivalAirportEventName = 'search_arrival_airport';
   static const String chooseArrivalAirportEventName = 'choose_arrival_airport';
   static const String chooseTravelDatesEventName = 'choose_travel_dates';
   static const String searchNationalityEventName = 'search_nationality';
   static const String chooseNationalityEventName = 'choose_nationality';
   static const String selectTravelPurposeEventName = 'select_travel_purpose';
-  static const String unselectTravelPurposeEventName = 'unselect_travel_purpose';
+  static const String unselectTravelPurposeEventName =
+      'unselect_travel_purpose';
   static const String submitTravelDetailsEventName = 'submit_travel_details';
-  static const String submitTravelDetailsErrorEventName = 'submit_travel_details_error';
+  static const String submitTravelDetailsErrorEventName =
+      'submit_travel_details_error';
   static const String moveToNextStepEventName = 'move_to_next_step';
   static const String moveToPreviousStepEventName = 'move_to_previous_step';
   static const String planAnotherTripEventName = 'plan_another_trip';
@@ -36,7 +40,8 @@ abstract class _Constants {
 }
 
 class FirebaseAnalyticsClient implements AnalyticsClient {
-  const FirebaseAnalyticsClient({required FirebaseAnalytics analytics}) : _analytics = analytics;
+  const FirebaseAnalyticsClient({required FirebaseAnalytics analytics})
+    : _analytics = analytics;
 
   final FirebaseAnalytics _analytics;
 
@@ -91,7 +96,10 @@ class FirebaseAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> logChooseTravelDates(String departureDate, String returnDate) async {
+  Future<void> logChooseTravelDates(
+    String departureDate,
+    String returnDate,
+  ) async {
     await _analytics.logEvent(
       name: _Constants.chooseTravelDatesEventName,
       parameters: {
@@ -201,7 +209,12 @@ class FirebaseAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> logLLMResponse(String model, String prompt, String response, int durationMs) async {
+  Future<void> logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  ) async {
     await _analytics.logEvent(
       name: _Constants.llmResponseEventName,
       parameters: {

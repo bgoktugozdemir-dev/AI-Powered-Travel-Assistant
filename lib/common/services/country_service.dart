@@ -78,7 +78,8 @@ class CountryService {
     return _countries.where((country) {
       return country.name.toLowerCase().contains(lowercaseQuery) ||
           country.code.toLowerCase().contains(lowercaseQuery) ||
-          (country.nationality?.toLowerCase().contains(lowercaseQuery) ?? false);
+          (country.nationality?.toLowerCase().contains(lowercaseQuery) ??
+              false);
     }).toList();
   }
 

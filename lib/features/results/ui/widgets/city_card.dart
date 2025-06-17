@@ -36,15 +36,21 @@ class CityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+    final firebaseRemoteConfigRepository =
+        context.read<FirebaseRemoteConfigRepository>();
 
     return TravelCard(
       icon: Icons.location_on,
       title: l10n.cityInformationTitle,
-      header: firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null ? _buildCityImage(context) : null,
+      header:
+          firebaseRemoteConfigRepository.showCityView &&
+                  cityImageInBytes != null
+              ? _buildCityImage(context)
+              : null,
       children: [
         // City Name and Time
-        if (!firebaseRemoteConfigRepository.showCityView && cityImageInBytes != null) ...[
+        if (!firebaseRemoteConfigRepository.showCityView &&
+            cityImageInBytes != null) ...[
           _buildCityNameAndTime(context),
         ],
         // Weather information if available
@@ -86,8 +92,12 @@ class CityCard extends StatelessWidget {
 
   Widget _buildCityImage(BuildContext context) {
     final screenHeight = MediaQuery.maybeSizeOf(context)?.height;
-    final imageHeight = screenHeight != null ? screenHeight * 0.4 : _Constants.cityImageMaxHeight;
-    final crowdLevelBarHeight = imageHeight * _Constants.crowdLevelBarHeightMultiplier;
+    final imageHeight =
+        screenHeight != null
+            ? screenHeight * 0.4
+            : _Constants.cityImageMaxHeight;
+    final crowdLevelBarHeight =
+        imageHeight * _Constants.crowdLevelBarHeightMultiplier;
     final crowdLevelColor = _getCrowdLevelColor(city.crowdLevel);
 
     return ConstrainedBox(
@@ -275,7 +285,8 @@ class _WeatherCards extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: weathers.length,
-            itemBuilder: (context, index) => _WeatherCard(weather: weathers[index]),
+            itemBuilder:
+                (context, index) => _WeatherCard(weather: weathers[index]),
           ),
         );
       },

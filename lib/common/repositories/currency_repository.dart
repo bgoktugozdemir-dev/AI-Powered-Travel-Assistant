@@ -21,7 +21,8 @@ class CurrencyRepository {
     String fromCurrency,
     String toCurrency,
   ) async {
-    if (_firebaseRemoteConfigRepository.cacheFreeCurrencyApiData && _exchangeRatesCache.containsKey(fromCurrency)) {
+    if (_firebaseRemoteConfigRepository.cacheFreeCurrencyApiData &&
+        _exchangeRatesCache.containsKey(fromCurrency)) {
       return _exchangeRatesCache[fromCurrency]![toCurrency];
     }
     final apiKey = _firebaseRemoteConfigRepository.freeCurrencyApiKey;

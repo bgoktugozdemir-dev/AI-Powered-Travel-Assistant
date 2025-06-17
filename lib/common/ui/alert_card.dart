@@ -6,7 +6,7 @@ abstract class _Constants {
   static const double iconSize = 20.0;
   static const double dismissButtonSize = 24.0;
   static const Duration fadeAnimationDuration = Duration(milliseconds: 300);
-  
+
   // Button Keys
   static const String buttonDismissAlert = 'button_dismiss_alert';
 }

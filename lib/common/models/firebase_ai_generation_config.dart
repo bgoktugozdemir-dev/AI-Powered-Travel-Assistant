@@ -29,15 +29,17 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
     required String? responseMimeType,
   }) = _FirebaseAIGenerationConfig;
 
-  static const FirebaseAIGenerationConfig defaultConfig = FirebaseAIGenerationConfig(
-    temperature: null,
-    topP: null,
-    maxOutputTokens: null,
-    responseMimeType: 'application/json',
-  );
+  static const FirebaseAIGenerationConfig defaultConfig =
+      FirebaseAIGenerationConfig(
+        temperature: null,
+        topP: null,
+        maxOutputTokens: null,
+        responseMimeType: 'application/json',
+      );
 
   /// Creates a [FirebaseAIGenerationConfig] from a JSON object.
-  factory FirebaseAIGenerationConfig.fromJson(Map<String, dynamic> json) => _$FirebaseAIGenerationConfigFromJson(json);
+  factory FirebaseAIGenerationConfig.fromJson(Map<String, dynamic> json) =>
+      _$FirebaseAIGenerationConfigFromJson(json);
 
   /// Returns the available max output tokens for the given model.
   static int _getAvailableMaxOutputTokens(String model) {
@@ -47,7 +49,6 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
       return _Constants._availableGemini25MaxOutputTokens;
     }
 
-
     return _Constants._defaultMaxOutputTokens;
   }
 
@@ -56,7 +57,10 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
     return GenerationConfig(
       temperature: temperature,
       topP: topP,
-      maxOutputTokens: maxOutputTokens != null ? min(maxOutputTokens!, _getAvailableMaxOutputTokens(model)) : null,
+      maxOutputTokens:
+          maxOutputTokens != null
+              ? min(maxOutputTokens!, _getAvailableMaxOutputTokens(model))
+              : null,
       responseMimeType: responseMimeType,
     );
   }

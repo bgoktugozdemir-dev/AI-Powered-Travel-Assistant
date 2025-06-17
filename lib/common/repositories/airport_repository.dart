@@ -7,7 +7,8 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 class AirportRepository {
   final AirportApiService _apiService;
   final ErrorMonitoringFacade _errorMonitoringFacade;
-  final String _datasetId = 'airports-code@public'; // The dataset ID for Opendatasoft
+  final String _datasetId =
+      'airports-code@public'; // The dataset ID for Opendatasoft
 
   /// Creates an [AirportRepository].
   ///

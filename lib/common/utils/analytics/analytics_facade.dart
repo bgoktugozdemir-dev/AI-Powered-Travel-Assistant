@@ -126,13 +126,21 @@ class AnalyticsFacade implements AnalyticsClient {
   }
 
   @override
-  void logLLMResponse(String model, String prompt, String response, int durationMs) {
+  void logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  ) {
     _dispatch(
-      (client) async => client.logLLMResponse(model, prompt, response, durationMs),
+      (client) async =>
+          client.logLLMResponse(model, prompt, response, durationMs),
     );
   }
 
-  Future<void> _dispatch(Future<void> Function(AnalyticsClient client) work) async {
+  Future<void> _dispatch(
+    Future<void> Function(AnalyticsClient client) work,
+  ) async {
     for (var client in _clients) {
       await work(client);
     }

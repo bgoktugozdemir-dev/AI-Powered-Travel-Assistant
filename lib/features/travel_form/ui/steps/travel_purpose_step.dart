@@ -15,13 +15,16 @@ class TravelPurposeStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final maximumTravelPurposesCount = context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
+    final maximumTravelPurposesCount =
+        context.read<FirebaseRemoteConfigRepository>().maximumTravelPurposes;
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       buildWhen:
           (previous, current) =>
-              previous.isTravelPurposesLoading != current.isTravelPurposesLoading ||
-              previous.availableTravelPurposes != current.availableTravelPurposes ||
+              previous.isTravelPurposesLoading !=
+                  current.isTravelPurposesLoading ||
+              previous.availableTravelPurposes !=
+                  current.availableTravelPurposes ||
               previous.selectedTravelPurposes != current.selectedTravelPurposes,
       builder: (context, state) {
         if (state.isTravelPurposesLoading) {
@@ -32,7 +35,8 @@ class TravelPurposeStep extends StatelessWidget {
           return Center(child: Text(l10n.noPurposesAvailable));
         }
 
-        final isSelectable = state.selectedTravelPurposes.length < maximumTravelPurposesCount;
+        final isSelectable =
+            state.selectedTravelPurposes.length < maximumTravelPurposesCount;
 
         return TravelFormStepLayout(
           children: [
@@ -68,9 +72,13 @@ class TravelPurposeStep extends StatelessWidget {
                               ? null
                               : (selected) {
                                 if (selected) {
-                                  context.read<AnalyticsFacade>().logSelectTravelPurpose(purpose.name);
+                                  context
+                                      .read<AnalyticsFacade>()
+                                      .logSelectTravelPurpose(purpose.name);
                                 } else {
-                                  context.read<AnalyticsFacade>().logUnselectTravelPurpose(purpose.name);
+                                  context
+                                      .read<AnalyticsFacade>()
+                                      .logUnselectTravelPurpose(purpose.name);
                                 }
 
                                 context.read<TravelFormBloc>().add(
@@ -80,7 +88,9 @@ class TravelPurposeStep extends StatelessWidget {
                                   ),
                                 );
                               },
-                      selectedColor: Theme.of(context).colorScheme.primary.withAlpha(160),
+                      selectedColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withAlpha(160),
                     );
                   }).toList(),
             ),

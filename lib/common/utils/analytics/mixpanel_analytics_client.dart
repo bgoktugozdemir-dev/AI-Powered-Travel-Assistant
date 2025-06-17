@@ -3,17 +3,21 @@ import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
 abstract class _Constants {
-  static const String searchDepartureAirportEventName = 'Search Departure Airport';
-  static const String chooseDepartureAirportEventName = 'Choose Departure Airport';
+  static const String searchDepartureAirportEventName =
+      'Search Departure Airport';
+  static const String chooseDepartureAirportEventName =
+      'Choose Departure Airport';
   static const String searchArrivalAirportEventName = 'Search Arrival Airport';
   static const String chooseArrivalAirportEventName = 'Choose Arrival Airport';
   static const String chooseTravelDatesEventName = 'Choose Travel Dates';
   static const String searchNationalityEventName = 'Search Nationality';
   static const String chooseNationalityEventName = 'Choose Nationality';
   static const String selectTravelPurposeEventName = 'Select Travel Purpose';
-  static const String unselectTravelPurposeEventName = 'Unselect Travel Purpose';
+  static const String unselectTravelPurposeEventName =
+      'Unselect Travel Purpose';
   static const String submitTravelDetailsEventName = 'Submit Travel Details';
-  static const String submitTravelDetailsErrorEventName = 'Submit Travel Details Error';
+  static const String submitTravelDetailsErrorEventName =
+      'Submit Travel Details Error';
   static const String moveToNextStepEventName = 'Move to Next Step';
   static const String moveToPreviousStepEventName = 'Move to Previous Step';
   static const String planAnotherTripEventName = 'Plan Another Trip';
@@ -36,7 +40,8 @@ abstract class _Constants {
 }
 
 class MixpanelAnalyticsClient implements AnalyticsClient {
-  const MixpanelAnalyticsClient({required Mixpanel mixpanel}) : _mixpanel = mixpanel;
+  const MixpanelAnalyticsClient({required Mixpanel mixpanel})
+    : _mixpanel = mixpanel;
 
   final Mixpanel _mixpanel;
 
@@ -95,7 +100,10 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> logChooseTravelDates(String departureDate, String returnDate) async {
+  Future<void> logChooseTravelDates(
+    String departureDate,
+    String returnDate,
+  ) async {
     await _mixpanel.track(
       _Constants.chooseTravelDatesEventName,
       properties: {
@@ -203,7 +211,12 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  void logLLMResponse(String model, String prompt, String response, int durationMs) {
+  void logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  ) {
     _mixpanel.track(
       _Constants.llmResponseEventName,
       properties: {

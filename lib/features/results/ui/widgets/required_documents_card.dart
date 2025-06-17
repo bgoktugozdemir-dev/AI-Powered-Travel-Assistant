@@ -28,7 +28,9 @@ class RequiredDocumentsCard extends StatelessWidget {
         ),
 
         // Document steps if available
-        if (requiredDocument.steps != null && requiredDocument.steps!.isNotEmpty) _buildSteps(context),
+        if (requiredDocument.steps != null &&
+            requiredDocument.steps!.isNotEmpty)
+          _buildSteps(context),
 
         // More information if available
         if (requiredDocument.moreInformation != null) ...[

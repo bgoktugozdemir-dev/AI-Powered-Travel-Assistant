@@ -9,7 +9,8 @@ abstract class _Constants {
   static const double buttonPadding = 16.0;
 
   // Button Keys
-  static const String buttonTryAgainCountryService = 'button_try_again_country_service';
+  static const String buttonTryAgainCountryService =
+      'button_try_again_country_service';
 }
 
 /// A widget that displays an error screen when the country service fails to initialize.
@@ -53,7 +54,9 @@ class CountryServiceErrorScreen extends StatelessWidget {
               ElevatedButton.icon(
                 key: const Key(_Constants.buttonTryAgainCountryService),
                 onPressed: () {
-                  context.read<TravelFormBloc>().add(const RetryCountryServiceEvent());
+                  context.read<TravelFormBloc>().add(
+                    const RetryCountryServiceEvent(),
+                  );
                 },
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n.tryAgainButton),

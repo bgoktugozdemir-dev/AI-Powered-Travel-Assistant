@@ -26,7 +26,10 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.isDepartureAirportLoading != current.isDepartureAirportLoading,
+          buildWhen:
+              (previous, current) =>
+                  previous.isDepartureAirportLoading !=
+                  current.isDepartureAirportLoading,
           builder: (context, state) {
             return TextField(
               controller: departureAirportController,
@@ -41,7 +44,9 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
                         : null,
               ),
               onChanged: (query) {
-                context.read<AnalyticsFacade>().logSearchDepartureAirport(query);
+                context.read<AnalyticsFacade>().logSearchDepartureAirport(
+                  query,
+                );
                 context.read<TravelFormBloc>().add(
                   TravelFormDepartureAirportSearchTermChanged(query),
                 );
@@ -50,7 +55,10 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.departureAirportSuggestions != current.departureAirportSuggestions,
+          buildWhen:
+              (previous, current) =>
+                  previous.departureAirportSuggestions !=
+                  current.departureAirportSuggestions,
           builder: (context, state) {
             if (state.departureAirportSuggestions.isEmpty) {
               return const SizedBox.shrink();
@@ -69,7 +77,9 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
                     title: Text("${airport.name} (${airport.iataCode})"),
                     subtitle: Text(airport.cityAndCountry),
                     onTap: () {
-                      context.read<AnalyticsFacade>().logChooseDepartureAirport(airport.iataCode);
+                      context.read<AnalyticsFacade>().logChooseDepartureAirport(
+                        airport.iataCode,
+                      );
                       context.read<TravelFormBloc>().add(
                         TravelFormDepartureAirportSelected(airport),
                       );
@@ -81,7 +91,10 @@ class TravelFormDepartureAirportStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedDepartureAirport != current.selectedDepartureAirport,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedDepartureAirport !=
+                  current.selectedDepartureAirport,
           builder: (context, state) {
             if (state.selectedDepartureAirport == null) {
               return const SizedBox.shrink();

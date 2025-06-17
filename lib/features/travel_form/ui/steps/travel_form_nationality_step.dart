@@ -20,7 +20,9 @@ class TravelFormNationalityStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.isNationalityLoading != current.isNationalityLoading,
+          buildWhen:
+              (previous, current) =>
+                  previous.isNationalityLoading != current.isNationalityLoading,
           builder: (context, state) {
             return TextField(
               decoration: InputDecoration(
@@ -43,7 +45,10 @@ class TravelFormNationalityStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.nationalitySuggestions != current.nationalitySuggestions,
+          buildWhen:
+              (previous, current) =>
+                  previous.nationalitySuggestions !=
+                  current.nationalitySuggestions,
           builder: (context, state) {
             if (state.nationalitySuggestions.isEmpty) {
               return const SizedBox.shrink();
@@ -69,7 +74,9 @@ class TravelFormNationalityStep extends StatelessWidget {
                     title: Text(country.name),
                     subtitle: Text(country.nationality ?? country.code),
                     onTap: () {
-                      context.read<AnalyticsFacade>().logChooseNationality(country.nationality ?? country.code);
+                      context.read<AnalyticsFacade>().logChooseNationality(
+                        country.nationality ?? country.code,
+                      );
                       context.read<TravelFormBloc>().add(
                         TravelFormNationalitySelected(country),
                       );
@@ -81,7 +88,9 @@ class TravelFormNationalityStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen: (previous, current) => previous.selectedNationality != current.selectedNationality,
+          buildWhen:
+              (previous, current) =>
+                  previous.selectedNationality != current.selectedNationality,
           builder: (context, state) {
             if (state.selectedNationality == null) {
               return const SizedBox.shrink();

@@ -74,16 +74,20 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
             ..environment = environment
             ..sampleRate = sampleRate ?? _Constants.sampleRate
             ..tracesSampleRate = tracesSampleRate ?? _Constants.tracesSampleRate
-            ..profilesSampleRate = profilesSampleRate ?? _Constants.profilesSampleRate
+            ..profilesSampleRate =
+                profilesSampleRate ?? _Constants.profilesSampleRate
             // By this code, 3rd party code will be collapsed and greyed out
             // when viewing stack traces on the Sentry dashboard
-            ..considerInAppFramesByDefault = considerInAppFramesByDefault ?? _Constants.considerInAppFramesByDefault
+            ..considerInAppFramesByDefault =
+                considerInAppFramesByDefault ??
+                _Constants.considerInAppFramesByDefault
             ..addInAppInclude('travel_assistant')
             //! [attachScreenshot] and [attachViewHierarchy] are expensive and should be enabled only if needed
             // Attach a screenshot to the event
             ..attachScreenshot = attachScreenshot ?? _Constants.attachScreenshot
             // Attach the view hierarchy to the event
-            ..attachViewHierarchy = attachViewHierarchy ?? _Constants.attachViewHierarchy
+            ..attachViewHierarchy =
+                attachViewHierarchy ?? _Constants.attachViewHierarchy
             // Use the [beforeSend] callback to filter which events are sent
             ..beforeSend = (event, hint) async {
               // Don't send event if [sendToSentry] is false or it is a debug build

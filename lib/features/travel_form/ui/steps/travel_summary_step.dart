@@ -26,7 +26,10 @@ class _TravelSummaryStepState extends State<TravelSummaryStep> {
   void initState() {
     super.initState();
 
-    final delay = context.read<FirebaseRemoteConfigRepository>().travelSummaryHelpCardDelay;
+    final delay =
+        context
+            .read<FirebaseRemoteConfigRepository>()
+            .travelSummaryHelpCardDelay;
 
     // Start the timer to show help card after 15 seconds
     _helpTimer = Timer(
@@ -104,12 +107,14 @@ class _TravelSummaryStepState extends State<TravelSummaryStep> {
             InfoRow(
               icon: Icons.flight_takeoff,
               label: l10n.fromLabel,
-              value: '${state.selectedDepartureAirport?.name} (${state.selectedDepartureAirport?.iataCode})',
+              value:
+                  '${state.selectedDepartureAirport?.name} (${state.selectedDepartureAirport?.iataCode})',
             ),
             InfoRow(
               icon: Icons.flight_land,
               label: l10n.toLabel,
-              value: '${state.selectedArrivalAirport?.name} (${state.selectedArrivalAirport?.iataCode})',
+              value:
+                  '${state.selectedArrivalAirport?.name} (${state.selectedArrivalAirport?.iataCode})',
             ),
             InfoRow(
               icon: Icons.calendar_today,

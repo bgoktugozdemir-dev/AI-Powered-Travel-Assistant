@@ -178,7 +178,8 @@ class _FlightCard extends StatelessWidget {
     final textTheme = theme.textTheme.bodyMedium;
 
     return Column(
-      crossAxisAlignment: isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment:
+          isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
       children: [
         Text(
           Formatters.dateWithTime(time),

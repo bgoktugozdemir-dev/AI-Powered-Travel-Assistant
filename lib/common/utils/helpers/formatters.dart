@@ -19,10 +19,12 @@ abstract class Formatters {
   static String shortDate(DateTime date) => DateFormat('MMM d').format(date);
 
   /// Formats a date as "MMM d, HH:mm" (e.g., "Dec 25, 14:30").
-  static String dateWithTime(DateTime date) => DateFormat('MMM d, HH:mm').format(date);
+  static String dateWithTime(DateTime date) =>
+      DateFormat('MMM d, HH:mm').format(date);
 
   /// Formats a date as "EEEE, MMMM d, yyyy" (e.g., "Monday, December 25, 2023").
-  static String fullDate(DateTime date) => DateFormat('EEEE, MMMM d, yyyy').format(date);
+  static String fullDate(DateTime date) =>
+      DateFormat('EEEE, MMMM d, yyyy').format(date);
 
   /// Formats time as "HH:mm" (e.g., "14:30").
   static String timeOnly(DateTime date) => DateFormat('HH:mm').format(date);
@@ -34,7 +36,9 @@ abstract class Formatters {
       return l10n.noDatesSelected;
     }
 
-    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
     final startDate = dateFormat.format(dateRange.start);
     final endDate = dateFormat.format(dateRange.end);
     return '$startDate - $endDate';
@@ -45,7 +49,9 @@ abstract class Formatters {
     DateTimeRange dateRange,
     BuildContext context,
   ) {
-    final dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).languageCode);
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
     final startDate = dateFormat.format(dateRange.start);
     final endDate = dateFormat.format(dateRange.end);
     return '$startDate - $endDate';
@@ -88,10 +94,12 @@ abstract class Formatters {
   // Number Formatters
 
   /// Formats percentage (e.g., "75%").
-  static String percentage(double value, [String? locale]) => NumberFormat.percentPattern(locale).format(value);
+  static String percentage(double value, [String? locale]) =>
+      NumberFormat.percentPattern(locale).format(value);
 
   /// Formats crowd level as percentage with localization support.
-  static String crowdLevel(int level, [String? locale]) => NumberFormat.percentPattern(locale).format(level / 100);
+  static String crowdLevel(int level, [String? locale]) =>
+      NumberFormat.percentPattern(locale).format(level / 100);
 
   /// Formats number with thousand separators.
   static String number(num value, [String? locale]) {
@@ -101,7 +109,11 @@ abstract class Formatters {
   // Duration Formatters
 
   /// Formats flight duration in minutes to human-readable format using localization.
-  static String duration(BuildContext context, Duration duration, {bool showFullDuration = false}) {
+  static String duration(
+    BuildContext context,
+    Duration duration, {
+    bool showFullDuration = false,
+  }) {
     final l10n = AppLocalizations.of(context);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);

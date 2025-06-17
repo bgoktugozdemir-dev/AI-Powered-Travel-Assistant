@@ -30,7 +30,8 @@ class ResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+    final firebaseRemoteConfigRepository =
+        context.read<FirebaseRemoteConfigRepository>();
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       builder: (context, state) {
@@ -69,7 +70,8 @@ class ResultsScreen extends StatelessWidget {
                       ),
 
                     // Required Documents Card
-                    if (firebaseRemoteConfigRepository.showRequiredDocumentsCard)
+                    if (firebaseRemoteConfigRepository
+                        .showRequiredDocumentsCard)
                       RequiredDocumentsCard(
                         requiredDocument: travelDetails.requiredDocuments,
                       ),
@@ -100,7 +102,8 @@ class ResultsScreen extends StatelessWidget {
                       ),
 
                     // Travel Plan Card
-                    if (firebaseRemoteConfigRepository.showTravelPlanCard && travelDetails.travelPlan.isNotEmpty)
+                    if (firebaseRemoteConfigRepository.showTravelPlanCard &&
+                        travelDetails.travelPlan.isNotEmpty)
                       TravelPlanCard(
                         travelPlan: travelDetails.travelPlan,
                       ),

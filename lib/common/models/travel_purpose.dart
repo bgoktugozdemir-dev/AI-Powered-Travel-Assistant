@@ -23,7 +23,8 @@ abstract class TravelPurpose with _$TravelPurpose {
   }) = _TravelPurpose;
 
   /// Creates a [TravelPurpose] instance from a JSON object.
-  factory TravelPurpose.fromJson(Map<String, dynamic> json) => _$TravelPurposeFromJson(json);
+  factory TravelPurpose.fromJson(Map<String, dynamic> json) =>
+      _$TravelPurposeFromJson(json);
 }
 
 extension TravelPurposeExtension on TravelPurpose {

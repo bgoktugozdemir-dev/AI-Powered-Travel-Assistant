@@ -9,7 +9,8 @@ class FlightOptions {
     required this.comfortable,
   });
 
-  factory FlightOptions.fromJson(Map<String, dynamic> json) => _$FlightOptionsFromJson(json);
+  factory FlightOptions.fromJson(Map<String, dynamic> json) =>
+      _$FlightOptionsFromJson(json);
 
   @JsonKey(name: 'cheapest')
   final FlightOption cheapest;
@@ -26,7 +27,8 @@ class FlightOption {
     required this.bookingUrl,
   });
 
-  factory FlightOption.fromJson(Map<String, dynamic> json) => _$FlightOptionFromJson(json);
+  factory FlightOption.fromJson(Map<String, dynamic> json) =>
+      _$FlightOptionFromJson(json);
 
   @JsonKey(name: 'departure')
   final Flight departure;
@@ -93,7 +95,8 @@ class Flight {
   @JsonKey(name: 'more_information')
   final String moreInformation;
 
-  static Duration _durationFromJson(int duration) => Duration(minutes: duration);
+  static Duration _durationFromJson(int duration) =>
+      Duration(minutes: duration);
 }
 
 @JsonSerializable(createToJson: false)
@@ -103,7 +106,8 @@ class LayoverDetail {
     required this.durationMinutes,
   });
 
-  factory LayoverDetail.fromJson(Map<String, dynamic> json) => _$LayoverDetailFromJson(json);
+  factory LayoverDetail.fromJson(Map<String, dynamic> json) =>
+      _$LayoverDetailFromJson(json);
 
   @JsonKey(name: 'airport')
   final String airport;

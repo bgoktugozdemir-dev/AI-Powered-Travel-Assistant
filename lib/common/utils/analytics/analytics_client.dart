@@ -55,5 +55,10 @@ abstract class AnalyticsClient {
   FutureOr<void> logLLMPrompt(String model, String prompt);
 
   /// Logs when a user receives a [response] from the [model].
-  FutureOr<void> logLLMResponse(String model, String prompt, String response, int durationMs);
+  FutureOr<void> logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  );
 }
