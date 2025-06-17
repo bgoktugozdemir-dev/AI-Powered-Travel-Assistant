@@ -11,34 +11,20 @@
             "args": [
                 "-d",
                 "chrome",
-                "--web-experimental-hot-reload",
-                "--web-browser-flag",
-                "--disable-web-security"
+                "--web-experimental-hot-reload"
             ]
         },
         {
             "name": "travel_assistant (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile",
-            "args": [
-                "-d",
-                "chrome",
-                "--web-browser-flag",
-                "--disable-web-security"
-            ]
+            "flutterMode": "profile"
         },
         {
             "name": "travel_assistant (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release",
-            "args": [
-                "-d",
-                "chrome",
-                "--web-browser-flag",
-                "--disable-web-security"
-            ]
+            "flutterMode": "release"
         }
     ]
 }

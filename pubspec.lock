@@ -861,14 +861,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
-  sentry_dio:
-    dependency: "direct main"
-    description:
-      name: sentry_dio
-      sha256: e4dc356a070cd36c8b54a6e27a48e06bb5863ed68b393831fc87fea31a823834
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.0.0"
   sentry_firebase_remote_config:
     dependency: "direct main"
     description:
