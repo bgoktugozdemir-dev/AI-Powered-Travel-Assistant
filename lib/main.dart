@@ -305,6 +305,9 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         home: const TravelFormScreen(),
         routes: {'/results': (context) => const ResultsScreen()},
+        navigatorObservers: [
+          SentryNavigatorObserver(),
+        ],
       ),
     );
   }
