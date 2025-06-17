@@ -155,6 +155,7 @@ Future<List<ErrorMonitoringClient>> _getErrorMonitoringClients(
     final sentryClient = SentryErrorMonitoringClient();
     await sentryClient.init(
       dsn: firebaseRemoteConfigRepository.sentryDsn,
+      firebaseRemoteConfig: firebaseRemoteConfigRepository.firebaseRemoteConfig,
       debug: kDebugMode,
       environment: kDebugMode ? 'dev' : 'prod',
       considerInAppFramesByDefault: false,

@@ -74,6 +74,7 @@ dependencies:
   firebase_analytics: ^11.4.6
   mixpanel_flutter: ^2.4.3
   sentry_flutter: ^9.0.0
+  sentry_firebase_remote_config: ^9.0.0
 
 # Add dependency override to fix flutter_math_fork compatibility issue
 dependency_overrides:

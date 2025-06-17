@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry_firebase_remote_config/sentry_firebase_remote_config.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
 
 abstract class _Constants {
@@ -45,6 +47,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   @override
   Future<void> init({
     AppRunner? appRunner,
+    FirebaseRemoteConfig? firebaseRemoteConfig,
     String? dsn,
     bool debug = false,
     bool? sendToSentry,
@@ -108,6 +111,15 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
               // Capture if it's a fatal event
               return event.level == SentryLevel.fatal;
             };
+
+          // Add Firebase Remote Config integration if available
+          if (firebaseRemoteConfig != null) {
+            options.addIntegration(
+              SentryFirebaseRemoteConfigIntegration(
+                firebaseRemoteConfig: firebaseRemoteConfig,
+              ),
+            );
+          }
         },
         appRunner: appRunner,
       );
