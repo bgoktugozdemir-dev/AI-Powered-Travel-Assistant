@@ -39,7 +39,7 @@ class CurrencyCard extends StatelessWidget {
     );
     final arrivalAverageLivingCostPerDayInTheirCurrency = Formatters.currency(
       amount: currency.arrivalAverageLivingCostPerDayInTheirCurrency,
-      currencyCode: currency.departureCurrencyCode ?? currency.code,
+      currencyCode: currency.code,
       locale: l10n.localeName,
     );
 
