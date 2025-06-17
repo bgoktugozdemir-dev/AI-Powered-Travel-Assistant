@@ -39,11 +39,6 @@ class ResultsScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              key: const Key(_Constants.buttonBackResults),
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
             title: Text(l10n.yourTravelPlan),
             actions: [
               // IconButton(
