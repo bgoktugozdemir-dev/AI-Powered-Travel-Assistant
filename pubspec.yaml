@@ -43,6 +43,7 @@ dependencies:
 
   # Networking
   dio: ^5.8.0+1
+  sentry_dio: ^9.0.0
   retrofit: ^4.4.2
   json_annotation: ^4.9.0
 
@@ -72,7 +73,7 @@ dependencies:
   url_launcher: ^6.3.1
   firebase_analytics: ^11.4.6
   mixpanel_flutter: ^2.4.3
-  sentry_flutter: ^8.14.2
+  sentry_flutter: ^9.0.0
 
 # Add dependency override to fix flutter_math_fork compatibility issue
 dependency_overrides:

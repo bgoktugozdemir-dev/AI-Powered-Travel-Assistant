@@ -53,7 +53,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     required ImageRepository imageRepository,
     required CurrencyRepository currencyRepository,
     required FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
-    CountryService? countryService,
+    required CountryService countryService,
   }) : _analyticsFacade = analyticsFacade,
        _errorMonitoringFacade = errorMonitoringFacade,
        _airportRepository = airportRepository,
@@ -63,7 +63,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
        _imageRepository = imageRepository,
        _currencyRepository = currencyRepository,
        _firebaseRemoteConfigRepository = firebaseRemoteConfigRepository,
-       _countryService = CountryService(),
+       _countryService = countryService,
        super(const TravelFormState()) {
     on<TravelFormInitializeServices>(_onInitializeServices);
 

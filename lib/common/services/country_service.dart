@@ -16,7 +16,9 @@ class CountryService {
   bool _isInitialized = false;
 
   /// Creates a [CountryService] with an optional [Dio] instance.
-  CountryService({Dio? dio}) : _dio = dio ?? Dio();
+  CountryService({
+    required Dio dio,
+  }) : _dio = dio;
 
   /// Initialize the service by fetching countries from the API.
   /// This should be called before using the service.
@@ -78,8 +80,7 @@ class CountryService {
     return _countries.where((country) {
       return country.name.toLowerCase().contains(lowercaseQuery) ||
           country.code.toLowerCase().contains(lowercaseQuery) ||
-          (country.nationality?.toLowerCase().contains(lowercaseQuery) ??
-              false);
+          (country.nationality?.toLowerCase().contains(lowercaseQuery) ?? false);
     }).toList();
   }
 

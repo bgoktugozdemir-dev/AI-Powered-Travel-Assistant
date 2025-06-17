@@ -71,23 +71,24 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
           options
             ..dsn = dsn
             ..debug = debug
+            ..useFlutterBreadcrumbTracking()
             ..environment = environment
             ..sampleRate = sampleRate ?? _Constants.sampleRate
             ..tracesSampleRate = tracesSampleRate ?? _Constants.tracesSampleRate
-            ..profilesSampleRate =
-                profilesSampleRate ?? _Constants.profilesSampleRate
+            ..profilesSampleRate = profilesSampleRate ?? _Constants.profilesSampleRate
             // By this code, 3rd party code will be collapsed and greyed out
             // when viewing stack traces on the Sentry dashboard
-            ..considerInAppFramesByDefault =
-                considerInAppFramesByDefault ??
-                _Constants.considerInAppFramesByDefault
+            ..considerInAppFramesByDefault = considerInAppFramesByDefault ?? _Constants.considerInAppFramesByDefault
             ..addInAppInclude('travel_assistant')
             //! [attachScreenshot] and [attachViewHierarchy] are expensive and should be enabled only if needed
             // Attach a screenshot to the event
             ..attachScreenshot = attachScreenshot ?? _Constants.attachScreenshot
             // Attach the view hierarchy to the event
-            ..attachViewHierarchy =
-                attachViewHierarchy ?? _Constants.attachViewHierarchy
+            ..attachViewHierarchy = attachViewHierarchy ?? _Constants.attachViewHierarchy
+            // Record HTTP breadcrumbs
+            ..recordHttpBreadcrumbs = !debug
+            // Capture failed requests
+            ..captureFailedRequests = !debug
             // Use the [beforeSend] callback to filter which events are sent
             ..beforeSend = (event, hint) async {
               // Don't send event if [sendToSentry] is false or it is a debug build
@@ -98,6 +99,14 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
 
               // For all other events, return the event as is
               return event;
+            }
+            ..beforeCaptureScreenshot = (event, hint, debounce) async {
+              // If debounce is active, skip capturing
+              if (debounce || sendToSentry == false || debug) {
+                return false;
+              }
+              // Capture if it's a fatal event
+              return event.level == SentryLevel.fatal;
             };
         },
         appRunner: appRunner,
@@ -139,6 +148,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
       error,
       stackTrace: stackTrace,
       withScope: (scope) {
+        scope.level = SentryLevel.error;
         if (context != null) {
           for (final entry in context.entries) {
             scope.setContexts(entry.key, entry.value);
@@ -160,6 +170,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
       exception,
       stackTrace: stackTrace,
       withScope: (scope) {
+        scope.level = SentryLevel.fatal;
         if (context != null) {
           for (final entry in context.entries) {
             scope.setContexts(entry.key, entry.value);

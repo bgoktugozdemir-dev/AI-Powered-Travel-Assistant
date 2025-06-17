@@ -4,8 +4,7 @@ import 'package:dio/dio.dart';
 
 abstract class _Constants {
   static const int timeoutDurationInSeconds = 30;
-  static const String errorMessageImageDownloadFailed =
-      'Failed to download image';
+  static const String errorMessageImageDownloadFailed = 'Failed to download image';
 }
 
 /// Service for converting images to base64.
@@ -13,7 +12,9 @@ class ImageToBase64Service {
   final Dio _dio;
 
   /// Creates an [ImageToBase64Service] with a [Dio] instance.
-  ImageToBase64Service({Dio? dio}) : _dio = dio ?? Dio();
+  ImageToBase64Service({
+    required Dio dio,
+  }) : _dio = dio;
 
   /// Downloads and converts an image to base64.
   Future<String> downloadImageAsBase64({required String url}) async {
