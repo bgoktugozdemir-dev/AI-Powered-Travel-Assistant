@@ -88,6 +88,8 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
             ..attachScreenshot = attachScreenshot ?? _Constants.attachScreenshot
             // Attach the view hierarchy to the event
             ..attachViewHierarchy = attachViewHierarchy ?? _Constants.attachViewHierarchy
+            // Attach HTTP breadcrumbs to the event
+            ..recordHttpBreadcrumbs = !debug
             // Use the [beforeSend] callback to filter which events are sent
             ..beforeSend = (event, hint) async {
               // Don't send event if [sendToSentry] is false or it is a debug build

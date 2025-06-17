@@ -32,6 +32,7 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/logger_error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/network/sentry_dio_interceptor.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
@@ -201,7 +202,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio();
+            final dio = Dio()..addSentryInterceptor();
             final imageService = ImageToBase64Service(dio: dio);
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
 
@@ -232,7 +233,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio();
+            final dio = Dio()..addSentryInterceptor();
             final apiService = AirportApiService(dio);
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return AirportRepository(
@@ -243,7 +244,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio();
+            final dio = Dio()..addSentryInterceptor();
             final unsplashService = UnsplashService(dio);
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
@@ -256,7 +257,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio();
+            final dio = Dio()..addSentryInterceptor();
             final freeCurrencyApiService = FreeCurrencyApiService(dio);
             final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
@@ -269,7 +270,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) {
-            final dio = Dio();
+            final dio = Dio()..addSentryInterceptor();
             final countryService = CountryService(dio: dio);
             final firebaseAIRepository = context.read<FirebaseAIRepository>();
             final airportRepository = context.read<AirportRepository>();

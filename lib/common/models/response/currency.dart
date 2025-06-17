@@ -32,6 +32,4 @@ class Currency {
 
   @JsonKey(name: 'arrival_average_living_cost_per_day')
   final double arrivalAverageLivingCostPerDay;
-
-  double get arrivalAverageLivingCostPerDayInTheirCurrency => arrivalAverageLivingCostPerDay * exchangeRate;
 }

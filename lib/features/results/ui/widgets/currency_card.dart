@@ -32,16 +32,36 @@ class CurrencyCard extends StatelessWidget {
       currencyCode: currency.code,
       locale: l10n.localeName,
     );
+    final departureAverageLivingCostPerDay =
+        currency.departureAverageLivingCostPerDay != null && currency.departureCurrencyCode != null
+            ? Formatters.currency(
+              amount: currency.departureAverageLivingCostPerDay!,
+              currencyCode: currency.departureCurrencyCode!,
+              locale: l10n.localeName,
+            )
+            : null;
+    final departureAverageLivingCostPerDayInArrivalCurrency =
+        currency.departureAverageLivingCostPerDay != null
+            ? Formatters.currency(
+              amount: currency.departureAverageLivingCostPerDay! * currencyExchangeRate,
+              currencyCode: currency.code,
+              locale: l10n.localeName,
+            )
+            : null;
+
     final arrivalAverageLivingCostPerDay = Formatters.currency(
       amount: currency.arrivalAverageLivingCostPerDay,
-      currencyCode: currency.departureCurrencyCode ?? currency.code,
-      locale: l10n.localeName,
-    );
-    final arrivalAverageLivingCostPerDayInTheirCurrency = Formatters.currency(
-      amount: currency.arrivalAverageLivingCostPerDayInTheirCurrency,
       currencyCode: currency.code,
       locale: l10n.localeName,
     );
+    final arrivalAverageLivingCostPerDayInDepartureCurrency =
+        currency.departureCurrencyCode != null
+            ? Formatters.currency(
+              amount: currency.arrivalAverageLivingCostPerDay / currencyExchangeRate,
+              currencyCode: currency.departureCurrencyCode!,
+              locale: l10n.localeName,
+            )
+            : null;
 
     return TravelCard(
       icon: Icons.currency_exchange,
@@ -59,10 +79,19 @@ class CurrencyCard extends StatelessWidget {
           value: '$departureCurrencyValue = $exchangeRateValue',
         ),
 
+        if (departureAverageLivingCostPerDayInArrivalCurrency != null)
+          InfoRow(
+            icon: Icons.price_change,
+            label: "Departure average living cost per day",
+            value:
+                '$departureAverageLivingCostPerDayInArrivalCurrency ${departureAverageLivingCostPerDay != null ? '($departureAverageLivingCostPerDay)' : ''}',
+          ),
+
         InfoRow(
           icon: Icons.price_change,
-          label: l10n.averageDailyCostLabel,
-          value: '$arrivalAverageLivingCostPerDayInTheirCurrency ($arrivalAverageLivingCostPerDay)',
+          label: "Arrival average living cost per day",
+          value:
+              '$arrivalAverageLivingCostPerDay ${arrivalAverageLivingCostPerDayInDepartureCurrency != null ? '($arrivalAverageLivingCostPerDayInDepartureCurrency)' : ''}',
         ),
       ],
     );

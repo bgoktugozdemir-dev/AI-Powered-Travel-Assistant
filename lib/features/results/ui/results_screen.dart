@@ -17,7 +17,7 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 
 abstract class _Constants {
   // Button Keys
-  static const String buttonBackResults = 'button_back_results';
+  // static const String buttonBackResults = 'button_back_results';
   // static const String buttonShareResults = 'button_share_results';
   static const String buttonPlanAnotherTrip = 'button_plan_another_trip';
 }
@@ -30,8 +30,7 @@ class ResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final firebaseRemoteConfigRepository =
-        context.read<FirebaseRemoteConfigRepository>();
+    final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
 
     return BlocBuilder<TravelFormBloc, TravelFormState>(
       builder: (context, state) {
@@ -65,10 +64,15 @@ class ResultsScreen extends StatelessWidget {
                       ),
 
                     // Required Documents Card
-                    if (firebaseRemoteConfigRepository
-                        .showRequiredDocumentsCard)
+                    if (firebaseRemoteConfigRepository.showRequiredDocumentsCard)
                       RequiredDocumentsCard(
                         requiredDocument: travelDetails.requiredDocuments,
+                      ),
+
+                    // Flight Options Card
+                    if (firebaseRemoteConfigRepository.showFlightOptionsCard)
+                      FlightOptionsCard(
+                        flightOptions: travelDetails.flightOptions,
                       ),
 
                     // Currency Information Card
@@ -76,12 +80,6 @@ class ResultsScreen extends StatelessWidget {
                       CurrencyCard(
                         currency: travelDetails.currency,
                         exchangeRate: state.exchangeRate,
-                      ),
-
-                    // Flight Options Card
-                    if (firebaseRemoteConfigRepository.showFlightOptionsCard)
-                      FlightOptionsCard(
-                        flightOptions: travelDetails.flightOptions,
                       ),
 
                     // Tax Information Card
@@ -97,8 +95,7 @@ class ResultsScreen extends StatelessWidget {
                       ),
 
                     // Travel Plan Card
-                    if (firebaseRemoteConfigRepository.showTravelPlanCard &&
-                        travelDetails.travelPlan.isNotEmpty)
+                    if (firebaseRemoteConfigRepository.showTravelPlanCard && travelDetails.travelPlan.isNotEmpty)
                       TravelPlanCard(
                         travelPlan: travelDetails.travelPlan,
                       ),
