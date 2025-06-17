@@ -584,6 +584,18 @@ abstract class AppLocalizations {
   /// **'Average Daily Living Cost'**
   String get averageDailyCostLabel;
 
+  /// Label for departure country average living cost per day
+  ///
+  /// In en, this message translates to:
+  /// **'Departure average living cost per day'**
+  String get departureAverageLivingCostPerDayLabel;
+
+  /// Label for arrival country average living cost per day
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival average living cost per day'**
+  String get arrivalAverageLivingCostPerDayLabel;
+
   /// Title for the tax information card
   ///
   /// In en, this message translates to:

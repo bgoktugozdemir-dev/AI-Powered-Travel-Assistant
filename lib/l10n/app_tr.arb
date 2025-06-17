@@ -412,6 +412,14 @@
   "@averageDailyCostLabel": {
     "description": "Label for average daily living cost field"
   },
+  "departureAverageLivingCostPerDayLabel": "Çıkış günlük ortalama yaşam maliyeti",
+  "@departureAverageLivingCostPerDayLabel": {
+    "description": "Label for departure country average living cost per day"
+  },
+  "arrivalAverageLivingCostPerDayLabel": "Varış günlük ortalama yaşam maliyeti",
+  "@arrivalAverageLivingCostPerDayLabel": {
+    "description": "Label for arrival country average living cost per day"
+  },
   "taxInformationTitle": "Vergi Bilgisi",
   "@taxInformationTitle": {
     "description": "Title for the tax information card"

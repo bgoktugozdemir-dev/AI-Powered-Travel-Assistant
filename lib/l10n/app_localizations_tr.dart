@@ -314,6 +314,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get averageDailyCostLabel => 'Ortalama Günlük Yaşam Maliyeti';
 
   @override
+  String get departureAverageLivingCostPerDayLabel =>
+      'Çıkış günlük ortalama yaşam maliyeti';
+
+  @override
+  String get arrivalAverageLivingCostPerDayLabel =>
+      'Varış günlük ortalama yaşam maliyeti';
+
+  @override
   String get taxInformationTitle => 'Vergi Bilgisi';
 
   @override

@@ -313,6 +313,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get averageDailyCostLabel => 'Average Daily Living Cost';
 
   @override
+  String get departureAverageLivingCostPerDayLabel =>
+      'Departure average living cost per day';
+
+  @override
+  String get arrivalAverageLivingCostPerDayLabel =>
+      'Arrival average living cost per day';
+
+  @override
   String get taxInformationTitle => 'Tax Information';
 
   @override

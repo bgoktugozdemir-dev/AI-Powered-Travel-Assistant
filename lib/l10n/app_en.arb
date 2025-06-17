@@ -412,6 +412,14 @@
   "@averageDailyCostLabel": {
     "description": "Label for average daily living cost field"
   },
+  "departureAverageLivingCostPerDayLabel": "Departure average living cost per day",
+  "@departureAverageLivingCostPerDayLabel": {
+    "description": "Label for departure country average living cost per day"
+  },
+  "arrivalAverageLivingCostPerDayLabel": "Arrival average living cost per day",
+  "@arrivalAverageLivingCostPerDayLabel": {
+    "description": "Label for arrival country average living cost per day"
+  },
   "taxInformationTitle": "Tax Information",
   "@taxInformationTitle": {
     "description": "Title for the tax information card"

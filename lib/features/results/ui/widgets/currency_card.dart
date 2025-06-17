@@ -82,14 +82,14 @@ class CurrencyCard extends StatelessWidget {
         if (departureAverageLivingCostPerDayInArrivalCurrency != null)
           InfoRow(
             icon: Icons.price_change,
-            label: "Departure average living cost per day",
+            label: l10n.departureAverageLivingCostPerDayLabel,
             value:
                 '$departureAverageLivingCostPerDayInArrivalCurrency ${departureAverageLivingCostPerDay != null ? '($departureAverageLivingCostPerDay)' : ''}',
           ),
 
         InfoRow(
           icon: Icons.price_change,
-          label: "Arrival average living cost per day",
+          label: l10n.arrivalAverageLivingCostPerDayLabel,
           value:
               '$arrivalAverageLivingCostPerDay ${arrivalAverageLivingCostPerDayInDepartureCurrency != null ? '($arrivalAverageLivingCostPerDayInDepartureCurrency)' : ''}',
         ),
