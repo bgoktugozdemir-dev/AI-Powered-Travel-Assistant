@@ -199,10 +199,10 @@ class MyApp extends StatelessWidget {
                     ..setAnalyticsCollectionEnabled(true),
         ),
         RepositoryProvider(
-          create: (_) => ErrorMonitoringFacade(errorMonitoringClients),
+          create: (_) => ErrorMonitoringFacade(errorMonitoringClients,),
         ),
         RepositoryProvider(
-          create: (_) {
+          create: (context) {
             final dio = Dio();
             final imageService = ImageToBase64Service(dio: dio);
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
@@ -214,7 +214,7 @@ class MyApp extends StatelessWidget {
           },
         ),
         RepositoryProvider(
-          create: (_) {
+          create: (context) {
             final vertexAI = FirebaseAI.vertexAI(
               appCheck: FirebaseAppCheck.instance,
               app: Firebase.app(),
@@ -233,7 +233,7 @@ class MyApp extends StatelessWidget {
           },
         ),
         RepositoryProvider(
-          create: (_) {
+          create: (context) {
             final apiService = AirportApiService(
               Dio(),
             );
