@@ -22,6 +22,7 @@ import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 
 part 'travel_form_event.dart';
@@ -189,10 +190,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       return;
     } else if (state.currentStep == 4) {
       final selectedTravelPurposes = state.selectedTravelPurposes.length;
-      final minimumTravelPurposes =
-          _firebaseRemoteConfigRepository.minimumTravelPurposes;
-      final maximumTravelPurposes =
-          _firebaseRemoteConfigRepository.maximumTravelPurposes;
+      final minimumTravelPurposes = _firebaseRemoteConfigRepository.minimumTravelPurposes;
+      final maximumTravelPurposes = _firebaseRemoteConfigRepository.maximumTravelPurposes;
       if (selectedTravelPurposes < minimumTravelPurposes) {
         emit(
           state.copyWith(
@@ -321,8 +320,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -397,8 +395,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
 
     _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -423,8 +420,12 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    _analyticsFacade.logChooseTravelDates(
+      Formatters.logDate(event.dateRange.start),
+      Formatters.logDate(event.dateRange.end),
+    );
+
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -512,10 +513,9 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    _analyticsFacade.logChooseNationality(event.country.name);
+    _analyticsFacade.logChooseNationality(event.country.nationality ?? event.country.code);
 
-    if (_firebaseRemoteConfigRepository
-        .navigateToNextStepAfterSelectingTravelPurpose) {
+    if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
     }
   }
@@ -632,8 +632,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           ),
           // Get exchange rate from Currency API
           _currencyRepository.getExchangeRate(
-            travelPlan.currency.departureCurrencyCode ??
-                travelPlan.currency.code,
+            travelPlan.currency.departureCurrencyCode ?? travelPlan.currency.code,
             travelPlan.currency.code,
           ),
         ],
@@ -661,10 +660,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error:
-              e is FirebaseError
-                  ? () => ServerError()
-                  : () => GeneralTravelFormError(),
+          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
         ),
       );
       _errorMonitoringFacade.reportError(

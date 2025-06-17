@@ -65,10 +65,6 @@ class TravelFormTravelDatesStep extends StatelessWidget {
                   }
 
                   if (pickedDateRange != null) {
-                    context.read<AnalyticsFacade>().logChooseTravelDates(
-                      Formatters.logDate(pickedDateRange.start),
-                      Formatters.logDate(pickedDateRange.end),
-                    );
                     bloc.add(TravelFormDateRangeSelected(pickedDateRange));
                   }
                 },

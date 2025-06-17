@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/widgets/travel_form_step_layout.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
@@ -20,9 +19,7 @@ class TravelFormNationalityStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.isNationalityLoading != current.isNationalityLoading,
+          buildWhen: (previous, current) => previous.isNationalityLoading != current.isNationalityLoading,
           builder: (context, state) {
             return TextField(
               decoration: InputDecoration(
@@ -35,20 +32,15 @@ class TravelFormNationalityStep extends StatelessWidget {
                         )
                         : null,
               ),
-              onChanged: (query) {
-                context.read<AnalyticsFacade>().logSearchNationality(query);
-                context.read<TravelFormBloc>().add(
-                  TravelFormNationalitySearchTermChanged(query),
-                );
-              },
+              onChanged:
+                  (query) => context.read<TravelFormBloc>().add(
+                    TravelFormNationalitySearchTermChanged(query),
+                  ),
             );
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.nationalitySuggestions !=
-                  current.nationalitySuggestions,
+          buildWhen: (previous, current) => previous.nationalitySuggestions != current.nationalitySuggestions,
           builder: (context, state) {
             if (state.nationalitySuggestions.isEmpty) {
               return const SizedBox.shrink();
@@ -73,14 +65,10 @@ class TravelFormNationalityStep extends StatelessWidget {
                             : null,
                     title: Text(country.name),
                     subtitle: Text(country.nationality ?? country.code),
-                    onTap: () {
-                      context.read<AnalyticsFacade>().logChooseNationality(
-                        country.nationality ?? country.code,
-                      );
-                      context.read<TravelFormBloc>().add(
-                        TravelFormNationalitySelected(country),
-                      );
-                    },
+                    onTap:
+                        () => context.read<TravelFormBloc>().add(
+                          TravelFormNationalitySelected(country),
+                        ),
                   );
                 },
               ),
@@ -88,9 +76,7 @@ class TravelFormNationalityStep extends StatelessWidget {
           },
         ),
         BlocBuilder<TravelFormBloc, TravelFormState>(
-          buildWhen:
-              (previous, current) =>
-                  previous.selectedNationality != current.selectedNationality,
+          buildWhen: (previous, current) => previous.selectedNationality != current.selectedNationality,
           builder: (context, state) {
             if (state.selectedNationality == null) {
               return const SizedBox.shrink();
