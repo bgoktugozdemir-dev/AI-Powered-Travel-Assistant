@@ -12,9 +12,9 @@ abstract class _Constants {
   static const int maxRetries = 3;
   static const String jsonCodeBlockStart = '```json';
   static const String codeBlockEnd = '```';
-  static const String retryPromptTemplate = 
+  static const String retryPromptTemplate =
       'The travel plan you generated previously was not correct. '
-      'Please fix the following error: ';
+      'Please fix the following error: {error_message}';
 }
 
 /// Repository for interacting with Firebase AI capabilities
@@ -49,11 +49,11 @@ class FirebaseAIRepository {
   }
 
   /// Generates travel plan with automatic retry mechanism for format errors.
-  /// 
+  ///
   /// [prompt] The prompt to send to Firebase AI
   /// [retryCount] Current retry attempt count
   /// [isRetry] Whether this is a retry attempt
-  /// 
+  ///
   /// Returns the generated travel details
   /// Throws an exception if generation fails after all retries
   Future<TravelDetails> _generateWithRetry(
@@ -69,9 +69,9 @@ class FirebaseAIRepository {
       if (retryCount >= _Constants.maxRetries) {
         rethrow;
       }
-      
+
       _logFormatError(e, prompt, retryCount);
-      final retryPrompt = _Constants.retryPromptTemplate + e.message;
+      final retryPrompt = _Constants.retryPromptTemplate.replaceFirst('{error_message}', e.message);
       return _generateWithRetry(retryPrompt, retryCount + 1, true);
     } on ServerException catch (e, stackTrace) {
       _logServerError(e, stackTrace, prompt);
@@ -83,15 +83,15 @@ class FirebaseAIRepository {
   }
 
   /// Sends a message to Firebase AI and returns the response.
-  /// 
+  ///
   /// [prompt] The prompt to send
-  /// 
+  ///
   /// Returns the Firebase AI response
   /// Throws an exception if the response is empty
   Future<GenerateContentResponse> _sendMessage(String prompt) async {
     final content = Content.text(prompt);
     final chatSession = firebaseAIService.startChatSession();
-    
+
     analyticsFacade.logLLMPrompt(firebaseAIService.model, prompt);
     final stopwatch = Stopwatch()..start();
 
@@ -118,22 +118,20 @@ class FirebaseAIRepository {
   }
 
   /// Processes the Firebase AI response and converts it to TravelDetails.
-  /// 
+  ///
   /// [response] The response from Firebase AI
   /// [prompt] The original prompt (for error logging)
-  /// 
+  ///
   /// Returns the parsed TravelDetails
   /// Throws FormatException if JSON parsing fails
   TravelDetails _processResponse(
-    GenerateContentResponse response, 
+    GenerateContentResponse response,
     String prompt,
   ) {
     var responseText = response.text!;
-    
+
     // Clean up markdown code blocks
-    responseText = responseText
-        .replaceAll(_Constants.jsonCodeBlockStart, '')
-        .replaceAll(_Constants.codeBlockEnd, '');
+    responseText = responseText.replaceAll(_Constants.jsonCodeBlockStart, '').replaceAll(_Constants.codeBlockEnd, '');
 
     try {
       final responseJson = jsonDecode(responseText);
@@ -160,8 +158,8 @@ class FirebaseAIRepository {
 
   /// Logs server errors with appropriate context.
   void _logServerError(
-    ServerException e, 
-    StackTrace stackTrace, 
+    ServerException e,
+    StackTrace stackTrace,
     String prompt,
   ) {
     errorMonitoringFacade.reportError(
@@ -177,8 +175,8 @@ class FirebaseAIRepository {
 
   /// Logs generic errors with appropriate context.
   void _logGenericError(
-    dynamic e, 
-    StackTrace stackTrace, 
+    dynamic e,
+    StackTrace stackTrace,
     String prompt,
   ) {
     errorMonitoringFacade.reportError(

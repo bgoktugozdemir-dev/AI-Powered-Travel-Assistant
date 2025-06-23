@@ -13,24 +13,34 @@ class FirebaseAIService {
   final FirebaseAI _firebaseAI;
   final FirebaseRemoteConfigRepository _firebaseRemoteConfigRepository;
 
+  ChatSession? _chatSession;
+
+  String get model => _firebaseRemoteConfigRepository.aiModel;
+  String get _systemPrompt => _firebaseRemoteConfigRepository.aiSystemPrompt;
+
   /// Returns the generative model for the Firebase AI model.
-  GenerativeModel getModel() {
+  GenerativeModel _getModel() {
     return _firebaseAI.generativeModel(
-      model: _model,
-      generationConfig: _firebaseRemoteConfigRepository.generationConfig
-          ?.toGenerationConfig(_model),
+      model: model,
+      generationConfig: _firebaseRemoteConfigRepository.generationConfig?.toGenerationConfig(model),
       systemInstruction: Content.system(_systemPrompt),
     );
   }
 
   /// Returns the chat session for the Firebase AI model.
-  ChatSession chatSession() {
-    final model = getModel();
+  ChatSession startChatSession() {
+    if (_chatSession != null) {
+      return _chatSession!;
+    }
 
-    return model.startChat();
+    final model = _getModel();
+
+    _chatSession = model.startChat();
+
+    return _chatSession!;
   }
 
-  String get _model => _firebaseRemoteConfigRepository.aiModel;
-
-  String get _systemPrompt => _firebaseRemoteConfigRepository.aiSystemPrompt;
+  void endChatSession() {
+    _chatSession = null;
+  }
 }
