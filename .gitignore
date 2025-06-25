@@ -129,6 +129,7 @@ coverage/
 
 # FVM Version Cache
 .fvm/
+.fvmrc
 
 # Other
 .sentryclirc
