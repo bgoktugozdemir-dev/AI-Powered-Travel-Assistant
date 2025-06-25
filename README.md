@@ -13,12 +13,14 @@ Travel Assistant is a sophisticated Flutter application that leverages artificia
 ## 🚀 Features
 
 ### ✈️ **Smart Trip Planning**
+
 - **Multi-step Travel Form**: Intuitive 6-step process to gather your travel preferences
 - **Airport Search**: Comprehensive database of global airports with intelligent search
 - **Date Selection**: Flexible travel date picker with validation
 - **Nationality Support**: International nationality database for visa requirements
 
 ### 🤖 **AI-Powered Recommendations**
+
 - **Personalized Suggestions**: AI-driven recommendations based on your travel purposes
 - **Visa Requirements**: Automatic visa and document requirement detection
 - **Cost Analysis**: Real-time currency conversion and cost of living comparisons
@@ -26,6 +28,7 @@ Travel Assistant is a sophisticated Flutter application that leverages artificia
 - **Local Insights**: Curated recommendations for attractions, food, and activities
 
 ### 🎯 **Travel Purposes**
+
 - **Sightseeing**: Tourist attractions and landmarks
 - **Local Food**: Culinary experiences and restaurants
 - **Business**: Business-friendly accommodations and services
@@ -34,11 +37,13 @@ Travel Assistant is a sophisticated Flutter application that leverages artificia
 - **Visiting Friends**: Social travel recommendations
 
 ### 🌐 **Multi-Language Support**
+
 - **English** and **Turkish** localization
 - **Extensible**: Easy to add more languages
 - **Context-aware**: Smart language switching based on destination
 
 ### 📱 **Cross-Platform**
+
 - **Mobile**: iOS and Android optimized
 - **Web**: Progressive Web App (PWA) support
 - **Desktop**: Windows, macOS, and Linux compatibility
@@ -47,33 +52,39 @@ Travel Assistant is a sophisticated Flutter application that leverages artificia
 ## 🛠️ Technologies Used
 
 ### **Frontend**
+
 - **Flutter 3.32.4** - Cross-platform UI framework
 - **Dart 3.8.1** - Programming language
 - **Material Design** - Modern, responsive UI components
 - **Lottie** - High-quality animations
 
 ### **State Management**
+
 - **BLoC Pattern** - Predictable state management
 - **flutter_bloc** - Official BLoC implementation
 - **Equatable** - Value equality for state comparison
 
 ### **Backend & AI**
+
 - **Firebase AI (Vertex AI)** - AI-powered recommendations
 - **Firebase Remote Config** - Dynamic configuration
 - **Firebase Analytics** - User behavior tracking
 - **Firebase App Check** - Security and abuse prevention
 
 ### **Networking & APIs**
+
 - **Retrofit** - Type-safe REST client
 - **Dio** - Powerful HTTP client
 - **JSON Serialization** - Automated model generation
 
 ### **Monitoring & Analytics**
+
 - **Sentry** - Error monitoring and performance tracking
 - **Mixpanel** - Advanced analytics and user insights
 - **Custom Analytics** - Comprehensive event tracking
 
 ### **External Services**
+
 - **Airport APIs** - Global airport database
 - **Currency APIs** - Real-time exchange rates
 - **Weather APIs** - Detailed weather forecasts
@@ -103,6 +114,7 @@ lib/
 ```
 
 ### **Design Patterns**
+
 - **Repository Pattern** - Data access abstraction
 - **Service Layer** - Business logic separation
 - **BLoC Pattern** - Reactive state management
@@ -111,6 +123,7 @@ lib/
 ## 🚀 Getting Started
 
 ### **Prerequisites**
+
 - Flutter SDK 3.32.4 or higher
 - Dart SDK 3.8.1 or higher
 - Firebase CLI (for Firebase configuration)
@@ -119,22 +132,26 @@ lib/
 ### **Installation**
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/yourusername/travel_assistant.git
+   git clone https://github.com/bgoktugozdemir/travel_assistant.git
    cd travel_assistant
    ```
 
 2. **Install dependencies**
+
    ```bash
    flutter pub get
    ```
 
 3. **Generate code**
+
    ```bash
    dart run build_runner build
    ```
 
 4. **Configure Firebase**
+
    - Create a new Firebase project
    - Add your platform-specific configuration files
    - Enable required Firebase services (see Configuration section)
@@ -149,11 +166,13 @@ lib/
 ### **Firebase Setup**
 
 1. **Create Firebase Project**
+
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Create a new project
    - Enable Google Analytics (optional)
 
 2. **Enable Required Services**
+
    - **Firebase AI** - For AI-powered recommendations
    - **Remote Config** - For dynamic configuration
    - **Analytics** - For user behavior tracking
@@ -179,7 +198,7 @@ Set up the following parameters in Firebase Remote Config:
     },
     {
       "id": "food",
-      "name": "Local Food", 
+      "name": "Local Food",
       "localizationKey": "travelPurposeFood",
       "icon": "restaurant"
     }
@@ -193,6 +212,7 @@ Set up the following parameters in Firebase Remote Config:
 ### **API Keys**
 
 You'll need API keys for:
+
 - **Airport Database API** - For airport search functionality
 - **Currency API** - For real-time exchange rates
 - **Weather API** - For weather forecasts
@@ -226,6 +246,7 @@ Add these to your Firebase Remote Config or environment variables.
 ## 🧪 Testing
 
 ### **Run Tests**
+
 ```bash
 # Unit tests
 flutter test
@@ -238,6 +259,7 @@ flutter test test/widget_test.dart
 ```
 
 ### **Code Quality**
+
 ```bash
 # Analyze code
 flutter analyze
@@ -252,18 +274,21 @@ flutter pub deps
 ## 📋 Development Guidelines
 
 ### **Code Style**
+
 - Follow [Dart Style Guide](https://dart.dev/guides/language/effective-dart/style)
 - Use `flutter_lints` for consistent formatting
 - Maximum line length: 80 characters
 - Use meaningful variable and function names
 
 ### **Architecture Rules**
+
 - **No hardcoded strings** - Use localization files
 - **Feature-first structure** - Organize by features, not layers
 - **Separation of concerns** - Keep UI, business logic, and data separate
 - **Constants class** - Define configurable parameters in `_Constants` classes
 
 ### **Git Workflow**
+
 - Use conventional commits
 - Create feature branches for new functionality
 - Ensure all tests pass before merging
@@ -287,10 +312,10 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ```bash
 # Clone your fork
-git clone https://github.com/yourusername/travel_assistant.git
+git clone https://github.com/bgoktugozdemir/travel_assistant.git
 
 # Add upstream remote
-git remote add upstream https://github.com/original/travel_assistant.git
+git remote add upstream https://github.com/bgoktugozdemir/travel_assistant.git
 
 # Install dependencies
 flutter pub get
@@ -308,12 +333,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 ### **Getting Help**
-- 📖 [Documentation](https://github.com/yourusername/travel_assistant/wiki)
-- 🐛 [Issue Tracker](https://github.com/yourusername/travel_assistant/issues)
-- 💬 [Discussions](https://github.com/yourusername/travel_assistant/discussions)
+
+- 📖 [Documentation](https://github.com/bgoktugozdemir/travel_assistant/wiki)
+- 🐛 [Issue Tracker](https://github.com/bgoktugozdemir/travel_assistant/issues)
+- 💬 [Discussions](https://github.com/bgoktugozdemir/travel_assistant/discussions)
 
 ### **Reporting Issues**
+
 Please use our issue templates and provide:
+
 - Device information
 - Flutter version
 - Steps to reproduce
@@ -323,6 +351,7 @@ Please use our issue templates and provide:
 ## 🎯 Roadmap
 
 ### **Upcoming Features**
+
 - [ ] **Booking Integration** - Direct flight and hotel booking
 - [ ] **Itinerary Builder** - Day-by-day trip planning
 - [ ] **Expense Tracking** - Budget management tools
@@ -331,6 +360,7 @@ Please use our issue templates and provide:
 - [ ] **AR Features** - Augmented reality city guides
 
 ### **Long-term Goals**
+
 - [ ] **Machine Learning** - Advanced recommendation algorithms
 - [ ] **Voice Assistant** - Voice-controlled trip planning
 - [ ] **Wearable Support** - Smartwatch integration
@@ -347,7 +377,7 @@ Please use our issue templates and provide:
 ---
 
 <p align="center">
-  <strong>Made with ❤️ by the Travel Assistant Team</strong>
+  <strong>Made with ❤️ by the <a href="https://linktr.ee/bgoktugozdemir"> @bgoktugozdemir </a> via Cursor</strong>
 </p>
 
 <p align="center">
