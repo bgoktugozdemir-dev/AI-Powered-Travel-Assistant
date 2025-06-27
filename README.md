@@ -368,6 +368,7 @@ Please use our issue templates and provide:
 
 ## 🙏 Acknowledgments
 
+- **[Agent Development Kit (ADK) Demos](https://github.com/meteatamel/adk-demos)** - Inspiration for AI-powered travel agent architecture
 - **Flutter Team** - For the amazing framework
 - **Firebase Team** - For powerful backend services
 - **Open Source Community** - For the incredible packages
