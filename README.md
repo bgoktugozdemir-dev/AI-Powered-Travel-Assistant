@@ -10,6 +10,8 @@
 
 Travel Assistant is a sophisticated Flutter application that leverages artificial intelligence to provide comprehensive travel planning assistance. Whether you're planning a business trip, vacation, or adventure, our app guides you through every aspect of your journey with intelligent recommendations and real-time information.
 
+I was heavily inspired by **[Agent Development Kit (ADK) Demos](https://github.com/meteatamel/adk-demos)**.
+
 ## 🚀 Features
 
 ### ✈️ **Smart Trip Planning**
@@ -365,15 +367,6 @@ Please use our issue templates and provide:
 - [ ] **Voice Assistant** - Voice-controlled trip planning
 - [ ] **Wearable Support** - Smartwatch integration
 - [ ] **Corporate Features** - Business travel management
-
-## 🙏 Acknowledgments
-
-- **[Agent Development Kit (ADK) Demos](https://github.com/meteatamel/adk-demos)** - Inspiration for AI-powered travel agent architecture
-- **Flutter Team** - For the amazing framework
-- **Firebase Team** - For powerful backend services
-- **Open Source Community** - For the incredible packages
-- **Contributors** - For making this project better
-- **Users** - For your feedback and support
 
 ---
 
