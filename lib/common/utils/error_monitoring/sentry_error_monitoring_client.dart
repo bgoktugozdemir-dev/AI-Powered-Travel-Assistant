@@ -131,14 +131,14 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> setErrorMonitoringEnabled(bool enabled) {
+  void setErrorMonitoringEnabled(bool enabled) {
     _enabled = enabled;
     // Note: Sentry doesn't support runtime enabling/disabling in this version
     // This would need to be handled at initialization time
   }
 
   @override
-  FutureOr<void> setUser(String userId) async {
+  Future<void> setUser(String userId) async {
     if (!_enabled) return;
 
     await Sentry.configureScope((scope) {
@@ -147,7 +147,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> reportError(
+  Future<void> reportError(
     Object error, {
     StackTrace? stackTrace,
     Map<String, dynamic>? context,
@@ -169,7 +169,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> reportException(
+  Future<void> reportException(
     Exception exception, {
     StackTrace? stackTrace,
     Map<String, dynamic>? context,
@@ -191,7 +191,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> addBreadcrumb(
+  Future<void> addBreadcrumb(
     String message, {
     String? category,
     Map<String, dynamic>? data,
@@ -209,7 +209,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> setCustomData(String key, dynamic value) async {
+  Future<void> setCustomData(String key, dynamic value) async {
     if (!_enabled) return;
 
     await Sentry.configureScope((scope) {
@@ -218,7 +218,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> setCustomContext(Map<String, dynamic> context) async {
+  Future<void> setCustomContext(Map<String, dynamic> context) async {
     if (!_enabled) return;
 
     await Sentry.configureScope((scope) {
@@ -229,7 +229,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> captureMessage(
+  Future<void> captureMessage(
     String message, {
     String? level,
     Map<String, dynamic>? context,
@@ -252,7 +252,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> clearUser() async {
+  Future<void> clearUser() async {
     if (!_enabled) return;
 
     await Sentry.configureScope((scope) {
@@ -261,7 +261,7 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }
 
   @override
-  FutureOr<void> clearCustomData() async {
+  Future<void> clearCustomData() async {
     if (!_enabled) return;
 
     await Sentry.configureScope((scope) {

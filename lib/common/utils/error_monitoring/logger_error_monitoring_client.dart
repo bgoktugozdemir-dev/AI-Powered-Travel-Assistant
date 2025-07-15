@@ -27,11 +27,8 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   );
 
   final _prettierPrinter = PrettyPrinter(
-    methodCount:
-        _Constants.methodCount, // Number of method calls to be displayed
-    errorMethodCount:
-        _Constants
-            .errorMethodCount, // Number of method calls if stacktrace is provided
+    methodCount: _Constants.methodCount, // Number of method calls to be displayed
+    errorMethodCount: _Constants.errorMethodCount, // Number of method calls if stacktrace is provided
     lineLength: _Constants.lineLength, // Width of the output
     printEmojis: true, // Print an emoji for each log message
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart, // Print timestamp
@@ -120,6 +117,12 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
     if (breadcrumbData.isNotEmpty) {
       _logger.d('Breadcrumb data: $breadcrumbData');
     }
+  }
+
+  @override
+  void addAIBreadcrumb(Map<String, dynamic> request, Map<String, dynamic> response) {
+    _logger.d('👨‍💻 AI Request: $request');
+    _logger.d('🤖 AI Response: $response');
   }
 
   @override

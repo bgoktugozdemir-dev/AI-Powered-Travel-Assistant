@@ -73,6 +73,17 @@ class FirebaseAIRepository {
         throw error;
       }
 
+      errorMonitoringFacade.addBreadcrumb(
+        responseText,
+        category: 'Firebase AI',
+        data: {
+          'prompt': prompt,
+          'response': responseText,
+          'model': firebaseAIService.model,
+          'retryCount': retryCount,
+          'durationMs': stopwatch.elapsedMilliseconds,
+        },
+      );
       // Log the successful response
       analyticsFacade.logLLMResponse(
         firebaseAIService.model,
