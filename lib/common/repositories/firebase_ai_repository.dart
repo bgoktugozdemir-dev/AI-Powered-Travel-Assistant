@@ -7,6 +7,7 @@ import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+import 'package:travel_assistant/common/utils/helpers/parser_utils.dart';
 
 abstract class _Constants {
   static const int maxRetries = 3;
@@ -92,9 +93,13 @@ class FirebaseAIRepository {
         stopwatch.elapsedMilliseconds,
       );
       responseText = responseText.replaceAll(_Constants.jsonCodeBlockStart, '').replaceAll(_Constants.codeBlockEnd, '');
-      final responseJson = jsonDecode(responseText);
+      final travelPlan = ParserUtils.parseTravelDetails(responseText);
 
-      return TravelDetails.fromJson(responseJson);
+      if (travelPlan == null) {
+        throw const FormatException('Failed to parse travel details from response');
+      }
+
+      return travelPlan;
     } catch (e, stackTrace) {
       stopwatch.stop();
 
