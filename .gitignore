@@ -133,3 +133,4 @@ coverage/
 
 # Other
 .sentryclirc
+.sentry-info
