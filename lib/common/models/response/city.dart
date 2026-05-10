@@ -35,7 +35,7 @@ class City {
       'name': Schema.string(),
       'country': Schema.string(),
       'crowd_level': Schema.integer(),
-      'time': TimeDetails.aiSchema,
+      'time': TimeDetails.aiSchema..nullable = true,
       'weather': Schema.array(items: Weather.aiSchema),
     },
     optionalProperties: ['time'],
