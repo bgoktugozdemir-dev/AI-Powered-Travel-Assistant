@@ -328,6 +328,35 @@ flutter test
 # Start developing!
 ```
 
+## Building with API Secrets
+
+This project uses compile-time secrets via `--dart-define-from-file`.
+
+1. Copy the secrets template:
+```bash
+cp env/secrets.example.json env/secrets.json
+```
+
+2. Fill in real API keys in `env/secrets.json`:
+```json
+{
+  "FREE_CURRENCY_API_KEY": "your_key_here"
+}
+```
+
+3. Run with secrets:
+```bash
+flutter run --dart-define-from-file=env/secrets.json
+```
+
+4. Build with secrets:
+```bash
+flutter build apk --dart-define-from-file=env/secrets.json
+flutter build ios --dart-define-from-file=env/secrets.json
+```
+
+Never commit `env/secrets.json`; it is gitignored.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
