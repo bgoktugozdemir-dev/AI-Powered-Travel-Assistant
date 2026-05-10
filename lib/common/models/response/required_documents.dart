@@ -42,11 +42,16 @@ class RequiredDocuments {
 
   static Schema get aiSchema => Schema.object(
     properties: {
-      'type': Schema.string(),
+      'type': Schema.enumString(
+        enumValues: ['passport', 'e_visa', 'visa', 'id_card', 'other'],
+        description:
+            'Allowed values only: passport, e_visa, visa, id_card, other',
+      ),
       'message': Schema.string(),
       'steps': Schema.array(items: Schema.string(), nullable: true),
       'more_information': Schema.string(nullable: true),
     },
     optionalProperties: ['steps', 'more_information'],
   );
+
 }
