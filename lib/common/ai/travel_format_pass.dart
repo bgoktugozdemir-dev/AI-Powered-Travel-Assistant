@@ -11,7 +11,15 @@ abstract class _Constants {
 }
 
 /// Pass 2 orchestrator: schema-bound formatting into TravelDetails.
-class TravelFormatPass {
+abstract class TravelFormatPassRunner {
+  Future<TravelDetails> formatResearchFindings({
+    required String userPrompt,
+    required String researchFindings,
+    required String systemPrompt,
+  });
+}
+
+class TravelFormatPass implements TravelFormatPassRunner {
   TravelFormatPass({
     required FirebaseAIService firebaseAIService,
     required ErrorMonitoringFacade errorMonitoring,
@@ -21,6 +29,7 @@ class TravelFormatPass {
   final FirebaseAIService _firebaseAIService;
   final ErrorMonitoringFacade _errorMonitoring;
 
+  @override
   Future<TravelDetails> formatResearchFindings({
     required String userPrompt,
     required String researchFindings,

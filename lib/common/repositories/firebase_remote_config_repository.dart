@@ -55,9 +55,6 @@ enum RemoteConfigs {
     defaultValue: '{city} {country} City View',
   ),
 
-  /// Key for the Free Currency API key.
-  freeCurrencyApiKey(key: 'free_currency_api_key', defaultValue: ''),
-
   /// Key for the cache free currency api data.
   cacheFreeCurrencyApiData(
     key: 'cache_free_currency_api_data',
@@ -235,12 +232,6 @@ class FirebaseRemoteConfigRepository {
   String get unsplashCityImageSearchQuery => firebaseRemoteConfig.getString(
     RemoteConfigs.unsplashCityImageSearchQuery.key,
   );
-
-  /// Fetches the Free Currency API key from Firebase Remote Config.
-  ///
-  /// Returns the API key string if available, otherwise an empty string.
-  String get freeCurrencyApiKey =>
-      firebaseRemoteConfig.getString(RemoteConfigs.freeCurrencyApiKey.key);
 
   /// Fetches the cache free currency api data from Firebase Remote Config.
   ///

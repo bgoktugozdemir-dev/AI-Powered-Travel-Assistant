@@ -36,6 +36,8 @@ class FirebaseAIService {
   GenerativeModel buildResearchModel({
     required String systemPrompt,
   }) {
+    // firebase_ai 2.0.0 currently supports function declarations only.
+    // Grounding tools (Google Search / URL Context) require newer SDK APIs.
     return _firebaseAI.generativeModel(
       model: model,
       generationConfig: _firebaseRemoteConfigRepository.generationConfig

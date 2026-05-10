@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:travel_assistant/common/ai/travel_format_pass.dart';
-import 'package:travel_assistant/common/ai/travel_research_pass.dart';
+import 'package:travel_assistant/common/ai/travel_format_pass.dart'
+    show TravelFormatPassRunner;
+import 'package:travel_assistant/common/ai/travel_research_pass.dart'
+    show TravelResearchPassRunner;
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
-import 'package:travel_assistant/common/services/firebase_ai_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
@@ -21,7 +22,7 @@ abstract class _Constants {
 class FirebaseAIRepository {
   /// Creates a [FirebaseAIRepository].
   const FirebaseAIRepository({
-    required this.firebaseAIService,
+    required this.modelName,
     required this.firebaseRemoteConfigRepository,
     required this.travelResearchPass,
     required this.travelFormatPass,
@@ -29,17 +30,17 @@ class FirebaseAIRepository {
     required this.errorMonitoringFacade,
   });
 
-  /// Firebase AI service instance.
-  final FirebaseAIService firebaseAIService;
+  /// Model name used for analytics and diagnostics.
+  final String modelName;
 
   /// Remote config repository.
   final FirebaseRemoteConfigRepository firebaseRemoteConfigRepository;
 
   /// First pass orchestrator for tool-grounded research.
-  final TravelResearchPass travelResearchPass;
+  final TravelResearchPassRunner travelResearchPass;
 
   /// Second pass orchestrator for schema formatting.
-  final TravelFormatPass travelFormatPass;
+  final TravelFormatPassRunner travelFormatPass;
 
   /// Analytics facade instance.
   final AnalyticsFacade analyticsFacade;
@@ -52,7 +53,7 @@ class FirebaseAIRepository {
     TravelInformation travelInformation,
   ) async {
     final userPrompt = jsonEncode(travelInformation.toJson());
-    analyticsFacade.logLLMPrompt(firebaseAIService.model, userPrompt);
+    analyticsFacade.logLLMPrompt(modelName, userPrompt);
     final stopwatch = Stopwatch()..start();
 
     try {
@@ -86,14 +87,14 @@ class FirebaseAIRepository {
           'prompt': userPrompt,
           'researchPrompt': researchPrompt,
           'formatPrompt': formatPrompt,
-          'model': firebaseAIService.model,
+          'model': modelName,
           'durationMs': stopwatch.elapsedMilliseconds,
         },
       );
       analyticsFacade.logLLMResponse(
-        firebaseAIService.model,
+        modelName,
         userPrompt,
-        jsonEncode(travelDetails),
+        travelDetails.toString(),
         stopwatch.elapsedMilliseconds,
       );
       return travelDetails;
@@ -105,7 +106,7 @@ class FirebaseAIRepository {
         context: {
           'error': e,
           'prompt': userPrompt,
-          'model': firebaseAIService.model,
+          'model': modelName,
           'durationMs': stopwatch.elapsedMilliseconds,
         },
       );

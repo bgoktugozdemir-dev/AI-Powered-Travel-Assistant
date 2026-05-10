@@ -26,14 +26,14 @@ Map<String, dynamic> _$OpenMeteoResponseToJson(_OpenMeteoResponse instance) =>
 
 _CurrentWeather _$CurrentWeatherFromJson(Map<String, dynamic> json) =>
     _CurrentWeather(
-      temperature: (json['temperature'] as num).toDouble(),
+      temperature: (json['temperature_2m'] as num).toDouble(),
       weatherCode: (json['weather_code'] as num).toInt(),
       relativeHumidity: (json['relative_humidity_2m'] as num).toInt(),
     );
 
 Map<String, dynamic> _$CurrentWeatherToJson(_CurrentWeather instance) =>
     <String, dynamic>{
-      'temperature': instance.temperature,
+      'temperature_2m': instance.temperature,
       'weather_code': instance.weatherCode,
       'relative_humidity_2m': instance.relativeHumidity,
     };

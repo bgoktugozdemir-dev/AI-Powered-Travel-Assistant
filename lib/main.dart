@@ -272,7 +272,7 @@ class MyApp extends StatelessWidget {
               errorMonitoring: errorMonitoringFacade,
             );
             return FirebaseAIRepository(
-              firebaseAIService: firebaseAIService,
+              modelName: firebaseAIService.model,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               travelResearchPass: travelResearchPass,
               travelFormatPass: travelFormatPass,

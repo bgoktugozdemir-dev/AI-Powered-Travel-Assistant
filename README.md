@@ -357,6 +357,17 @@ flutter build ios --dart-define-from-file=env/secrets.json
 
 Never commit `env/secrets.json`; it is gitignored.
 
+## Firebase AI Grounding Note
+
+The current pinned SDK is `firebase_ai: 2.0.0`. In this version, the Dart
+API supports function declarations for tool calling, but does not expose
+Google Search grounding or URL Context tool registration methods yet.
+
+The research pass currently uses function-calling for live FX and weather
+data. Google Search and URL Context grounding should be enabled after
+upgrading to a `firebase_ai` version that provides `Tool.googleSearch()` and
+`Tool.urlContext()`.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

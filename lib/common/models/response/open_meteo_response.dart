@@ -20,7 +20,7 @@ abstract class OpenMeteoResponse with _$OpenMeteoResponse {
 @freezed
 abstract class CurrentWeather with _$CurrentWeather {
   const factory CurrentWeather({
-    required double temperature,
+    @JsonKey(name: 'temperature_2m') required double temperature,
     @JsonKey(name: 'weather_code') required int weatherCode,
     @JsonKey(name: 'relative_humidity_2m') required int relativeHumidity,
   }) = _CurrentWeather;

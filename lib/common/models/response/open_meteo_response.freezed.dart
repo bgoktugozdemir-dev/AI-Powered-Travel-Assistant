@@ -81,7 +81,8 @@ as Hourly,
 @override
 @pragma('vm:prefer-inline')
 $CurrentWeatherCopyWith<$Res> get current {
-  
+
+
   return $CurrentWeatherCopyWith<$Res>(_self.current, (value) {
     return _then(_self.copyWith(current: value));
   });
@@ -90,7 +91,8 @@ $CurrentWeatherCopyWith<$Res> get current {
 @override
 @pragma('vm:prefer-inline')
 $HourlyCopyWith<$Res> get hourly {
-  
+
+
   return $HourlyCopyWith<$Res>(_self.hourly, (value) {
     return _then(_self.copyWith(hourly: value));
   });
@@ -177,7 +179,8 @@ as Hourly,
 @override
 @pragma('vm:prefer-inline')
 $CurrentWeatherCopyWith<$Res> get current {
-  
+
+
   return $CurrentWeatherCopyWith<$Res>(_self.current, (value) {
     return _then(_self.copyWith(current: value));
   });
@@ -186,7 +189,8 @@ $CurrentWeatherCopyWith<$Res> get current {
 @override
 @pragma('vm:prefer-inline')
 $HourlyCopyWith<$Res> get hourly {
-  
+
+
   return $HourlyCopyWith<$Res>(_self.hourly, (value) {
     return _then(_self.copyWith(hourly: value));
   });
@@ -197,7 +201,7 @@ $HourlyCopyWith<$Res> get hourly {
 /// @nodoc
 mixin _$CurrentWeather {
 
- double get temperature;@JsonKey(name: 'weather_code') int get weatherCode;@JsonKey(name: 'relative_humidity_2m') int get relativeHumidity;
+@JsonKey(name: 'temperature_2m') double get temperature;@JsonKey(name: 'weather_code') int get weatherCode;@JsonKey(name: 'relative_humidity_2m') int get relativeHumidity;
 /// Create a copy of CurrentWeather
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -230,7 +234,7 @@ abstract mixin class $CurrentWeatherCopyWith<$Res>  {
   factory $CurrentWeatherCopyWith(CurrentWeather value, $Res Function(CurrentWeather) _then) = _$CurrentWeatherCopyWithImpl;
 @useResult
 $Res call({
- double temperature,@JsonKey(name: 'weather_code') int weatherCode,@JsonKey(name: 'relative_humidity_2m') int relativeHumidity
+@JsonKey(name: 'temperature_2m') double temperature,@JsonKey(name: 'weather_code') int weatherCode,@JsonKey(name: 'relative_humidity_2m') int relativeHumidity
 });
 
 
@@ -263,10 +267,10 @@ as int,
 @JsonSerializable()
 
 class _CurrentWeather implements CurrentWeather {
-  const _CurrentWeather({required this.temperature, @JsonKey(name: 'weather_code') required this.weatherCode, @JsonKey(name: 'relative_humidity_2m') required this.relativeHumidity});
+  const _CurrentWeather({@JsonKey(name: 'temperature_2m') required this.temperature, @JsonKey(name: 'weather_code') required this.weatherCode, @JsonKey(name: 'relative_humidity_2m') required this.relativeHumidity});
   factory _CurrentWeather.fromJson(Map<String, dynamic> json) => _$CurrentWeatherFromJson(json);
 
-@override final  double temperature;
+@override@JsonKey(name: 'temperature_2m') final  double temperature;
 @override@JsonKey(name: 'weather_code') final  int weatherCode;
 @override@JsonKey(name: 'relative_humidity_2m') final  int relativeHumidity;
 
@@ -303,7 +307,7 @@ abstract mixin class _$CurrentWeatherCopyWith<$Res> implements $CurrentWeatherCo
   factory _$CurrentWeatherCopyWith(_CurrentWeather value, $Res Function(_CurrentWeather) _then) = __$CurrentWeatherCopyWithImpl;
 @override @useResult
 $Res call({
- double temperature,@JsonKey(name: 'weather_code') int weatherCode,@JsonKey(name: 'relative_humidity_2m') int relativeHumidity
+@JsonKey(name: 'temperature_2m') double temperature,@JsonKey(name: 'weather_code') int weatherCode,@JsonKey(name: 'relative_humidity_2m') int relativeHumidity
 });
 
 

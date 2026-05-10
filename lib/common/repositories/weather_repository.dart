@@ -35,7 +35,7 @@ class WeatherRepository {
   }) async {
     try {
       final cacheKey =
-          '$latitude|$longitude|${startDate.toIso8601String()}|${endDate.toIso8601String()}';
+          '$latitude|$longitude|${startDate.toIso8601String()}|${endDate.toIso8601String()}|$timezone';
       final cachedValue = _cache[cacheKey];
 
       if (cachedValue != null && !cachedValue.isExpired) {

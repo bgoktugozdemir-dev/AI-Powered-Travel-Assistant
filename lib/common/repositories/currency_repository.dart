@@ -52,7 +52,6 @@ class CurrencyRepository {
         context: {
           'error': e,
           'api': 'Free Currency API',
-          'apiKey': apiKey,
           'fromCurrency': fromCurrency,
           'toCurrency': toCurrency,
         },

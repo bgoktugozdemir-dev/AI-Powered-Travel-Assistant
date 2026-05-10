@@ -9,8 +9,26 @@ abstract class _Constants {
   static const int maxToolCallRounds = 6;
 }
 
+/// Thrown when research pass cannot complete successfully.
+class TravelResearchPassException implements Exception {
+  const TravelResearchPassException(this.message, {this.cause});
+
+  final String message;
+  final Object? cause;
+
+  @override
+  String toString() => 'TravelResearchPassException($message)';
+}
+
 /// Pass 1 orchestrator: tool-enabled research + grounding.
-class TravelResearchPass {
+abstract class TravelResearchPassRunner {
+  Future<String> generateResearchFindings({
+    required String userPrompt,
+    required String systemPrompt,
+  });
+}
+
+class TravelResearchPass implements TravelResearchPassRunner {
   TravelResearchPass({
     required FirebaseAIService firebaseAIService,
     required CurrencyRepository currencyRepository,
@@ -27,6 +45,7 @@ class TravelResearchPass {
   final FunctionCallDispatcher _dispatcher;
   final ErrorMonitoringFacade _errorMonitoring;
 
+  @override
   Future<String> generateResearchFindings({
     required String userPrompt,
     required String systemPrompt,
@@ -38,16 +57,21 @@ class TravelResearchPass {
 
       final chat = model.startChat();
       var roundCount = 0;
-      var currentPrompt = userPrompt;
+      var response = await chat.sendMessage(
+        Content.text(userPrompt),
+      );
 
       while (roundCount < _Constants.maxToolCallRounds) {
         roundCount++;
-        final response = await chat.sendMessage(
-          Content.text(currentPrompt),
-        );
         final functionCalls = response.functionCalls.toList();
         if (functionCalls.isEmpty) {
-          return response.text ?? '';
+          final text = response.text;
+          if (text == null || text.isEmpty) {
+            throw const TravelResearchPassException(
+              'Research pass completed without response text.',
+            );
+          }
+          return text;
         }
 
         final functionResponses = <Part>[];
@@ -55,20 +79,27 @@ class TravelResearchPass {
           functionResponses.add(await _dispatcher.dispatch(call));
         }
 
-        await chat.sendMessage(Content.multi(functionResponses));
-        currentPrompt = 'Continue with grounded research synthesis.';
+        response = await chat.sendMessage(Content.multi(functionResponses));
       }
 
       _errorMonitoring.reportError(
         'TravelResearchPass max tool call rounds exceeded',
       );
-      return 'Research pass exceeded maximum tool-call rounds.';
+      throw const TravelResearchPassException(
+        'Research pass exceeded maximum tool-call rounds.',
+      );
     } catch (e, st) {
       _errorMonitoring.reportError(
         'TravelResearchPass.generateResearchFindings failed: $e',
         stackTrace: st,
       );
-      return 'Research pass failed.';
+      if (e is TravelResearchPassException) {
+        rethrow;
+      }
+      throw TravelResearchPassException(
+        'Research pass failed.',
+        cause: e,
+      );
     }
   }
 }
