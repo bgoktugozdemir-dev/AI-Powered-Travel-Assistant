@@ -53,4 +53,5 @@ class RequiredDocuments {
     },
     optionalProperties: ['steps', 'more_information'],
   );
+
 }
