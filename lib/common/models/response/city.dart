@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'city.g.dart';
 
@@ -28,6 +29,17 @@ class City {
 
   @JsonKey(name: 'weather')
   final List<Weather> weather;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'name': Schema.string(),
+      'country': Schema.string(),
+      'crowd_level': Schema.integer(),
+      'time': TimeDetails.aiSchema..nullable = true,
+      'weather': Schema.array(items: Weather.aiSchema),
+    },
+    optionalProperties: ['time'],
+  );
 }
 
 @JsonSerializable(createToJson: false)
@@ -49,6 +61,14 @@ class TimeDetails {
 
   @JsonKey(name: 'difference_in_hours')
   final int differenceInHours;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'departure_timezone': Schema.string(),
+      'arrival_timezone': Schema.string(),
+      'difference_in_hours': Schema.integer(),
+    },
+  );
 }
 
 @JsonSerializable(createToJson: false)
@@ -70,4 +90,12 @@ class Weather {
 
   @JsonKey(name: 'temperature')
   final double temperature;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'date': Schema.string(),
+      'weather': Schema.string(),
+      'temperature': Schema.number(),
+    },
+  );
 }

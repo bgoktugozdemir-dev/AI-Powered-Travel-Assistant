@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'travel_spot.g.dart';
 
@@ -21,4 +22,13 @@ class TravelSpot {
 
   @JsonKey(name: 'requirements')
   final String? requirements;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'place': Schema.string(),
+      'description': Schema.string(),
+      'requirements': Schema.string(nullable: true),
+    },
+    optionalProperties: ['requirements'],
+  );
 }

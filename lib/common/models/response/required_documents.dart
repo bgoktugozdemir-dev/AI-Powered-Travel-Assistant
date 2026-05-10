@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'required_documents.g.dart';
 
@@ -38,4 +39,14 @@ class RequiredDocuments {
 
   @JsonKey(name: 'more_information')
   final String? moreInformation;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'type': Schema.string(),
+      'message': Schema.string(),
+      'steps': Schema.array(items: Schema.string(), nullable: true),
+      'more_information': Schema.string(nullable: true),
+    },
+    optionalProperties: ['steps', 'more_information'],
+  );
 }

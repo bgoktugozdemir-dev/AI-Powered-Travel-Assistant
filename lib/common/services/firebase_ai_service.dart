@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 
 /// Service class for interacting with the Firebase AI model through Firebase VertexAI.
@@ -22,7 +23,8 @@ class FirebaseAIService {
   GenerativeModel _getModel() {
     return _firebaseAI.generativeModel(
       model: model,
-      generationConfig: _firebaseRemoteConfigRepository.generationConfig?.toGenerationConfig(model),
+      generationConfig: _firebaseRemoteConfigRepository.generationConfig
+          ?.toGenerationConfig(model, responseSchema: TravelDetails.aiSchema),
       systemInstruction: Content.system(_systemPrompt),
     );
   }

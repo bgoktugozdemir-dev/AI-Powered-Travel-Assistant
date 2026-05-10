@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'currency.g.dart';
 
@@ -13,7 +14,8 @@ class Currency {
     required this.arrivalAverageLivingCostPerDay,
   });
 
-  factory Currency.fromJson(Map<String, dynamic> json) => _$CurrencyFromJson(json);
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
 
   @JsonKey(name: 'code')
   final String code;
@@ -32,4 +34,19 @@ class Currency {
 
   @JsonKey(name: 'arrival_average_living_cost_per_day')
   final double arrivalAverageLivingCostPerDay;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'code': Schema.string(),
+      'name': Schema.string(),
+      'exchange_rate': Schema.number(),
+      'arrival_average_living_cost_per_day': Schema.number(),
+      'departure_currency_code': Schema.string(nullable: true),
+      'departure_average_living_cost_per_day': Schema.number(nullable: true),
+    },
+    optionalProperties: [
+      'departure_currency_code',
+      'departure_average_living_cost_per_day',
+    ],
+  );
 }

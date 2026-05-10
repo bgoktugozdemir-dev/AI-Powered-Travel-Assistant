@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/models/response/currency.dart';
 import 'package:travel_assistant/common/models/response/flight_options.dart';
@@ -48,4 +49,17 @@ class TravelDetails {
 
   @JsonKey(name: 'recommendations')
   final List<String> recommendations;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'city': City.aiSchema,
+      'required_documents': RequiredDocuments.aiSchema,
+      'currency': Currency.aiSchema,
+      'flight_options': FlightOptions.aiSchema,
+      'tax_information': TaxInformation.aiSchema,
+      'spots': Schema.array(items: TravelSpot.aiSchema),
+      'travel_plan': Schema.array(items: TravelPlan.aiSchema),
+      'recommendations': Schema.array(items: Schema.string()),
+    },
+  );
 }
