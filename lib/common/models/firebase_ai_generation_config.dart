@@ -15,6 +15,9 @@ abstract class _Constants {
 
   // Default Max Output Tokens
   static const int _defaultMaxOutputTokens = 4_000;
+
+  // Response MIME type required by structured output schema.
+  static const String jsonResponseMimeType = 'application/json';
 }
 
 /// Model for Firebase AI Generation Config.
@@ -34,7 +37,7 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
         temperature: null,
         topP: null,
         maxOutputTokens: null,
-        responseMimeType: 'application/json',
+        responseMimeType: _Constants.jsonResponseMimeType,
       );
 
   /// Creates a [FirebaseAIGenerationConfig] from a JSON object.
@@ -53,7 +56,15 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
   }
 
   /// Converts the [FirebaseAIGenerationConfig] to a [GenerationConfig].
-  GenerationConfig toGenerationConfig(String model) {
+  GenerationConfig toGenerationConfig(
+    String model, {
+    Schema? responseSchema,
+  }) {
+    final resolvedResponseMimeType =
+        responseSchema != null
+            ? _Constants.jsonResponseMimeType
+            : responseMimeType;
+
     return GenerationConfig(
       temperature: temperature,
       topP: topP,
@@ -61,7 +72,8 @@ abstract class FirebaseAIGenerationConfig with _$FirebaseAIGenerationConfig {
           maxOutputTokens != null
               ? min(maxOutputTokens!, _getAvailableMaxOutputTokens(model))
               : null,
-      responseMimeType: responseMimeType,
+      responseMimeType: resolvedResponseMimeType,
+      responseSchema: responseSchema,
     );
   }
 }

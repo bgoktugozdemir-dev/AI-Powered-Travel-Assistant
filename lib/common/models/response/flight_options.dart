@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'flight_options.g.dart';
 
@@ -17,6 +18,13 @@ class FlightOptions {
 
   @JsonKey(name: 'comfortable')
   final FlightOption comfortable;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'cheapest': FlightOption.aiSchema,
+      'comfortable': FlightOption.aiSchema,
+    },
+  );
 }
 
 @JsonSerializable(createToJson: false)
@@ -38,6 +46,14 @@ class FlightOption {
 
   @JsonKey(name: 'booking_url')
   final String bookingUrl;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'departure': Flight.aiSchema,
+      'arrival': Flight.aiSchema,
+      'booking_url': Schema.string(),
+    },
+  );
 }
 
 @JsonSerializable(createToJson: false)
@@ -95,6 +111,23 @@ class Flight {
   @JsonKey(name: 'more_information')
   final String moreInformation;
 
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'airline': Schema.string(),
+      'departure_airport': Schema.string(),
+      'arrival_airport': Schema.string(),
+      'flight_number': Schema.string(),
+      'departure_time': Schema.string(),
+      'arrival_time': Schema.string(),
+      'duration': Schema.integer(),
+      'price': Schema.number(),
+      'currency': Schema.string(),
+      'stops': Schema.integer(),
+      'layover_details': Schema.array(items: LayoverDetail.aiSchema),
+      'more_information': Schema.string(),
+    },
+  );
+
   static Duration _durationFromJson(int duration) =>
       Duration(minutes: duration);
 }
@@ -114,4 +147,11 @@ class LayoverDetail {
 
   @JsonKey(name: 'duration_minutes')
   final int durationMinutes;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'airport': Schema.string(),
+      'duration_minutes': Schema.integer(),
+    },
+  );
 }

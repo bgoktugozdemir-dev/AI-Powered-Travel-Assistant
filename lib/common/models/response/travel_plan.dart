@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'travel_plan.g.dart';
 
@@ -14,6 +15,13 @@ class TravelPlan {
 
   @JsonKey(name: 'events')
   final List<TravelEvent> events;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'date': Schema.string(),
+      'events': Schema.array(items: TravelEvent.aiSchema),
+    },
+  );
 }
 
 @JsonSerializable(createToJson: false)
@@ -43,4 +51,15 @@ class TravelEvent {
 
   @JsonKey(name: 'requirements')
   final String? requirements;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'name': Schema.string(),
+      'time': Schema.string(),
+      'location': Schema.string(),
+      'description': Schema.string(),
+      'requirements': Schema.string(nullable: true),
+    },
+    optionalProperties: ['requirements'],
+  );
 }

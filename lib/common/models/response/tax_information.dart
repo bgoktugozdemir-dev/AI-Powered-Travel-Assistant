@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
 part 'tax_information.g.dart';
 
@@ -25,4 +26,14 @@ class TaxInformation {
 
   @JsonKey(name: 'tax_refund_information')
   final String? taxRefundInformation;
+
+  static Schema get aiSchema => Schema.object(
+    properties: {
+      'has_tax_free_options': Schema.boolean(),
+      'tax_rate': Schema.number(),
+      'refundable_tax_rate': Schema.number(),
+      'tax_refund_information': Schema.string(nullable: true),
+    },
+    optionalProperties: ['tax_refund_information'],
+  );
 }
