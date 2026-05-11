@@ -40,12 +40,17 @@ class RequiredDocuments {
   @JsonKey(name: 'more_information')
   final String? moreInformation;
 
+  static List<String> get documentTypeSchemaValues => RequiredDocumentType
+      .values
+      .map((type) => _$RequiredDocumentTypeEnumMap[type]!)
+      .toList(growable: false);
+
   static Schema get aiSchema => Schema.object(
     properties: {
       'type': Schema.enumString(
-        enumValues: ['passport', 'e_visa', 'visa', 'id_card', 'other'],
+        enumValues: documentTypeSchemaValues,
         description:
-            'Allowed values only: passport, e_visa, visa, id_card, other',
+            'Allowed values only: ${documentTypeSchemaValues.join(', ')}',
       ),
       'message': Schema.string(),
       'steps': Schema.array(items: Schema.string(), nullable: true),

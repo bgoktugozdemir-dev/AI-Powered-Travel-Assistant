@@ -3,6 +3,11 @@ import 'package:firebase_ai/firebase_ai.dart';
 
 part 'travel_plan.g.dart';
 
+abstract class _Constants {
+  static const String dateOnlyPattern = r'^\d{4}-\d{2}-\d{2}$';
+  static const String timezoneSuffixPattern = r'(Z|[+-]\d{2}:\d{2})$';
+}
+
 @JsonSerializable(createToJson: false)
 class TravelPlan {
   const TravelPlan({required this.date, required this.events});
@@ -10,7 +15,7 @@ class TravelPlan {
   factory TravelPlan.fromJson(Map<String, dynamic> json) =>
       _$TravelPlanFromJson(json);
 
-  @JsonKey(name: 'date')
+  @JsonKey(name: 'date', fromJson: _dateFromJson)
   final DateTime date;
 
   @JsonKey(name: 'events')
@@ -18,10 +23,32 @@ class TravelPlan {
 
   static Schema get aiSchema => Schema.object(
     properties: {
-      'date': Schema.string(),
+      'date': Schema.string(
+        description:
+            'Travel day as YYYY-MM-DD or ISO 8601 datetime. '
+            'Date-only values are normalized to 00:00:00Z. '
+            'Datetime values must include timezone/offset.',
+      ),
       'events': Schema.array(items: TravelEvent.aiSchema),
     },
   );
+
+  static DateTime _dateFromJson(String value) {
+    final dateOnlyPattern = RegExp(_Constants.dateOnlyPattern);
+    if (dateOnlyPattern.hasMatch(value)) {
+      return DateTime.parse('${value}T00:00:00Z').toUtc();
+    }
+
+    final timezoneSuffixPattern = RegExp(_Constants.timezoneSuffixPattern);
+    if (!timezoneSuffixPattern.hasMatch(value)) {
+      throw FormatException(
+        'TravelPlan.date datetime values must include timezone/offset: $value',
+      );
+    }
+
+    final parsed = DateTime.parse(value);
+    return parsed.isUtc ? parsed : parsed.toUtc();
+  }
 }
 
 @JsonSerializable(createToJson: false)
