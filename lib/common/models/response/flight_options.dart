@@ -117,9 +117,15 @@ class Flight {
       'departure_airport': Schema.string(),
       'arrival_airport': Schema.string(),
       'flight_number': Schema.string(),
-      'departure_time': Schema.string(),
-      'arrival_time': Schema.string(),
-      'duration': Schema.integer(),
+      'departure_time': Schema.string(
+        description: 'Departure timestamp in ISO 8601 datetime format.',
+      ),
+      'arrival_time': Schema.string(
+        description: 'Arrival timestamp in ISO 8601 datetime format.',
+      ),
+      'duration': Schema.integer(
+        description: 'Total flight duration in minutes.',
+      ),
       'price': Schema.number(),
       'currency': Schema.string(),
       'stops': Schema.integer(),

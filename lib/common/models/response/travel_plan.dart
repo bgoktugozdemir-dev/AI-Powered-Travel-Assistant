@@ -18,7 +18,9 @@ class TravelPlan {
 
   static Schema get aiSchema => Schema.object(
     properties: {
-      'date': Schema.string(),
+      'date': Schema.string(
+        description: 'Travel day in ISO 8601 date or datetime format.',
+      ),
       'events': Schema.array(items: TravelEvent.aiSchema),
     },
   );
