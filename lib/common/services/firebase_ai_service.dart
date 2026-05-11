@@ -32,7 +32,7 @@ class FirebaseAIService {
     );
   }
 
-  /// Build a research model with tools and grounding enabled.
+  /// Build a research model with function-calling tools enabled.
   GenerativeModel buildResearchModel({
     required String systemPrompt,
   }) {

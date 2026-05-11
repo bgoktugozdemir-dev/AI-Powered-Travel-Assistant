@@ -4,6 +4,7 @@ import 'package:travel_assistant/common/ai/travel_format_pass.dart'
     show TravelFormatPassRunner;
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
     show TravelResearchPassRunner;
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
@@ -59,8 +60,8 @@ class FirebaseAIRepository {
     try {
       final researchPrompt =
           firebaseRemoteConfigRepository.aiResearchSystemPrompt.isNotEmpty
-              ? firebaseRemoteConfigRepository.aiResearchSystemPrompt
-              : _Constants.defaultResearchPrompt;
+          ? firebaseRemoteConfigRepository.aiResearchSystemPrompt
+          : _Constants.defaultResearchPrompt;
 
       final researchFindings = await travelResearchPass
           .generateResearchFindings(
@@ -70,8 +71,8 @@ class FirebaseAIRepository {
 
       final formatPrompt =
           firebaseRemoteConfigRepository.aiFormatSystemPrompt.isNotEmpty
-              ? firebaseRemoteConfigRepository.aiFormatSystemPrompt
-              : _Constants.defaultFormatPrompt;
+          ? firebaseRemoteConfigRepository.aiFormatSystemPrompt
+          : _Constants.defaultFormatPrompt;
 
       final travelDetails = await travelFormatPass.formatResearchFindings(
         userPrompt: userPrompt,
@@ -110,6 +111,9 @@ class FirebaseAIRepository {
           'durationMs': stopwatch.elapsedMilliseconds,
         },
       );
+      if (e is FirebaseError) {
+        rethrow;
+      }
       throw Exception('Failed to generate text: $e');
     }
   }

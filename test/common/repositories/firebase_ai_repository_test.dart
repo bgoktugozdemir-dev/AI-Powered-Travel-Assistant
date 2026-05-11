@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/common/models/country.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
@@ -24,17 +25,17 @@ class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
 }
 
 class _FakeResearchPass implements TravelResearchPassRunner {
-  _FakeResearchPass({this.throwOnCall = false});
+  _FakeResearchPass({this.errorToThrow});
 
-  final bool throwOnCall;
+  final Object? errorToThrow;
 
   @override
   Future<String> generateResearchFindings({
     required String userPrompt,
     required String systemPrompt,
   }) async {
-    if (throwOnCall) {
-      throw const TravelResearchPassException('research failure');
+    if (errorToThrow case final error?) {
+      throw error;
     }
     return 'research-findings';
   }
@@ -225,12 +226,14 @@ void main() {
     expect(formatPass.callCount, 1);
   });
 
-  test('propagates research pass failures', () async {
+  test('wraps non-firebase errors from research pass', () async {
     final formatPass = _FakeFormatPass(_sampleTravelDetails());
     final repository = FirebaseAIRepository(
       modelName: 'gemini-test',
       firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
-      travelResearchPass: _FakeResearchPass(throwOnCall: true),
+      travelResearchPass: _FakeResearchPass(
+        errorToThrow: const TravelResearchPassException('research failure'),
+      ),
       travelFormatPass: formatPass,
       analyticsFacade: const AnalyticsFacade([]),
       errorMonitoringFacade: const ErrorMonitoringFacade([]),
@@ -239,6 +242,26 @@ void main() {
     await expectLater(
       () => repository.generateTravelPlan(_sampleTravelInformation()),
       throwsA(isA<Exception>()),
+    );
+    expect(formatPass.callCount, 0);
+  });
+
+  test('rethrows firebase errors without wrapping', () async {
+    final formatPass = _FakeFormatPass(_sampleTravelDetails());
+    final repository = FirebaseAIRepository(
+      modelName: 'gemini-test',
+      firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
+      travelResearchPass: _FakeResearchPass(
+        errorToThrow: FirebaseAppCheckError(),
+      ),
+      travelFormatPass: formatPass,
+      analyticsFacade: const AnalyticsFacade([]),
+      errorMonitoringFacade: const ErrorMonitoringFacade([]),
+    );
+
+    await expectLater(
+      () => repository.generateTravelPlan(_sampleTravelInformation()),
+      throwsA(isA<FirebaseAppCheckError>()),
     );
     expect(formatPass.callCount, 0);
   });
