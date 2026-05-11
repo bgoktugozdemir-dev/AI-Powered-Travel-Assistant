@@ -1,6 +1,6 @@
 # Travel Assistant 🌍✈️
 
-![Flutter](https://img.shields.io/badge/Flutter-3.32.4-blue.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.41.6-blue.svg)
 ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange.svg)
 ![AI Powered](https://img.shields.io/badge/AI-Powered-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -55,8 +55,8 @@ I was heavily inspired by **[Agent Development Kit (ADK) Demos](https://github.c
 
 ### **Frontend**
 
-- **Flutter 3.32.4** - Cross-platform UI framework
-- **Dart 3.8.1** - Programming language
+- **Flutter 3.41.6** - Cross-platform UI framework
+- **Dart 3.11.4** - Programming language
 - **Material Design** - Modern, responsive UI components
 - **Lottie** - High-quality animations
 
@@ -126,8 +126,8 @@ lib/
 
 ### **Prerequisites**
 
-- Flutter SDK 3.32.4 or higher
-- Dart SDK 3.8.1 or higher
+- Flutter SDK 3.41.6 or higher
+- Dart SDK 3.11.4 or higher
 - Firebase CLI (for Firebase configuration)
 - Android Studio / Xcode (for mobile development)
 
