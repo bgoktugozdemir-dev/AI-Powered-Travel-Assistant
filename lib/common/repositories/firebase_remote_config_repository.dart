@@ -31,6 +31,12 @@ enum RemoteConfigs {
   /// Key for the AI system prompt.
   aiSystemPrompt(key: 'ai_system_prompt', defaultValue: ''),
 
+  /// Key for the AI research prompt in two-pass flow.
+  aiResearchSystemPrompt(key: 'ai_research_system_prompt', defaultValue: ''),
+
+  /// Key for the AI format prompt in two-pass flow.
+  aiFormatSystemPrompt(key: 'ai_format_system_prompt', defaultValue: ''),
+
   /// Key for the Recaptcha site key.
   recaptchaSiteKey(key: 'recaptcha_site_key', defaultValue: ''),
 
@@ -49,12 +55,15 @@ enum RemoteConfigs {
     defaultValue: '{city} {country} City View',
   ),
 
-  /// Key for the Free Currency API key.
-  freeCurrencyApiKey(key: 'free_currency_api_key', defaultValue: ''),
-
   /// Key for the cache free currency api data.
   cacheFreeCurrencyApiData(
     key: 'cache_free_currency_api_data',
+    defaultValue: true,
+  ),
+
+  /// Key for weather cache toggle.
+  cacheWeatherData(
+    key: 'cache_weather_data',
     defaultValue: true,
   ),
 
@@ -157,7 +166,9 @@ class FirebaseRemoteConfigRepository {
     final settings = RemoteConfigSettings(
       fetchTimeout: _Constants.fetchTimeout,
       minimumFetchInterval:
-          kDebugMode ? _Constants.minimumFetchIntervalForDevelopment : _Constants.minimumFetchInterval,
+          kDebugMode
+              ? _Constants.minimumFetchIntervalForDevelopment
+              : _Constants.minimumFetchInterval,
     );
     await firebaseRemoteConfig.setConfigSettings(settings);
   }
@@ -173,32 +184,46 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the AI model from Firebase Remote Config.
   ///
   /// Returns the AI model string if available, otherwise the default model.
-  String get aiModel => firebaseRemoteConfig.getString(RemoteConfigs.aiModel.key);
+  String get aiModel =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiModel.key);
 
   /// Fetches the AI system prompt from Firebase Remote Config.
   ///
   /// Returns the AI system prompt string if available, otherwise an empty string.
-  String get aiSystemPrompt => firebaseRemoteConfig.getString(RemoteConfigs.aiSystemPrompt.key);
+  String get aiSystemPrompt =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiSystemPrompt.key);
+
+  /// Fetches the AI research system prompt.
+  String get aiResearchSystemPrompt =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiResearchSystemPrompt.key);
+
+  /// Fetches the AI format system prompt.
+  String get aiFormatSystemPrompt =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiFormatSystemPrompt.key);
 
   /// Fetches the Recaptcha site key from Firebase Remote Config.
   ///
   /// Returns the Recaptcha site key string if available, otherwise an empty string.
-  String get recaptchaSiteKey => firebaseRemoteConfig.getString(RemoteConfigs.recaptchaSiteKey.key);
+  String get recaptchaSiteKey =>
+      firebaseRemoteConfig.getString(RemoteConfigs.recaptchaSiteKey.key);
 
   /// Fetches the Mixpanel project token from Firebase Remote Config.
   ///
   /// Returns the Mixpanel project token string if available, otherwise an empty string.
-  String get mixpanelProjectToken => firebaseRemoteConfig.getString(RemoteConfigs.mixpanelProjectToken.key);
+  String get mixpanelProjectToken =>
+      firebaseRemoteConfig.getString(RemoteConfigs.mixpanelProjectToken.key);
 
   /// Fetches the Sentry DSN from Firebase Remote Config.
   ///
   /// Returns the Sentry DSN string if available, otherwise an empty string.
-  String get sentryDsn => firebaseRemoteConfig.getString(RemoteConfigs.sentryDsn.key);
+  String get sentryDsn =>
+      firebaseRemoteConfig.getString(RemoteConfigs.sentryDsn.key);
 
   /// Fetches the Unsplash Client ID from Firebase Remote Config.
   ///
   /// Returns the client ID string if available, otherwise an empty string.
-  String get unsplashClientId => firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
+  String get unsplashClientId =>
+      firebaseRemoteConfig.getString(RemoteConfigs.unsplashClientId.key);
 
   /// Fetches the Unsplash city image search query from Firebase Remote Config.
   ///
@@ -208,15 +233,15 @@ class FirebaseRemoteConfigRepository {
     RemoteConfigs.unsplashCityImageSearchQuery.key,
   );
 
-  /// Fetches the Free Currency API key from Firebase Remote Config.
-  ///
-  /// Returns the API key string if available, otherwise an empty string.
-  String get freeCurrencyApiKey => firebaseRemoteConfig.getString(RemoteConfigs.freeCurrencyApiKey.key);
-
   /// Fetches the cache free currency api data from Firebase Remote Config.
   ///
   /// Returns true if the cache free currency api data should be cached, otherwise true.
-  bool get cacheFreeCurrencyApiData => firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
+  bool get cacheFreeCurrencyApiData =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.cacheFreeCurrencyApiData.key);
+
+  /// Fetches weather cache toggle from Firebase Remote Config.
+  bool get cacheWeatherData =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.cacheWeatherData.key);
 
   /// Fetches the generation config from Firebase Remote Config.
   ///
@@ -239,27 +264,32 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the minimum number of travel purposes from Firebase Remote Config.
   ///
   /// Returns the minimum number of travel purposes if available, otherwise 1.
-  int get minimumTravelPurposes => firebaseRemoteConfig.getInt(RemoteConfigs.minimumTravelPurposes.key);
+  int get minimumTravelPurposes =>
+      firebaseRemoteConfig.getInt(RemoteConfigs.minimumTravelPurposes.key);
 
   /// Fetches the maximum number of travel purposes from Firebase Remote Config.
   ///
   /// Returns the maximum number of travel purposes if available, otherwise 3.
-  int get maximumTravelPurposes => firebaseRemoteConfig.getInt(RemoteConfigs.maximumTravelPurposes.key);
+  int get maximumTravelPurposes =>
+      firebaseRemoteConfig.getInt(RemoteConfigs.maximumTravelPurposes.key);
 
   /// Fetches the show city view from Firebase Remote Config.
   ///
   /// Returns true if the city view should be shown, otherwise false.
-  bool get showCityView => firebaseRemoteConfig.getBool(RemoteConfigs.showCityView.key);
+  bool get showCityView =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showCityView.key);
 
   /// Fetches the show city card from Firebase Remote Config.
   ///
   /// Returns true if the city card should be shown, otherwise true.
-  bool get showCityCard => firebaseRemoteConfig.getBool(RemoteConfigs.showCityCard.key);
+  bool get showCityCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showCityCard.key);
 
   /// Fetches the show city crowd level from Firebase Remote Config.
   ///
   /// Returns true if the city crowd level should be shown, otherwise true.
-  bool get showCityCrowdLevel => firebaseRemoteConfig.getBool(RemoteConfigs.showCityCrowdLevel.key);
+  bool get showCityCrowdLevel =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showCityCrowdLevel.key);
 
   /// Fetches the show required documents card from Firebase Remote Config.
   ///
@@ -271,39 +301,46 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the show currency card from Firebase Remote Config.
   ///
   /// Returns true if the currency card should be shown, otherwise true.
-  bool get showCurrencyCard => firebaseRemoteConfig.getBool(RemoteConfigs.showCurrencyCard.key);
+  bool get showCurrencyCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showCurrencyCard.key);
 
   /// Fetches the show flight options card from Firebase Remote Config.
   ///
   /// Returns true if the flight options card should be shown, otherwise false.
-  bool get showFlightOptionsCard => firebaseRemoteConfig.getBool(RemoteConfigs.showFlightOptionsCard.key);
+  bool get showFlightOptionsCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showFlightOptionsCard.key);
 
   /// Fetches the show tax information card from Firebase Remote Config.
   ///
   /// Returns true if the tax information card should be shown, otherwise true.
-  bool get showTaxInfoCard => firebaseRemoteConfig.getBool(RemoteConfigs.showTaxInfoCard.key);
+  bool get showTaxInfoCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showTaxInfoCard.key);
 
   /// Fetches the show top spots card from Firebase Remote Config.
   ///
   /// Returns true if the top spots card should be shown, otherwise true.
-  bool get showTopSpotsCard => firebaseRemoteConfig.getBool(RemoteConfigs.showTopSpotsCard.key);
+  bool get showTopSpotsCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showTopSpotsCard.key);
 
   /// Fetches the show travel plan card from Firebase Remote Config.
   ///
   /// Returns true if the travel plan card should be shown, otherwise true.
-  bool get showTravelPlanCard => firebaseRemoteConfig.getBool(RemoteConfigs.showTravelPlanCard.key);
+  bool get showTravelPlanCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showTravelPlanCard.key);
 
   /// Fetches the show recommendations card from Firebase Remote Config.
   ///
   /// Returns true if the recommendations card should be shown, otherwise true.
-  bool get showRecommendationsCard => firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
+  bool get showRecommendationsCard =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
 
   /// Fetches the navigate to next step after selecting travel purpose from Firebase Remote Config.
   ///
   /// Returns true if the navigate to next step after selecting travel purpose should be shown, otherwise false.
-  bool get navigateToNextStepAfterSelectingTravelPurpose => firebaseRemoteConfig.getBool(
-    RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,
-  );
+  bool get navigateToNextStepAfterSelectingTravelPurpose =>
+      firebaseRemoteConfig.getBool(
+        RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,
+      );
 
   /// Fetches the travel purposes configuration from Firebase Remote Config.
   ///

@@ -1,3 +1,4 @@
+import 'package:travel_assistant/common/config/app_secrets.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/services/free_currency_api_service.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
@@ -25,7 +26,7 @@ class CurrencyRepository {
         _exchangeRatesCache.containsKey(fromCurrency)) {
       return _exchangeRatesCache[fromCurrency]![toCurrency];
     }
-    final apiKey = _firebaseRemoteConfigRepository.freeCurrencyApiKey;
+    final apiKey = AppSecrets.freeCurrencyApiKey;
 
     try {
       final response = await _freeCurrencyApiService.getExchangeRates(
@@ -51,7 +52,6 @@ class CurrencyRepository {
         context: {
           'error': e,
           'api': 'Free Currency API',
-          'apiKey': apiKey,
           'fromCurrency': fromCurrency,
           'toCurrency': toCurrency,
         },
