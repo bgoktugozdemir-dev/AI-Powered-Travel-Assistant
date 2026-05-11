@@ -10,7 +10,7 @@ class TravelPlan {
   factory TravelPlan.fromJson(Map<String, dynamic> json) =>
       _$TravelPlanFromJson(json);
 
-  @JsonKey(name: 'date')
+  @JsonKey(name: 'date', fromJson: _dateFromJson)
   final DateTime date;
 
   @JsonKey(name: 'events')
@@ -19,11 +19,23 @@ class TravelPlan {
   static Schema get aiSchema => Schema.object(
     properties: {
       'date': Schema.string(
-        description: 'Travel day in ISO 8601 date or datetime format.',
+        description:
+            'Travel day in ISO 8601 datetime format with timezone/offset. '
+            'If date-only value is provided, it is normalized to 00:00:00Z.',
       ),
       'events': Schema.array(items: TravelEvent.aiSchema),
     },
   );
+
+  static DateTime _dateFromJson(String value) {
+    final dateOnlyPattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+    if (dateOnlyPattern.hasMatch(value)) {
+      return DateTime.parse('${value}T00:00:00Z').toUtc();
+    }
+
+    final parsed = DateTime.parse(value);
+    return parsed.isUtc ? parsed : parsed.toUtc();
+  }
 }
 
 @JsonSerializable(createToJson: false)

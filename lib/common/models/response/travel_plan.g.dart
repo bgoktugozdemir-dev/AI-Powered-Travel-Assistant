@@ -7,7 +7,7 @@ part of 'travel_plan.dart';
 // **************************************************************************
 
 TravelPlan _$TravelPlanFromJson(Map<String, dynamic> json) => TravelPlan(
-  date: DateTime.parse(json['date'] as String),
+  date: TravelPlan._dateFromJson(json['date'] as String),
   events:
       (json['events'] as List<dynamic>)
           .map((e) => TravelEvent.fromJson(e as Map<String, dynamic>))
