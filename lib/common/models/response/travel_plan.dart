@@ -3,6 +3,11 @@ import 'package:firebase_ai/firebase_ai.dart';
 
 part 'travel_plan.g.dart';
 
+abstract class _Constants {
+  static const String dateOnlyPattern = r'^\d{4}-\d{2}-\d{2}$';
+  static const String timezoneSuffixPattern = r'(Z|[+-]\d{2}:\d{2})$';
+}
+
 @JsonSerializable(createToJson: false)
 class TravelPlan {
   const TravelPlan({required this.date, required this.events});
@@ -20,17 +25,25 @@ class TravelPlan {
     properties: {
       'date': Schema.string(
         description:
-            'Travel day in ISO 8601 datetime format with timezone/offset. '
-            'If date-only value is provided, it is normalized to 00:00:00Z.',
+            'Travel day as YYYY-MM-DD or ISO 8601 datetime. '
+            'Date-only values are normalized to 00:00:00Z. '
+            'Datetime values must include timezone/offset.',
       ),
       'events': Schema.array(items: TravelEvent.aiSchema),
     },
   );
 
   static DateTime _dateFromJson(String value) {
-    final dateOnlyPattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+    final dateOnlyPattern = RegExp(_Constants.dateOnlyPattern);
     if (dateOnlyPattern.hasMatch(value)) {
       return DateTime.parse('${value}T00:00:00Z').toUtc();
+    }
+
+    final timezoneSuffixPattern = RegExp(_Constants.timezoneSuffixPattern);
+    if (!timezoneSuffixPattern.hasMatch(value)) {
+      throw FormatException(
+        'TravelPlan.date datetime values must include timezone/offset: $value',
+      );
     }
 
     final parsed = DateTime.parse(value);

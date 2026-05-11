@@ -12,7 +12,7 @@ void main() {
       expect(typeSchema['type'], 'STRING');
       expect(
         typeSchema['enum'],
-        ['passport', 'e_visa', 'visa', 'id_card', 'other'],
+        RequiredDocuments.documentTypeSchemaValues,
       );
     });
 
