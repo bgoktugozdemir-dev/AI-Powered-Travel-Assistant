@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
@@ -51,8 +49,7 @@ class TravelFormatPass implements TravelFormatPassRunner {
         if (parsed != null) {
           return parsed;
         }
-        final fallbackJson = jsonDecode(text) as Map<String, dynamic>;
-        return TravelDetails.fromJson(fallbackJson);
+        return ParserUtils.parseTravelDetailsOrThrow(text);
       } on FormatException catch (e) {
         retryCount++;
         if (retryCount >= _Constants.maxFormatRetries) {

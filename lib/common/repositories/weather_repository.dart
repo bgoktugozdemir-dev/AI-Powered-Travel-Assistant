@@ -16,12 +16,14 @@ class WeatherRepository {
   WeatherRepository(
     this._service,
     this._remoteConfig,
-    this._errorMonitoring,
-  );
+    this._errorMonitoring, {
+    DateTime Function()? now,
+  }) : _now = now ?? DateTime.now;
 
   final OpenMeteoService _service;
   final FirebaseRemoteConfigRepository _remoteConfig;
   final ErrorMonitoringFacade _errorMonitoring;
+  final DateTime Function() _now;
 
   static final Map<String, _CachedWeather> _cache = {};
 
@@ -34,28 +36,35 @@ class WeatherRepository {
     String timezone = 'auto',
   }) async {
     try {
+      final requestStartDate = _formatDate(startDate);
+      final requestEndDate = _formatDate(endDate);
       final cacheKey =
-          '$latitude|$longitude|${startDate.toIso8601String()}|${endDate.toIso8601String()}|$timezone';
-      final cachedValue = _cache[cacheKey];
+          '$latitude|$longitude|$requestStartDate|$requestEndDate|$timezone';
+      final shouldCache = _remoteConfig.cacheWeatherData;
 
-      if (cachedValue != null && !cachedValue.isExpired) {
-        return cachedValue.response;
+      if (shouldCache) {
+        _evictExpiredCacheEntries();
+        final cachedValue = _cache[cacheKey];
+        if (cachedValue != null) {
+          return cachedValue.response;
+        }
       }
 
       final response = await _service.getWeatherForecast(
         latitude: latitude,
         longitude: longitude,
-        startDate: startDate.toIso8601String().split('T').first,
-        endDate: endDate.toIso8601String().split('T').first,
+        startDate: requestStartDate,
+        endDate: requestEndDate,
         hourly: _Constants.hourlyFields,
         current: _Constants.currentFields,
         timezone: timezone,
       );
 
-      if (_remoteConfig.cacheWeatherData) {
+      if (shouldCache) {
+        _evictExpiredCacheEntries();
         _cache[cacheKey] = _CachedWeather(
           response,
-          DateTime.now().add(
+          _now().add(
             const Duration(hours: _Constants.cacheHours),
           ),
         );
@@ -73,6 +82,12 @@ class WeatherRepository {
 
   /// Clears weather cache.
   static void clearCache() => _cache.clear();
+
+  String _formatDate(DateTime date) => date.toIso8601String().split('T').first;
+
+  void _evictExpiredCacheEntries() {
+    _cache.removeWhere((_, cachedWeather) => cachedWeather.isExpired(_now()));
+  }
 }
 
 class _CachedWeather {
@@ -81,5 +96,5 @@ class _CachedWeather {
   final OpenMeteoResponse response;
   final DateTime expiresAt;
 
-  bool get isExpired => DateTime.now().isAfter(expiresAt);
+  bool isExpired(DateTime now) => now.isAfter(expiresAt);
 }

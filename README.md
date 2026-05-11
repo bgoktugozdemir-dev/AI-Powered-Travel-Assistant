@@ -359,9 +359,9 @@ Never commit `env/secrets.json`; it is gitignored.
 
 ## Firebase AI Grounding Note
 
-The current pinned SDK is `firebase_ai: 2.0.0`. In this version, the Dart
-API supports function declarations for tool calling, but does not expose
-Google Search grounding or URL Context tool registration methods yet.
+The current SDK constraint is `firebase_ai: ^2.0.0`. This SDK line supports
+function declarations for tool calling, but does not expose Google Search
+grounding or URL Context tool registration methods yet.
 
 The research pass currently uses function-calling for live FX and weather
 data. Google Search and URL Context grounding should be enabled after

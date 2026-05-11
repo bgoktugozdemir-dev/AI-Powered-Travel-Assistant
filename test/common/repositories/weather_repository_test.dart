@@ -11,6 +11,8 @@ class _FakeOpenMeteoService implements OpenMeteoService {
   final OpenMeteoResponse response;
   final bool shouldThrow;
   int callCount = 0;
+  final List<String> requestedStartDates = [];
+  final List<String> requestedEndDates = [];
 
   @override
   Future<OpenMeteoResponse> getWeatherForecast({
@@ -23,6 +25,8 @@ class _FakeOpenMeteoService implements OpenMeteoService {
     String timezone = 'auto',
   }) async {
     callCount++;
+    requestedStartDates.add(startDate);
+    requestedEndDates.add(endDate);
     if (shouldThrow) {
       throw Exception('network');
     }
@@ -85,6 +89,91 @@ void main() {
       startDate: DateTime(2026, 6, 1),
       endDate: DateTime(2026, 6, 2),
       timezone: 'UTC',
+    );
+
+    expect(service.callCount, 2);
+  });
+
+  test('uses date-only values in cache key', () async {
+    WeatherRepository.clearCache();
+    final service = _FakeOpenMeteoService(response: sampleResponse);
+    final repo = WeatherRepository(
+      service,
+      _FakeFirebaseRemoteConfigRepository(cacheWeatherData: true),
+      const ErrorMonitoringFacade([]),
+    );
+
+    await repo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6, 1, 8, 30),
+      endDate: DateTime(2026, 6, 2, 18, 45),
+    );
+    await repo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6, 1, 22, 15),
+      endDate: DateTime(2026, 6, 2, 6, 5),
+    );
+
+    expect(service.callCount, 1);
+    expect(service.requestedStartDates, ['2026-06-01']);
+    expect(service.requestedEndDates, ['2026-06-02']);
+  });
+
+  test('bypasses cached reads when cache is disabled', () async {
+    WeatherRepository.clearCache();
+    final service = _FakeOpenMeteoService(response: sampleResponse);
+    final cacheEnabledRepo = WeatherRepository(
+      service,
+      _FakeFirebaseRemoteConfigRepository(cacheWeatherData: true),
+      const ErrorMonitoringFacade([]),
+    );
+    final cacheDisabledRepo = WeatherRepository(
+      service,
+      _FakeFirebaseRemoteConfigRepository(cacheWeatherData: false),
+      const ErrorMonitoringFacade([]),
+    );
+
+    await cacheEnabledRepo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6),
+      endDate: DateTime(2026, 6, 2),
+    );
+    await cacheDisabledRepo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6),
+      endDate: DateTime(2026, 6, 2),
+    );
+
+    expect(service.callCount, 2);
+  });
+
+  test('evicts expired cache entries before reads', () async {
+    WeatherRepository.clearCache();
+    var now = DateTime(2026, 6);
+    final service = _FakeOpenMeteoService(response: sampleResponse);
+    final repo = WeatherRepository(
+      service,
+      _FakeFirebaseRemoteConfigRepository(cacheWeatherData: true),
+      const ErrorMonitoringFacade([]),
+      now: () => now,
+    );
+
+    await repo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6),
+      endDate: DateTime(2026, 6, 2),
+    );
+    now = DateTime(2026, 6, 1, 7);
+    await repo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6),
+      endDate: DateTime(2026, 6, 2),
     );
 
     expect(service.callCount, 2);

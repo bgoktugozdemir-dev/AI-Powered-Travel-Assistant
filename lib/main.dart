@@ -68,10 +68,12 @@ Future<void> main() async {
         webProvider: ReCaptchaV3Provider(
           firebaseRemoteConfigRepository.recaptchaSiteKey,
         ),
-        androidProvider:
-            kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider:
-            kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
+        androidProvider: kDebugMode
+            ? AndroidProvider.debug
+            : AndroidProvider.playIntegrity,
+        appleProvider: kDebugMode
+            ? AppleProvider.debug
+            : AppleProvider.deviceCheck,
       );
 
       final analyticsClients = await _getAnalyticsClients(
@@ -99,10 +101,9 @@ Future<void> main() async {
               errorString.contains('document.createEvent')) {
             showDialog(
               context: navigatorKey.currentContext!,
-              builder:
-                  (context) => const TravelFormErrorDialog(
-                    error: PlatformOrBrowserError(),
-                  ),
+              builder: (context) => const TravelFormErrorDialog(
+                error: PlatformOrBrowserError(),
+              ),
             );
           } else {
             FlutterError.dumpErrorToConsole(details);
@@ -202,16 +203,14 @@ class MyApp extends StatelessWidget {
           value: firebaseRemoteConfigRepository,
         ),
         RepositoryProvider(
-          create:
-              (_) =>
-                  AnalyticsFacade(analyticsClients)
-                    ..setAnalyticsCollectionEnabled(true),
+          create: (_) =>
+              AnalyticsFacade(analyticsClients)
+                ..setAnalyticsCollectionEnabled(true),
         ),
         RepositoryProvider(
-          create:
-              (_) => ErrorMonitoringFacade(
-                errorMonitoringClients,
-              ),
+          create: (_) => ErrorMonitoringFacade(
+            errorMonitoringClients,
+          ),
         ),
         RepositoryProvider(
           create: (context) {
@@ -229,8 +228,8 @@ class MyApp extends StatelessWidget {
           create: (context) {
             final dio = Dio()..addSentryInterceptor();
             final openMeteoService = OpenMeteoService(dio);
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return WeatherRepository(
               openMeteoService,
@@ -241,8 +240,22 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final dio = Dio()..addSentryInterceptor();
+            final freeCurrencyApiService = FreeCurrencyApiService(dio);
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+            return CurrencyRepository(
+              freeCurrencyApiService: freeCurrencyApiService,
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              errorMonitoringFacade: errorMonitoringFacade,
+            );
+          },
+        ),
+        RepositoryProvider(
+          create: (context) {
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final vertexAI = FirebaseAI.vertexAI(
               appCheck: FirebaseAppCheck.instance,
               app: Firebase.app(),
@@ -251,13 +264,7 @@ class MyApp extends StatelessWidget {
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               firebaseAI: vertexAI,
             );
-            final currencyRepository = CurrencyRepository(
-              freeCurrencyApiService: FreeCurrencyApiService(
-                Dio()..addSentryInterceptor(),
-              ),
-              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-              errorMonitoringFacade: context.read<ErrorMonitoringFacade>(),
-            );
+            final currencyRepository = context.read<CurrencyRepository>();
             final weatherRepository = context.read<WeatherRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
@@ -296,25 +303,11 @@ class MyApp extends StatelessWidget {
           create: (context) {
             final dio = Dio()..addSentryInterceptor();
             final unsplashService = UnsplashService(dio);
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return UnsplashRepository(
               unsplashService: unsplashService,
-              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-              errorMonitoringFacade: errorMonitoringFacade,
-            );
-          },
-        ),
-        RepositoryProvider(
-          create: (context) {
-            final dio = Dio()..addSentryInterceptor();
-            final freeCurrencyApiService = FreeCurrencyApiService(dio);
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
-            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
-            return CurrencyRepository(
-              freeCurrencyApiService: freeCurrencyApiService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               errorMonitoringFacade: errorMonitoringFacade,
             );
@@ -328,8 +321,8 @@ class MyApp extends StatelessWidget {
             final airportRepository = context.read<AirportRepository>();
             final unsplashRepository = context.read<UnsplashRepository>();
             final currencyRepository = context.read<CurrencyRepository>();
-            final firebaseRemoteConfigRepository =
-                context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();

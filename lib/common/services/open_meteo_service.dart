@@ -6,7 +6,7 @@ part 'open_meteo_service.g.dart';
 
 @RestApi(baseUrl: 'https://api.open-meteo.com/v1')
 abstract class OpenMeteoService {
-  factory OpenMeteoService(Dio dio, {String baseUrl}) = _OpenMeteoService;
+  factory OpenMeteoService(Dio dio, {String? baseUrl}) = _OpenMeteoService;
 
   @GET('/forecast')
   Future<OpenMeteoResponse> getWeatherForecast({
