@@ -61,6 +61,7 @@ class ResultsScreen extends StatelessWidget {
                       CityCard(
                         city: travelDetails.city,
                         cityImageInBytes: state.cityImageInBytes,
+                        photographer: state.cityImageAuthor,
                       ),
 
                     // Required Documents Card

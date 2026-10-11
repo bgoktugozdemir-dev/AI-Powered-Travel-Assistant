@@ -7,7 +7,11 @@ import 'package:travel_assistant/common/models/firebase_ai_generation_config.dar
 
 abstract class _Constants {
   /// Timeout for fetching the config.
-  static const Duration fetchTimeout = Duration(minutes: 1);
+  ///
+  /// The app waits for the fetch before its first frame, so a long timeout
+  /// keeps the loading screen up on a bad connection. The defaults are good
+  /// enough to start with.
+  static const Duration fetchTimeout = Duration(seconds: 10);
 
   /// Fetch up to 5 times per hour.
   static const Duration minimumFetchInterval = Duration(minutes: 12);
@@ -89,7 +93,12 @@ enum RemoteConfigs {
     defaultValue: '{"response_mime_type":"application/json"}',
   ),
 
-  /// Navigate to next step after selecting travel purpose.
+  /// Go to the next step right after a choice is made in the airport, date
+  /// and nationality steps.
+  ///
+  /// The name is historical: it does not affect the travel purpose step, which
+  /// allows several choices. The key is kept so the value in the Remote Config
+  /// console keeps working.
   navigateToNextStepAfterSelectingTravelPurpose(
     key: 'navigate_to_next_step_after_selecting_travel_purpose',
     defaultValue: false,
@@ -163,6 +172,10 @@ class FirebaseRemoteConfigRepository {
 
   final FirebaseRemoteConfig firebaseRemoteConfig;
 
+  /// Fetches and activates the config.
+  ///
+  /// Never throws: when something fails (offline, timeout) the defaults, or
+  /// the values of the last successful fetch, stay in effect.
   Future<void> initialize() async {
     try {
       /// Set the config settings.
@@ -174,7 +187,8 @@ class FirebaseRemoteConfigRepository {
       /// Fetch and activate the config.
       await _fetchAndActivate();
     } catch (_) {
-      // TODO: Show error page and retry button.
+      // Intentionally swallowed, see above. Error monitoring is not available
+      // yet at this point: its DSN comes from this config.
     }
   }
 
@@ -364,9 +378,11 @@ class FirebaseRemoteConfigRepository {
   bool get showRecommendationsCard =>
       firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
 
-  /// Fetches the navigate to next step after selecting travel purpose from Firebase Remote Config.
+  /// Whether the form goes to the next step right after a choice is made in
+  /// the airport, date and nationality steps (see
+  /// [RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose]).
   ///
-  /// Returns true if the navigate to next step after selecting travel purpose should be shown, otherwise false.
+  /// Returns false unless enabled in Remote Config.
   bool get navigateToNextStepAfterSelectingTravelPurpose =>
       firebaseRemoteConfig.getBool(
         RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,

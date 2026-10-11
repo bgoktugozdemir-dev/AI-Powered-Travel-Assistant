@@ -14,13 +14,16 @@ abstract class _Constants {
   /// If set to 0.1 only 10% of events will be sent. Events are picked randomly.
   static const double sampleRate = 1.0;
 
-  /// Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-  /// We recommend adjusting this value in production.
-  static const double tracesSampleRate = 1.0;
+  /// Share of transactions captured for tracing.
+  ///
+  /// Every performance transaction is sent from the user's browser or phone, so
+  /// tracing all of them costs bandwidth and quota. 20% is plenty to spot
+  /// trends.
+  static const double tracesSampleRate = 0.2;
 
-  /// The sampling rate for profiling is relative to tracesSampleRate
-  /// Setting to 1.0 will profile 100% of sampled transactions:
-  static const double profilesSampleRate = 1.0;
+  /// The sampling rate for profiling is relative to tracesSampleRate: 0.2 of
+  /// the sampled transactions are profiled.
+  static const double profilesSampleRate = 0.2;
 
   /// By default, Sentry considers all frames in the app to be in-app.
   /// This means that frames from the Flutter framework and packages will be collapsed

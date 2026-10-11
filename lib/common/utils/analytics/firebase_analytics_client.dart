@@ -46,6 +46,9 @@ class FirebaseAnalyticsClient implements AnalyticsClient {
   final FirebaseAnalytics _analytics;
 
   @override
+  String get name => 'FirebaseAnalyticsClient';
+
+  @override
   Future<void> identifyUser(String userId) async {
     await _analytics.setUserId(id: userId);
   }

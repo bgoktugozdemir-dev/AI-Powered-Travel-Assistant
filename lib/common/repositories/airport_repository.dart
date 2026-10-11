@@ -1,7 +1,21 @@
 import 'package:dio/dio.dart'; // Required for DioError
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/common/services/airport_api_service.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+
+/// Thrown when an airport search fails.
+///
+/// [AirportRepository] reports the underlying cause before throwing this, so
+/// callers must not report it again ([AlreadyReportedError]).
+class AirportSearchException implements Exception, AlreadyReportedError {
+  const AirportSearchException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
 
 /// Repository for fetching airport data.
 class AirportRepository {
@@ -98,7 +112,9 @@ class AirportRepository {
           'error': e,
         },
       );
-      throw Exception('Failed to fetch airports (Network Error): ${e.message}');
+      throw AirportSearchException(
+        'Failed to fetch airports (Network Error): ${e.message}',
+      );
     } catch (e, stackTrace) {
       _errorMonitoringFacade.reportError(
         'AirportRepository Error',
@@ -108,7 +124,9 @@ class AirportRepository {
           'error': e,
         },
       );
-      throw Exception('Failed to fetch airports (Unknown Error): $e');
+      throw AirportSearchException(
+        'Failed to fetch airports (Unknown Error): $e',
+      );
     }
   }
 }

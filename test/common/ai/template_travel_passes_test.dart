@@ -2,13 +2,16 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
 import 'package:travel_assistant/common/ai/template_travel_passes.dart';
+import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
 import 'package:travel_assistant/common/ai/travel_template_client.dart';
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/open_meteo_response.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/weather_repository.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
+import '../../support/recording_error_monitoring_client.dart';
 import 'travel_details_fixture.dart';
 
 class _FakeCurrencyRepository implements CurrencyRepository {
@@ -240,7 +243,16 @@ void main() {
         ],
       );
 
-      await expectLater(() => run(build(client)), throwsFormatException);
+      await expectLater(
+        () => run(build(client)),
+        throwsA(
+          isA<TravelFormatPassException>().having(
+            (e) => e.cause,
+            'cause',
+            isA<FormatException>(),
+          ),
+        ),
+      );
       expect(client.generatedInputs, hasLength(3));
     });
 
@@ -253,6 +265,123 @@ void main() {
         throwsA(same(serverError)),
       );
       expect(client.generatedInputs, hasLength(1));
+    });
+
+    test('reports a failure once, with the real error, and marks it', () async {
+      final monitoring = RecordingErrorMonitoringClient();
+      final serverError = ServerException('permission denied');
+      final client = _FakeTemplateClient(generateResponses: [serverError]);
+
+      await expectLater(
+        () => run(
+          TemplateTravelFormatPass(
+            templateClient: client,
+            templateId: () => 'format-template',
+            errorMonitoring: ErrorMonitoringFacade([monitoring]),
+          ),
+        ),
+        throwsA(
+          isA<TravelFormatPassException>()
+              .having((e) => e.cause, 'cause', same(serverError))
+              .having((e) => e, 'is already reported', isA<AlreadyReportedError>()),
+        ),
+      );
+
+      expect(monitoring.reports, hasLength(1));
+      expect(monitoring.reports.single.context?['error'], same(serverError));
+    });
+
+    test('does not report a missing template, the caller falls back', () async {
+      final monitoring = RecordingErrorMonitoringClient();
+      final client = _FakeTemplateClient(
+        generateResponses: [ServerException('template not found')],
+      );
+
+      await expectLater(
+        () => run(
+          TemplateTravelFormatPass(
+            templateClient: client,
+            templateId: () => 'format-template',
+            errorMonitoring: ErrorMonitoringFacade([monitoring]),
+          ),
+        ),
+        throwsA(isA<ServerException>()),
+      );
+
+      expect(monitoring.reports, isEmpty);
+    });
+  });
+
+  group('error reporting of the research pass', () {
+    late RecordingErrorMonitoringClient monitoring;
+
+    TemplateTravelResearchPass build(_FakeTemplateClient client) {
+      return TemplateTravelResearchPass(
+        templateClient: client,
+        dispatcher: FunctionCallDispatcher(
+          currencyRepository: _FakeCurrencyRepository(),
+          weatherRepository: _FakeWeatherRepository(),
+        ),
+        templateId: () => 'research-template',
+        errorMonitoring: ErrorMonitoringFacade([monitoring]),
+      );
+    }
+
+    setUp(() => monitoring = RecordingErrorMonitoringClient());
+
+    test('reports once, with the real error, and marks the failure', () async {
+      final boom = StateError('boom');
+      final client = _FakeTemplateClient(chat: _FakeTemplateChat([boom]));
+
+      await expectLater(
+        () => build(client).generateResearchFindings(
+          userPrompt: '{}',
+          systemPrompt: '',
+        ),
+        throwsA(isA<AlreadyReportedError>()),
+      );
+
+      expect(monitoring.reports, hasLength(1));
+      expect(monitoring.reports.single.context?['error'], same(boom));
+    });
+
+    test('reports exhausted tool-call rounds once', () async {
+      final client = _FakeTemplateClient(
+        chat: _FakeTemplateChat(
+          List.generate(20, (_) => _exchangeRateCallResponse()),
+        ),
+      );
+
+      await expectLater(
+        () => build(client).generateResearchFindings(
+          userPrompt: '{}',
+          systemPrompt: '',
+        ),
+        throwsA(isA<TravelResearchPassException>()),
+      );
+
+      expect(monitoring.reports, hasLength(1));
+      expect(
+        monitoring.reports.single.context?['error'],
+        isA<TravelResearchPassException>(),
+      );
+      expect(monitoring.breadcrumbs, isNotEmpty);
+    });
+
+    test('does not report a missing template, the caller falls back', () async {
+      final client = _FakeTemplateClient(
+        chat: _FakeTemplateChat([ServerException('template not found')]),
+      );
+
+      await expectLater(
+        () => build(client).generateResearchFindings(
+          userPrompt: '{}',
+          systemPrompt: '',
+        ),
+        throwsA(isA<TravelResearchPassException>()),
+      );
+
+      expect(monitoring.reports, isEmpty);
     });
   });
 }

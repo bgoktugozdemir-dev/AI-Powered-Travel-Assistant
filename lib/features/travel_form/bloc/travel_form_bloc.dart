@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/airport.dart';
 import 'package:travel_assistant/common/models/country.dart';
@@ -23,6 +23,7 @@ import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
+import 'package:travel_assistant/features/travel_form/bloc/travel_form_transformers.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 
 part 'travel_form_event.dart';
@@ -67,35 +68,20 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
        super(const TravelFormState()) {
     on<TravelFormInitializeServices>(_onInitializeServices);
 
-    // Transformation for debouncing airport search
+    // Search events are debounced on the input and restarted on newer input.
     on<TravelFormDepartureAirportSearchTermChanged>(
       _onDepartureAirportSearchTermChanged,
-      transformer:
-          (events, mapper) => events
-              .switchMap(mapper)
-              .debounceTime(
-                const Duration(milliseconds: 300),
-              ),
+      transformer: debounceRestartable(),
     );
 
     on<TravelFormArrivalAirportSearchTermChanged>(
       _onArrivalAirportSearchTermChanged,
-      transformer:
-          (events, mapper) => events
-              .switchMap(mapper)
-              .debounceTime(
-                const Duration(milliseconds: 300),
-              ),
+      transformer: debounceRestartable(),
     );
 
     on<TravelFormNationalitySearchTermChanged>(
       _onNationalitySearchTermChanged,
-      transformer:
-          (events, mapper) => events
-              .switchMap(mapper)
-              .debounceTime(
-                const Duration(milliseconds: 300),
-              ),
+      transformer: debounceRestartable(),
     );
 
     // Form Events
@@ -118,7 +104,12 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
     on<ToggleTravelPurposeEvent>(_onToggleTravelPurpose);
 
     // Form Submission
-    on<SubmitTravelFormEvent>(_onSubmitTravelForm);
+    // `droppable` ignores a submit that arrives while one is running, so a
+    // double tap cannot start two AI pipelines.
+    on<SubmitTravelFormEvent>(
+      _onSubmitTravelForm,
+      transformer: droppable(),
+    );
 
     // Country Service Retry
     on<RetryCountryServiceEvent>(_onRetryCountryService);
@@ -250,7 +241,8 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   }
 
   // --- Departure Airport Handlers ---
-  // The transformer handles debouncing and cancellation of previous requests.
+  // The transformer debounces the input and restarts the handler on newer
+  // input, which cancels the previous request's emissions.
   Future<void> _onDepartureAirportSearchTermChanged(
     TravelFormDepartureAirportSearchTermChanged event,
     Emitter<TravelFormState> emit,
@@ -288,14 +280,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       );
       _analyticsFacade.logSearchDepartureAirport(event.searchTerm);
     } catch (e, stackTrace) {
-      _errorMonitoringFacade.reportError(
-        'Failed to get departure airport suggestions.',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-          'searchTerm': event.searchTerm,
-        },
-      );
+      // The airport repository already reported its own failures.
+      if (e is! AlreadyReportedError) {
+        _errorMonitoringFacade.reportError(
+          'Failed to get departure airport suggestions.',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'searchTerm': event.searchTerm,
+          },
+        );
+      }
       emit(
         state.copyWith(
           isDepartureAirportLoading: false,
@@ -318,7 +313,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       ),
     );
 
-    _analyticsFacade.logChooseArrivalAirport(event.airport.iataCode);
+    _analyticsFacade.logChooseDepartureAirport(event.airport.iataCode);
 
     if (_firebaseRemoteConfigRepository.navigateToNextStepAfterSelectingTravelPurpose) {
       add(TravelFormNextStepRequested());
@@ -326,7 +321,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
   }
 
   // --- Arrival Airport Handlers ---
-  // The transformer handles debouncing and cancellation of previous requests.
+  // See the departure handlers: the transformer debounces and restarts.
   Future<void> _onArrivalAirportSearchTermChanged(
     TravelFormArrivalAirportSearchTermChanged event,
     Emitter<TravelFormState> emit,
@@ -370,14 +365,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => GeneralTravelFormError(),
         ),
       );
-      _errorMonitoringFacade.reportError(
-        'Failed to get arrival airport suggestions.',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-          'searchTerm': event.searchTerm,
-        },
-      );
+      // The airport repository already reported its own failures.
+      if (e is! AlreadyReportedError) {
+        _errorMonitoringFacade.reportError(
+          'Failed to get arrival airport suggestions.',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'searchTerm': event.searchTerm,
+          },
+        );
+      }
     }
   }
 
@@ -641,9 +639,21 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       final cityImage = results[0] as UnsplashPhoto?;
       final exchangeRate = results[1] as double?;
 
-      final cityImageInBytes = await _imageRepository.downloadImageAsBase64(
-        url: cityImage?.urls.full ?? '',
-      );
+      // Without a photo there is nothing to download (the Unsplash repository
+      // already noted why).
+      final cityImageInBytes = cityImage == null
+          ? null
+          : await _imageRepository.downloadImageAsBase64(
+              url: cityImage.urls.full,
+            );
+
+      // The photo is only shown, and so only "used" in Unsplash's terms, when
+      // the city view is on. Fire and forget: it never throws.
+      if (cityImage != null &&
+          cityImageInBytes != null &&
+          _firebaseRemoteConfigRepository.showCityView) {
+        unawaited(_unsplashRepository.trackDownload(cityImage));
+      }
 
       // Successful form submission
       emit(
@@ -651,6 +661,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           formSubmissionStatus: FormSubmissionStatus.success,
           travelPlan: () => travelPlan,
           cityImageInBytes: () => cityImageInBytes,
+          cityImageAuthor: () => cityImageInBytes == null ? null : cityImage?.user,
           exchangeRate: () => exchangeRate,
           error: () => null,
         ),

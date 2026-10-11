@@ -73,8 +73,15 @@ class WeatherRepository {
       return response;
     } catch (e, st) {
       _errorMonitoring.reportError(
-        'WeatherRepository.getWeatherForecast failed: $e',
+        'Failed to get weather forecast.',
         stackTrace: st,
+        context: {
+          'error': e,
+          'latitude': latitude,
+          'longitude': longitude,
+          'startDate': startDate.toIso8601String(),
+          'endDate': endDate.toIso8601String(),
+        },
       );
       return null;
     }

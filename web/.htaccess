@@ -17,7 +17,27 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     Header always set X-Frame-Options "SAMEORIGIN"
     
     # Content Security Policy
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mixpanel.com https://cdn.firebase.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.mixpanel.com https://*.googleapis.com https://*.firebase.com wss://*.firebase.com; manifest-src 'self';"
+    # One directive per line (a trailing backslash continues the line).
+    # script-src: Flutter's inline bootstrap, CanvasKit and the Firebase JS
+    #   SDK (www.gstatic.com), reCAPTCHA for App Check, the Sentry JS SDK that
+    #   sentry_flutter injects, the Mixpanel library and gtag for Analytics.
+    # connect-src: the REST APIs (currency, weather, airports, countries,
+    #   Unsplash incl. image downloads), Firebase (*.googleapis.com: AI Logic,
+    #   App Check, Remote Config, Installations, logging), CanvasKit and
+    #   fallback fonts, reCAPTCHA, Google Analytics, Sentry and Mixpanel.
+    # img-src keeps https: for images in AI generated content.
+    Header always set Content-Security-Policy "\
+        default-src 'self';\
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://www.gstatic.com https://www.google.com/recaptcha/ https://browser.sentry-cdn.com https://cdn.mxpnl.com https://www.googletagmanager.com https://apis.google.com https://cdn.firebase.com https://api.mixpanel.com;\
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;\
+        font-src 'self' data: https://fonts.gstatic.com;\
+        img-src 'self' data: blob: https:;\
+        connect-src 'self' https://api.freecurrencyapi.com https://api.open-meteo.com https://data.opendatasoft.com https://raw.githubusercontent.com https://api.unsplash.com https://images.unsplash.com https://*.googleapis.com https://*.firebase.com wss://*.firebase.com https://www.gstatic.com https://fonts.gstatic.com https://www.google.com/recaptcha/ https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://*.googletagmanager.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io https://api.mixpanel.com https://api-js.mixpanel.com;\
+        frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/;\
+        worker-src 'self' blob:;\
+        manifest-src 'self';\
+        object-src 'none';\
+        base-uri 'self';"
     
     # Referrer Policy
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
@@ -31,7 +51,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 <IfModule mod_expires.c>
     ExpiresActive on
     
-    # Flutter app shell - cache for 1 hour (frequent updates)
+    # HTML - cache for 1 hour (files that must not be cached are further down)
     ExpiresByType text/html "access plus 1 hour"
     
     # CSS and JavaScript - cache for 1 year
@@ -58,6 +78,17 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     ExpiresByType application/json "access plus 1 day"
     ExpiresByType application/manifest+json "access plus 1 day"
 </IfModule>
+
+# Flutter's entry points keep the same name in every release (no content hash),
+# so a long cache would keep users on an old version, or on a mix of old and
+# new files. Make the browser revalidate them every time. ExpiresActive Off is
+# needed: otherwise mod_expires adds the long max-age configured above.
+<FilesMatch "^(index\.html|main\.dart\.js|flutter_bootstrap\.js|flutter_service_worker\.js|version\.json)$">
+    ExpiresActive Off
+    <IfModule mod_headers.c>
+        Header always set Cache-Control "no-cache, must-revalidate"
+    </IfModule>
+</FilesMatch>
 
 # Enable Gzip compression
 <IfModule mod_deflate.c>
@@ -87,8 +118,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ErrorDocument 404 /index.html
 ErrorDocument 403 /index.html
 
-# Prevent access to sensitive files
-<FilesMatch "(\.htaccess|\.htpasswd|\.env|\.git|\.svn|\.lock|composer\.json|package\.json|\.md)$">
+# Prevent access to sensitive files. Source maps (main.dart.js.map) are uploaded
+# to Sentry by `make build_web` and must not be served: they expose the source.
+<FilesMatch "(\.htaccess|\.htpasswd|\.env|\.git|\.svn|\.lock|composer\.json|package\.json|\.md|\.map)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>

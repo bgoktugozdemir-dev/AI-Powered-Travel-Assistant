@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart' show ServerException;
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
-    show TravelFormatPassRunner;
+    show TravelFormatPassException, TravelFormatPassRunner;
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
     show TravelResearchPassException, TravelResearchPassRunner;
 import 'package:travel_assistant/common/error/firebase_error.dart';
@@ -104,16 +104,26 @@ class FirebaseAIRepository {
       return travelDetails;
     } catch (e, stackTrace) {
       stopwatch.stop();
-      errorMonitoringFacade.reportError(
-        'Exception occurred while generating text with Firebase AI',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-          'prompt': userPrompt,
-          'model': modelName,
-          'durationMs': stopwatch.elapsedMilliseconds,
-        },
-      );
+      final failureData = {
+        'prompt': userPrompt,
+        'model': modelName,
+        'durationMs': stopwatch.elapsedMilliseconds,
+      };
+      if (e is AlreadyReportedError) {
+        // A pass already reported the failure. Keep what only this layer
+        // knows as a breadcrumb instead of creating a second issue.
+        errorMonitoringFacade.addBreadcrumb(
+          'Two-pass Firebase AI pipeline failed.',
+          category: 'Firebase AI',
+          data: failureData,
+        );
+      } else {
+        errorMonitoringFacade.reportError(
+          'Exception occurred while generating text with Firebase AI',
+          stackTrace: stackTrace,
+          context: {'error': e, ...failureData},
+        );
+      }
       if (e is FirebaseError) {
         rethrow;
       }
@@ -127,18 +137,15 @@ class FirebaseAIRepository {
     }
   }
 
-  Object _rootCause(Object error) =>
-      error is TravelResearchPassException && error.cause != null
-      ? error.cause!
-      : error;
+  /// The error a pass wrapped, or [error] itself.
+  Object _rootCause(Object error) => switch (error) {
+    TravelResearchPassException(:final cause?) => cause,
+    TravelFormatPassException(:final cause) => cause,
+    _ => error,
+  };
 
   /// Whether [error] is (or wraps) a Firebase AI [ServerException], which is
   /// how App Check / backend rejections surface from the SDK.
-  bool _isServerException(Object error) {
-    if (error is ServerException) {
-      return true;
-    }
-    return error is TravelResearchPassException &&
-        error.cause is ServerException;
-  }
+  bool _isServerException(Object error) =>
+      _rootCause(error) is ServerException;
 }
