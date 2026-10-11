@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show debugPrint;
+
 /// Compile-time secrets loaded via --dart-define-from-file.
 class AppSecrets {
   const AppSecrets._();
@@ -10,10 +12,13 @@ class AppSecrets {
     );
   }
 
-  /// Validates required secrets at startup.
+  /// Warns about missing secrets at startup.
+  ///
+  /// Does not throw: a missing key only disables the features that need it
+  /// (e.g. live currency rates), it must not prevent the app from starting.
   static void validate() {
     if (freeCurrencyApiKey.isEmpty) {
-      throw Exception(
+      debugPrint(
         'AppSecrets.freeCurrencyApiKey is empty. '
         'Run flutter with --dart-define-from-file=env/secrets.json',
       );
