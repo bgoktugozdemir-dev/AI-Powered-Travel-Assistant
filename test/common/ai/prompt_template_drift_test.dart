@@ -83,6 +83,51 @@ Set<String> _flattenSchemaJson(Map<String, Object?> json, String path) {
   return lines;
 }
 
+/// Same output as [_flattenSchemaJson] for a plain JSON Schema written in the
+/// template frontmatter (`type: [string, "null"]` means nullable).
+///
+/// Server prompt templates don't support output enums, so the template uses a
+/// string whose description lists the values. [descriptions] collects the
+/// description of every node so the test can check those values.
+Set<String> _flattenTemplateJsonSchema(
+  YamlMap schema,
+  String path, {
+  Map<String, String>? descriptions,
+}) {
+  final lines = <String>{};
+
+  void visit(YamlMap node, String path, {required bool optional}) {
+    final declared = node['type'];
+    final types = declared is YamlList
+        ? declared.cast<String>().toList()
+        : [declared! as String];
+    final nullable = types.contains('null');
+    final type = types.firstWhere((type) => type != 'null');
+    lines.add('$path: $type optional=$optional nullable=$nullable');
+    if (node['description'] case final String description) {
+      descriptions?[path] = description;
+    }
+
+    if (node['properties'] case final YamlMap properties) {
+      final required = (node['required'] as YamlList? ?? YamlList())
+          .cast<String>();
+      for (final MapEntry(:key, :value) in properties.entries) {
+        visit(
+          value as YamlMap,
+          '$path.$key',
+          optional: !required.contains(key),
+        );
+      }
+    }
+    if (node['items'] case final YamlMap items) {
+      visit(items, '$path[]', optional: false);
+    }
+  }
+
+  visit(schema, path, optional: false);
+  return lines;
+}
+
 /// Same output as [_flattenSchemaJson] for a Picoschema property map.
 Set<String> _flattenPicoschema(YamlMap schema, String path) {
   final lines = <String>{'$path: object optional=false nullable=false'};
@@ -150,14 +195,40 @@ void main() {
 
     test('output schema matches TravelDetails.aiSchema', () {
       final output = template.frontmatter['output'] as YamlMap;
-      final fromTemplate = _flattenPicoschema(
+      final descriptions = <String, String>{};
+      final fromTemplate = _flattenTemplateJsonSchema(
         output['schema'] as YamlMap,
         'root',
+        descriptions: descriptions,
       );
-      final fromApp = _flattenSchemaJson(
+      // Enums become described strings in the template (output enums are not
+      // supported); the description must list every allowed value.
+      final enumLine = RegExp(r'^(\S+): enum\(([^)]*)\) (.*)$');
+      final fromApp = {
+        for (final line in _flattenSchemaJson(
+          TravelDetails.aiSchema.toJson(),
+          'root',
+        ))
+          if (enumLine.firstMatch(line) case final match?)
+            '${match.group(1)}: string ${match.group(3)}'
+          else
+            line,
+      };
+      for (final line in _flattenSchemaJson(
         TravelDetails.aiSchema.toJson(),
         'root',
-      );
+      )) {
+        if (enumLine.firstMatch(line) case final match?) {
+          final path = match.group(1)!;
+          expect(
+            descriptions[path],
+            allOf([
+              for (final value in match.group(2)!.split('|')) contains(value),
+            ]),
+            reason: 'The description of $path must list every enum value.',
+          );
+        }
+      }
 
       expect(
         fromApp.difference(fromTemplate),
