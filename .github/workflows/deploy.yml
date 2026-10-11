@@ -136,3 +136,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TRAVEL_ASSISTANT_FLUTTER }}
           channelId: live
           projectId: travel-assistant-flutter
+          # Pin firebase-tools too (the action defaults to latest).
+          firebaseToolsVersion: 15.33.0

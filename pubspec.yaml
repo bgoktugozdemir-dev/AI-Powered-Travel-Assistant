@@ -151,7 +151,7 @@ sentry:
   # (GitHub secret in CI, shell variable locally).
   # release and dist are not set either: the plugin defaults to
   # `<name>@<version>` (+ dist from the build number), which is exactly what
-  # sentry_flutter reports at runtime on web, e.g. travel_assistant@1.2.4+17.
+  # sentry_flutter reports at runtime on web, e.g. travel_assistant@1.3.0+18.
   # Disable automatic upload of debug symbols
   # upload_debug_symbols: false
   # Enable source context
