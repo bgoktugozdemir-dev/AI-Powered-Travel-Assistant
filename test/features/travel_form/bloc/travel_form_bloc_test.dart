@@ -28,8 +28,10 @@ class _FakeRemoteConfig extends Fake implements FirebaseRemoteConfigRepository {
   @override
   bool get navigateToNextStepAfterSelectingTravelPurpose => false;
 
+  bool showCityViewValue = false;
+
   @override
-  bool get showCityView => false;
+  bool get showCityView => showCityViewValue;
 
   @override
   int get minimumTravelPurposes => 1;
@@ -80,11 +82,20 @@ class _FakeAIRepository extends Fake implements FirebaseAIRepository {
 }
 
 class _FakeUnsplashRepository extends Fake implements UnsplashRepository {
+  /// The photo found for the city, if any.
+  UnsplashPhoto? photo;
+  final List<UnsplashPhoto> trackedDownloads = [];
+
   @override
   Future<UnsplashPhoto?> getCityView({
     required String cityName,
     required String countryName,
-  }) async => null;
+  }) async => photo;
+
+  @override
+  Future<void> trackDownload(UnsplashPhoto photo) async {
+    trackedDownloads.add(photo);
+  }
 }
 
 class _FakeCurrencyRepository extends Fake implements CurrencyRepository {
@@ -96,9 +107,35 @@ class _FakeCurrencyRepository extends Fake implements CurrencyRepository {
 }
 
 class _FakeImageRepository extends Fake implements ImageRepository {
+  /// What a download returns. Null means the download failed.
+  String? bytes;
+  final List<String> downloadedUrls = [];
+
   @override
-  Future<String?> downloadImageAsBase64({required String url}) async => null;
+  Future<String?> downloadImageAsBase64({required String url}) async {
+    downloadedUrls.add(url);
+    return bytes;
+  }
 }
+
+const _photographer = UnsplashUser(
+  name: 'Jane Doe',
+  username: 'jane_doe',
+  portfolioUrl: null,
+);
+
+UnsplashPhoto _photo() => UnsplashPhoto(
+  id: 'abc',
+  urls: UnsplashPhotoUrls(
+    raw: 'raw',
+    full: 'https://images.unsplash.com/full',
+    regular: 'regular',
+    small: 'small',
+    thumb: 'thumb',
+  ),
+  user: _photographer,
+  downloadLocation: 'https://api.unsplash.com/photos/abc/download?ixid=XYZ',
+);
 
 const _istanbul = Airport(
   iataCode: 'IST',
@@ -125,6 +162,9 @@ void main() {
   late _FakeAirportRepository airportRepository;
   late _FakeCountryService countryService;
   late _FakeAIRepository aiRepository;
+  late _FakeRemoteConfig remoteConfig;
+  late _FakeUnsplashRepository unsplashRepository;
+  late _FakeImageRepository imageRepository;
   late RecordingErrorMonitoringClient monitoring;
   late TravelFormBloc bloc;
 
@@ -133,16 +173,19 @@ void main() {
     airportRepository = _FakeAirportRepository();
     countryService = _FakeCountryService();
     aiRepository = _FakeAIRepository();
+    remoteConfig = _FakeRemoteConfig();
+    unsplashRepository = _FakeUnsplashRepository();
+    imageRepository = _FakeImageRepository();
     bloc = TravelFormBloc(
       analyticsFacade: const AnalyticsFacade([]),
       errorMonitoringFacade: ErrorMonitoringFacade([monitoring]),
       airportRepository: airportRepository,
       travelPurposeService: _FakeTravelPurposeService(),
       firebaseAIRepository: aiRepository,
-      unsplashRepository: _FakeUnsplashRepository(),
-      imageRepository: _FakeImageRepository(),
+      unsplashRepository: unsplashRepository,
+      imageRepository: imageRepository,
       currencyRepository: _FakeCurrencyRepository(),
-      firebaseRemoteConfigRepository: _FakeRemoteConfig(),
+      firebaseRemoteConfigRepository: remoteConfig,
       countryService: countryService,
     );
   });
@@ -268,6 +311,73 @@ void main() {
       await settle();
 
       expect(aiRepository.calls, 2);
+    });
+
+    group('city photo', () {
+      Future<void> submitAndFinish() async {
+        fillForm();
+        await settle();
+        bloc.add(submit);
+        await settle();
+        aiRepository.pending.complete(travelDetailsFixture());
+        await expectLater(
+          bloc.stream,
+          emitsThrough(
+            predicate<TravelFormState>(
+              (state) =>
+                  state.formSubmissionStatus == FormSubmissionStatus.success,
+            ),
+          ),
+        );
+        await settle();
+      }
+
+      test('keeps the photographer to credit and counts the download', () async {
+        unsplashRepository.photo = _photo();
+        imageRepository.bytes = 'base64-image';
+        remoteConfig.showCityViewValue = true;
+
+        await submitAndFinish();
+
+        expect(bloc.state.cityImageInBytes, 'base64-image');
+        expect(bloc.state.cityImageAuthor, _photographer);
+        expect(imageRepository.downloadedUrls, ['https://images.unsplash.com/full']);
+        expect(unsplashRepository.trackedDownloads, hasLength(1));
+        expect(unsplashRepository.trackedDownloads.single.id, 'abc');
+      });
+
+      test('does not count a download while the city view is off', () async {
+        unsplashRepository.photo = _photo();
+        imageRepository.bytes = 'base64-image';
+        remoteConfig.showCityViewValue = false;
+
+        await submitAndFinish();
+
+        expect(unsplashRepository.trackedDownloads, isEmpty);
+      });
+
+      test('does not count a download when the image failed to load', () async {
+        unsplashRepository.photo = _photo();
+        imageRepository.bytes = null;
+        remoteConfig.showCityViewValue = true;
+
+        await submitAndFinish();
+
+        expect(bloc.state.cityImageAuthor, isNull);
+        expect(unsplashRepository.trackedDownloads, isEmpty);
+      });
+
+      test('has nothing to download or credit without a photo', () async {
+        unsplashRepository.photo = null;
+        remoteConfig.showCityViewValue = true;
+
+        await submitAndFinish();
+
+        expect(imageRepository.downloadedUrls, isEmpty);
+        expect(bloc.state.cityImageAuthor, isNull);
+        expect(bloc.state.formSubmissionStatus, FormSubmissionStatus.success);
+        expect(monitoring.reports, isEmpty);
+      });
     });
   });
 }

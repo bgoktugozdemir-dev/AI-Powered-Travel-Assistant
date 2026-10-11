@@ -496,4 +496,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startupErrorRetry => 'Try again';
+
+  @override
+  String unsplashPhotoCredit(String photographer, String unsplash) {
+    return 'Photo by $photographer on $unsplash';
+  }
 }

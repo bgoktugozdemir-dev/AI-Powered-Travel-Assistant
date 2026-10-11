@@ -492,6 +492,7 @@ class MyApp extends StatelessWidget {
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return UnsplashRepository(
               unsplashService: unsplashService,
+              dio: dio,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               errorMonitoringFacade: errorMonitoringFacade,
             );

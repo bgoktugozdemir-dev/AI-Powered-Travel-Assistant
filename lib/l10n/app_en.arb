@@ -663,5 +663,19 @@
   "startupErrorRetry": "Try again",
   "@startupErrorRetry": {
     "description": "Button on the start-up error screen. Reloads the page on the web and starts the app again elsewhere."
+  },
+  "unsplashPhotoCredit": "Photo by {photographer} on {unsplash}",
+  "@unsplashPhotoCredit": {
+    "description": "Credit line under a city photo, as the Unsplash API guidelines require. Both placeholders become links.",
+    "placeholders": {
+      "photographer": {
+        "type": "String",
+        "example": "Jane Doe"
+      },
+      "unsplash": {
+        "type": "String",
+        "example": "Unsplash"
+      }
+    }
   }
 }

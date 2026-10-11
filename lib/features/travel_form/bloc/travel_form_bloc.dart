@@ -639,9 +639,21 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       final cityImage = results[0] as UnsplashPhoto?;
       final exchangeRate = results[1] as double?;
 
-      final cityImageInBytes = await _imageRepository.downloadImageAsBase64(
-        url: cityImage?.urls.full ?? '',
-      );
+      // Without a photo there is nothing to download (the Unsplash repository
+      // already noted why).
+      final cityImageInBytes = cityImage == null
+          ? null
+          : await _imageRepository.downloadImageAsBase64(
+              url: cityImage.urls.full,
+            );
+
+      // The photo is only shown, and so only "used" in Unsplash's terms, when
+      // the city view is on. Fire and forget: it never throws.
+      if (cityImage != null &&
+          cityImageInBytes != null &&
+          _firebaseRemoteConfigRepository.showCityView) {
+        unawaited(_unsplashRepository.trackDownload(cityImage));
+      }
 
       // Successful form submission
       emit(
@@ -649,6 +661,7 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           formSubmissionStatus: FormSubmissionStatus.success,
           travelPlan: () => travelPlan,
           cityImageInBytes: () => cityImageInBytes,
+          cityImageAuthor: () => cityImageInBytes == null ? null : cityImage?.user,
           exchangeRate: () => exchangeRate,
           error: () => null,
         ),

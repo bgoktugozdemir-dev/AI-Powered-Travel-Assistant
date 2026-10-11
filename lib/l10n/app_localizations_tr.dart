@@ -497,4 +497,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get startupErrorRetry => 'Tekrar dene';
+
+  @override
+  String unsplashPhotoCredit(String photographer, String unsplash) {
+    return 'Fotoğraf: $photographer / $unsplash';
+  }
 }

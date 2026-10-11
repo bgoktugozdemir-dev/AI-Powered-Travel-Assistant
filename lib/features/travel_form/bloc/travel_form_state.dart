@@ -66,6 +66,7 @@ class TravelFormState extends Equatable {
     this.countryServiceStatus = CountryServiceStatus.initial,
     this.travelPlan,
     this.cityImageInBytes,
+    this.cityImageAuthor,
     this.exchangeRate,
     this.error,
   });
@@ -133,6 +134,9 @@ class TravelFormState extends Equatable {
   /// The city image in bytes.
   final String? cityImageInBytes;
 
+  /// The photographer of [cityImageInBytes], who has to be credited.
+  final UnsplashUser? cityImageAuthor;
+
   /// The exchange rate.
   final double? exchangeRate;
 
@@ -175,6 +179,7 @@ class TravelFormState extends Equatable {
     CountryServiceStatus? countryServiceStatus,
     ValueGetter<TravelDetails?>? travelPlan,
     ValueGetter<String?>? cityImageInBytes,
+    ValueGetter<UnsplashUser?>? cityImageAuthor,
     ValueGetter<double?>? exchangeRate,
     ValueGetter<TravelFormError?>?
     error, // Use ValueGetter for explicit null setting
@@ -225,6 +230,8 @@ class TravelFormState extends Equatable {
       travelPlan: travelPlan != null ? travelPlan() : this.travelPlan,
       cityImageInBytes:
           cityImageInBytes != null ? cityImageInBytes() : this.cityImageInBytes,
+      cityImageAuthor:
+          cityImageAuthor != null ? cityImageAuthor() : this.cityImageAuthor,
       exchangeRate: exchangeRate != null ? exchangeRate() : this.exchangeRate,
       error: error != null ? error() : this.error,
     );
@@ -253,6 +260,7 @@ class TravelFormState extends Equatable {
     countryServiceStatus,
     travelPlan,
     cityImageInBytes,
+    cityImageAuthor,
     exchangeRate,
     error,
   ];

@@ -913,6 +913,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get startupErrorRetry;
+
+  /// Credit line under a city photo, as the Unsplash API guidelines require. Both placeholders become links.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo by {photographer} on {unsplash}'**
+  String unsplashPhotoCredit(String photographer, String unsplash);
 }
 
 class _AppLocalizationsDelegate
