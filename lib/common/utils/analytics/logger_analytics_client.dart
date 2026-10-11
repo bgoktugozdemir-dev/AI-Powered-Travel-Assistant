@@ -6,6 +6,9 @@ import 'package:travel_assistant/common/utils/analytics/data/submit_travel_detai
 class LoggerAnalyticsClient implements AnalyticsClient {
   const LoggerAnalyticsClient();
 
+  @override
+  String get name => 'LoggerAnalyticsClient';
+
   void _log(String message) {
     log(message, name: 'LoggerAnalyticsClient');
   }

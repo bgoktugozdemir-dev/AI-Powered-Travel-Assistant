@@ -20,6 +20,9 @@ class AnalyticsFacade implements AnalyticsClient {
   final AnalyticsFailureCallback? onError;
 
   @override
+  String get name => 'AnalyticsFacade';
+
+  @override
   void identifyUser(String userId) {
     _dispatch(
       (client) async => client.identifyUser(userId),

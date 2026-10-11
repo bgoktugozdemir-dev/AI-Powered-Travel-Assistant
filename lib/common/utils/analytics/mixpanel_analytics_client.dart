@@ -46,6 +46,9 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   final Mixpanel _mixpanel;
 
   @override
+  String get name => 'MixpanelAnalyticsClient';
+
+  @override
   Future<void> identifyUser(String userId) async {
     await _mixpanel.identify(userId);
   }

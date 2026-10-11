@@ -231,7 +231,7 @@ class MyApp extends StatelessWidget {
             return AnalyticsFacade(
               analyticsClients,
               onError: (error, stackTrace, client) {
-                if (!reportedFailures.add('${client.runtimeType}: $error')) {
+                if (!reportedFailures.add('${client.name}: $error')) {
                   return;
                 }
                 ErrorMonitoringFacade(errorMonitoringClients).reportError(
@@ -239,7 +239,7 @@ class MyApp extends StatelessWidget {
                   stackTrace: stackTrace,
                   context: {
                     'error': error,
-                    'analyticsClient': client.runtimeType.toString(),
+                    'analyticsClient': client.name,
                   },
                 );
               },
