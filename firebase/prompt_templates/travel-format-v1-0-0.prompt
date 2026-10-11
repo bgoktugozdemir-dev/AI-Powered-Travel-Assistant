@@ -1,0 +1,154 @@
+---
+# Firebase AI Logic server prompt template: format pass (pass 2 of 2).
+# Template ID: travel-format-v1-0-0 (Remote Config: ai_format_template_id)
+# Single-turn template. Turns the findings of the research template into the
+# TravelDetails JSON the app parses (lib/common/models/response/travel_details.dart).
+model: gemini-3.8-flash
+config:
+  candidateCount: 1
+input:
+  schema:
+    travel_information:
+      type: string
+      description: JSON-encoded trip details (airports, dates, nationality, purposes, locale).
+      maxLength: 4000
+    research_findings:
+      type: string
+      description: Plain-text findings produced by the research template.
+# Structured output: must stay equivalent to TravelDetails.aiSchema
+# (lib/common/models/response/travel_details.dart). test/common/ai/prompt_template_drift_test.dart
+# fails when the property sets drift apart.
+output:
+  format: json
+  schema:
+    city(object):
+      name: string
+      country: string
+      crowd_level: integer
+      time?(object):
+        departure_timezone: string
+        arrival_timezone: string
+        difference_in_hours: integer
+      weather(array):
+        date: string
+        weather: string
+        temperature: number
+    required_documents(object):
+      type(enum, Document the traveler needs for entry): [passport, e_visa, visa, id_card, other]
+      message: string
+      steps?(array): string
+      more_information?: string
+    currency(object):
+      code: string
+      name: string
+      exchange_rate: number
+      arrival_average_living_cost_per_day: number
+      departure_currency_code?: string
+      departure_average_living_cost_per_day?: number
+    flight_options(object):
+      cheapest(object):
+        departure(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        arrival(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        booking_url: string
+      comfortable(object):
+        departure(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        arrival(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        booking_url: string
+    tax_information(object):
+      has_tax_free_options: boolean
+      tax_rate: number
+      refundable_tax_rate: number
+      tax_refund_information?: string
+    spots(array):
+      place: string
+      description: string
+      requirements?: string
+    travel_plan(array):
+      date: string, Travel day as YYYY-MM-DD or ISO 8601 datetime. Date-only values are normalized to 00:00:00Z. Datetime values must include timezone/offset.
+      events(array):
+        name: string
+        time: string
+        location: string
+        description: string
+        requirements?: string
+    recommendations(array): string
+---
+
+{{role "system"}}
+Format given findings into TravelDetails JSON matching schema exactly.
+
+The input has two parts: the trip details as JSON and the research findings as plain text. Use only information that is present in the research findings. Do not add facts of your own and do not change numbers.
+
+Rules:
+- Return a single JSON object and nothing else: no markdown fences, no explanations.
+- Use the key names, types and nesting of the schema exactly.
+- Dates and times use ISO 8601. Flight times include a timezone offset. Travel plan dates are YYYY-MM-DD.
+- Flight duration is an integer number of minutes.
+- crowd_level is an integer percentage from 0 to 100.
+- required_documents.type must be one of the allowed values of the schema.
+- exchange_rate is how many units of the arrival currency one unit of the departure currency buys. The departure living cost is in the departure currency and the arrival living cost is in the arrival currency.
+- Use null for optional fields whose information is missing from the findings.
+- Write all text values in the language given by the locale field of the trip details.
+
+{{role "user"}}
+User Input:
+{{travel_information}}
+
+Research Findings:
+{{research_findings}}

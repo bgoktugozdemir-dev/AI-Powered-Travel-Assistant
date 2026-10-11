@@ -10,8 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/ai/template_aware_passes.dart';
+import 'package:travel_assistant/common/ai/template_travel_passes.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
+import 'package:travel_assistant/common/ai/travel_template_client.dart';
 import 'package:travel_assistant/common/config/app_secrets.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
@@ -48,6 +52,12 @@ import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 
+abstract class _Constants {
+  /// Firebase AI Logic location. Matches the former `FirebaseAI.vertexAI()`
+  /// default (`us-central1`); `agentPlatform()` would default to `global`.
+  static const String firebaseAILocation = 'us-central1';
+}
+
 Future<void> main() async {
   await runZonedGuarded(
     () async {
@@ -64,16 +74,21 @@ Future<void> main() async {
       await firebaseRemoteConfigRepository.initialize();
 
       // Activate Firebase App Check
+      //
+      // This must run before the first `FirebaseAI.agentPlatform()` call:
+      // firebase_ai resolves App Check through
+      // `app.getService<FirebaseAppCheck>()`, which is registered once
+      // `FirebaseAppCheck.instance` is first accessed.
       await FirebaseAppCheck.instance.activate(
-        webProvider: ReCaptchaV3Provider(
+        providerWeb: ReCaptchaV3Provider(
           firebaseRemoteConfigRepository.recaptchaSiteKey,
         ),
-        androidProvider: kDebugMode
-            ? AndroidProvider.debug
-            : AndroidProvider.playIntegrity,
-        appleProvider: kDebugMode
-            ? AppleProvider.debug
-            : AppleProvider.deviceCheck,
+        providerAndroid: kDebugMode
+            ? const AndroidDebugProvider()
+            : const AndroidPlayIntegrityProvider(),
+        providerApple: kDebugMode
+            ? const AppleDebugProvider()
+            : const AppleDeviceCheckProvider(),
       );
 
       final analyticsClients = await _getAnalyticsClients(
@@ -256,26 +271,59 @@ class MyApp extends StatelessWidget {
           create: (context) {
             final firebaseRemoteConfigRepository = context
                 .read<FirebaseRemoteConfigRepository>();
-            final vertexAI = FirebaseAI.vertexAI(
-              appCheck: FirebaseAppCheck.instance,
+            // App Check is attached automatically (activated in `main`).
+            // `agentPlatform()` defaults to the `global` location whereas the
+            // deprecated `vertexAI()` defaulted to `us-central1`, so the
+            // previous location is pinned explicitly to keep behavior as is.
+            final agentPlatform = FirebaseAI.agentPlatform(
               app: Firebase.app(),
+              location: _Constants.firebaseAILocation,
             );
             final firebaseAIService = FirebaseAIService(
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-              firebaseAI: vertexAI,
+              firebaseAI: agentPlatform,
             );
             final currencyRepository = context.read<CurrencyRepository>();
             final weatherRepository = context.read<WeatherRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
-            final travelResearchPass = TravelResearchPass(
-              firebaseAIService: firebaseAIService,
-              currencyRepository: currencyRepository,
-              weatherRepository: weatherRepository,
+            // Server prompt templates are preferred when enabled in Remote
+            // Config; the client-built passes stay as the fallback.
+            final templateClient = FirebaseTravelTemplateClient(
+              firebaseAI: agentPlatform,
+            );
+            final travelResearchPass = TemplateAwareResearchPass(
+              templatePass: TemplateTravelResearchPass(
+                templateClient: templateClient,
+                dispatcher: FunctionCallDispatcher(
+                  currencyRepository: currencyRepository,
+                  weatherRepository: weatherRepository,
+                ),
+                templateId: () =>
+                    firebaseRemoteConfigRepository.aiResearchTemplateId,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              fallbackPass: TravelResearchPass(
+                firebaseAIService: firebaseAIService,
+                currencyRepository: currencyRepository,
+                weatherRepository: weatherRepository,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
             );
-            final travelFormatPass = TravelFormatPass(
-              firebaseAIService: firebaseAIService,
+            final travelFormatPass = TemplateAwareFormatPass(
+              templatePass: TemplateTravelFormatPass(
+                templateClient: templateClient,
+                templateId: () =>
+                    firebaseRemoteConfigRepository.aiFormatTemplateId,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              fallbackPass: TravelFormatPass(
+                firebaseAIService: firebaseAIService,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
             );
             return FirebaseAIRepository(

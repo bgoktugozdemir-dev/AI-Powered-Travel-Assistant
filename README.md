@@ -211,7 +211,83 @@ Set up the following parameters in Firebase Remote Config:
 }
 ```
 
-### **API Keys**
+### **AI Prompt Templates (Firebase AI Logic)**
+
+The two AI passes (research with function calling, then JSON formatting) can run
+from [server prompt templates](https://firebase.google.com/docs/ai-logic/server-prompt-templates/get-started)
+instead of prompts built in the app. The prompt, model and configuration then live
+in Firebase and can change without an app release. The templates are stored in
+[`firebase/prompt_templates/`](firebase/prompt_templates):
+
+| Pass | Template ID (default) | File | Inputs |
+| --- | --- | --- | --- |
+| Research (chat, tools) | `travel-research-v1-0-0` | `travel-research-v1-0-0.prompt` | `travel_information` |
+| Format (single turn) | `travel-format-v1-0-0` | `travel-format-v1-0-0.prompt` | `travel_information`, `research_findings` |
+
+`travel_information` is the JSON-encoded trip (`TravelInformation.toJson()`) and
+`research_findings` is the text returned by the research pass.
+
+**Upload the templates**
+
+1. Open the Firebase console, **AI Services > AI Logic > Prompt templates** and
+   click **Create new template**.
+2. Enter the template name and the template ID from the table (the ID cannot be
+   changed later; IDs allow lowercase letters, digits and hyphens).
+3. Paste the part between the `---` lines of the `.prompt` file into
+   **Configuration (frontmatter)** and the rest into **Prompt and system
+   instructions**. Set `model` to the Gemini model you want to serve; the
+   template's `model` and `config` replace the `ai_model` and `generation_config`
+   Remote Config values for template calls.
+4. Save, then use **Create formatted test request** and **Run prompt test**. For
+   the research template use `{"travel_information": "{\"departure_airport\":\"IST\",\"arrival_airport\":\"JFK\",\"travel_date_range\":{\"start\":\"2026-07-01T00:00:00.000\",\"end\":\"2026-07-10T00:00:00.000\"},\"nationality\":\"TR\",\"travel_purposes\":[\"Sightseeing\"],\"locale\":\"en\"}"}`.
+   For the format template also pass a `research_findings` string. In the
+   formatted test request check that the JSON in the prompt shows plain `"`
+   characters. If it shows `&quot;`, the renderer HTML-escapes variables: use
+   `{{{travel_information}}}` and `{{{research_findings}}}` (triple braces) in both
+   templates.
+5. Lock each template (lock icon) so it can be used from the app and wait a couple
+   of minutes for it to propagate.
+
+Templates created in the console are available in all supported locations, which
+includes the `us-central1` location the app uses.
+
+**Structured output**
+
+The format template declares `output.format: json` and an `output.schema`
+(Picoschema syntax) that is equivalent to `TravelDetails.aiSchema`, so Gemini is
+constrained to the JSON the app parses. `TravelDetails.aiSchema` stays in the code
+for the in-app fallback path. Because two copies of the schema exist,
+`test/common/ai/prompt_template_drift_test.dart` compares them (property names,
+types, nesting, optional/nullable, enum values) and also checks the research
+template tools against `lib/common/ai/function_declarations.dart`. When you change
+the response models, update the `.prompt` file, make the test pass and upload the
+result as a new template ID version.
+
+**Enable them in Remote Config**
+
+| Parameter | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `ai_use_prompt_templates` | boolean | `false` | Master switch. Off: prompts are built in the app. |
+| `ai_research_template_id` | string | `travel-research-v1-0-0` | Research template ID. |
+| `ai_format_template_id` | string | `travel-format-v1-0-0` | Format template ID. |
+
+Publish `ai_use_prompt_templates = true` once both templates are uploaded and
+tested. To ship a prompt change safely, upload it as a new template ID (for
+example `travel-research-v1-1-0`) and switch the Remote Config parameter instead of
+editing a template that is in use.
+
+**Fallback**
+
+The app never depends on the templates. A pass uses its template only when
+`ai_use_prompt_templates` is on and the template ID is not empty. If the server
+answers that the template does not exist or is invalid, that pass transparently
+runs the in-app prompt path (`ai_research_system_prompt`, `ai_format_system_prompt`,
+`ai_model`, `generation_config`) and a breadcrumb is recorded. Other errors, for
+example App Check denials, are not retried.
+
+> Firebase App Check enforcement becomes mandatory for Firebase AI Logic on
+> November 2, 2026, so enable enforcement for your apps before then.
+
 
 You'll need API keys for:
 
