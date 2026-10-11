@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:firebase_ai/firebase_ai.dart' show ServerException;
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
     show TravelFormatPassRunner;
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
-    show TravelResearchPassRunner;
+    show TravelResearchPassException, TravelResearchPassRunner;
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
@@ -13,8 +14,9 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 
 abstract class _Constants {
   static const String defaultResearchPrompt =
-      'You are a travel research assistant. Use functions and grounding to '
-      'collect up-to-date flight, visa, tax, weather, and currency findings.';
+      'You are a travel research assistant. Use the provided functions to '
+      'collect up-to-date weather and currency findings, and your own knowledge '
+      'for flight, visa, and tax findings.';
   static const String defaultFormatPrompt =
       'Format given findings into TravelDetails JSON matching schema exactly.';
 }
@@ -114,7 +116,20 @@ class FirebaseAIRepository {
       if (e is FirebaseError) {
         rethrow;
       }
+      if (_isServerException(e)) {
+        throw FirebaseAppCheckError();
+      }
       throw Exception('Failed to generate text: $e');
     }
+  }
+
+  /// Whether [error] is (or wraps) a Firebase AI [ServerException], which is
+  /// how App Check / backend rejections surface from the SDK.
+  bool _isServerException(Object error) {
+    if (error is ServerException) {
+      return true;
+    }
+    return error is TravelResearchPassException &&
+        error.cause is ServerException;
   }
 }

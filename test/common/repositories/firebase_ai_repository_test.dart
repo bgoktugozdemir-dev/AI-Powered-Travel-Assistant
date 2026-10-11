@@ -1,3 +1,4 @@
+import 'package:firebase_ai/firebase_ai.dart' show ServerException;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
@@ -265,4 +266,30 @@ void main() {
     );
     expect(formatPass.callCount, 0);
   });
+
+  test(
+    'maps wrapped firebase_ai ServerException to FirebaseAppCheckError',
+    () async {
+      final formatPass = _FakeFormatPass(_sampleTravelDetails());
+      final repository = FirebaseAIRepository(
+        modelName: 'gemini-test',
+        firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
+        travelResearchPass: _FakeResearchPass(
+          errorToThrow: TravelResearchPassException(
+            'Research pass failed.',
+            cause: ServerException('app check rejected'),
+          ),
+        ),
+        travelFormatPass: formatPass,
+        analyticsFacade: const AnalyticsFacade([]),
+        errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_sampleTravelInformation()),
+        throwsA(isA<FirebaseAppCheckError>()),
+      );
+      expect(formatPass.callCount, 0);
+    },
+  );
 }
