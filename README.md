@@ -4,7 +4,7 @@
 ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange.svg)
 ![AI Powered](https://img.shields.io/badge/AI-Powered-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Version](https://img.shields.io/badge/Version-1.2.2-blue.svg)
+![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)
 
 > **AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights.**
 
@@ -448,6 +448,7 @@ the live channel.
    `v` and without the build number (`v1.2.5`). The workflow stops if the tag and
    the pubspec version disagree. The Sentry release is `travel_assistant@1.2.5+18`,
    matching what the app reports at runtime.
+   Pre-releases are skipped and never deploy to the live channel.
 
 You can also run the workflow by hand from the default branch (Actions, Deploy
 web, Run workflow); `make deploy_web` does the same from your machine and needs

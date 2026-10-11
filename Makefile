@@ -8,7 +8,7 @@ build_web:
 	flutter clean
 	flutter pub get
 	flutter build web --release --source-maps --dart-define-from-file=env/secrets.json
-	flutter pub run sentry_dart_plugin
+	dart run sentry_dart_plugin
 	find build/web -name '*.map' -type f -delete
 
 # Manual deploy to Firebase Hosting (project in .firebaserc). Releases are
