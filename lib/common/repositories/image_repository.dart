@@ -45,11 +45,11 @@ class ImageRepository {
   /// This is a basic validation that checks URL format and common image extensions.
   bool isValidImageUrl(String url) {
     if (url.isEmpty) {
-      _errorMonitoringFacade.reportError(
-        'Image URL is empty',
-        context: {
-          'url': url,
-        },
+      // Expected when there is no photo for the city (see UnsplashRepository),
+      // so it is a breadcrumb and not an error report.
+      _errorMonitoringFacade.addBreadcrumb(
+        'Image URL is empty, skipping the download.',
+        category: 'Image',
       );
       return false;
     }

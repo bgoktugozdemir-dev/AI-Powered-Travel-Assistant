@@ -77,9 +77,16 @@ class _FlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // The model may return an empty or invalid booking URL; only http(s)
+    // links make the card tappable.
+    final bookingUri = Uri.tryParse(bookingUrl.trim());
+    final canBook =
+        bookingUri != null &&
+        (bookingUri.scheme == 'https' || bookingUri.scheme == 'http') &&
+        bookingUri.host.isNotEmpty;
 
     return GestureDetector(
-      onTap: () => launchUrl(Uri.parse(bookingUrl)),
+      onTap: canBook ? () => launchUrl(bookingUri) : null,
       child: Card(
         elevation: 2,
         color: Theme.of(context).cardColor.withValues(alpha: 0.8),
@@ -178,8 +185,9 @@ class _FlightCard extends StatelessWidget {
     final textTheme = theme.textTheme.bodyMedium;
 
     return Column(
-      crossAxisAlignment:
-          isDeparture ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment: isDeparture
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.end,
       children: [
         Text(
           Formatters.dateWithTime(time),

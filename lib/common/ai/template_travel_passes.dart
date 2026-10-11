@@ -2,7 +2,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
 import 'package:travel_assistant/common/ai/template_errors.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
-    show TravelFormatPassRunner;
+    show TravelFormatPassException, TravelFormatPassRunner;
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
     show
         ResearchToolLoop,
@@ -64,16 +64,20 @@ class TemplateTravelResearchPass implements TravelResearchPassRunner {
       return await _loop.run(
         sendMessage: chat.sendMessage,
         firstMessage: Content.text(_Constants.researchKickoffMessage),
-        onRoundsExhausted: () => _errorMonitoring.reportError(
-          'TemplateTravelResearchPass max tool call rounds exceeded',
+        // The exception thrown after this callback is reported below, so this
+        // only leaves a breadcrumb.
+        onRoundsExhausted: () => _errorMonitoring.addBreadcrumb(
+          'TemplateTravelResearchPass max tool call rounds exceeded.',
+          category: 'Firebase AI',
         ),
       );
     } catch (e, st) {
       // A missing template is not an incident: the caller falls back.
       if (!isTemplateUnavailableError(e)) {
         _errorMonitoring.reportError(
-          'TemplateTravelResearchPass.generateResearchFindings failed: $e',
+          'TemplateTravelResearchPass.generateResearchFindings failed.',
           stackTrace: st,
+          context: {'error': e},
         );
       }
       if (e is TravelResearchPassException) {
@@ -132,17 +136,20 @@ class TemplateTravelFormatPass implements TravelFormatPassRunner {
             e,
             context: {'retryCount': retryCount},
           );
-          rethrow;
+          throw TravelFormatPassException(e);
         }
       } catch (e, st) {
-        // A missing template is not an incident: the caller falls back.
-        if (!isTemplateUnavailableError(e)) {
-          _errorMonitoring.reportError(
-            'TemplateTravelFormatPass.formatResearchFindings failed: $e',
-            stackTrace: st,
-          );
+        // A missing template is not an incident: the caller falls back, which
+        // needs the original error to recognize it.
+        if (isTemplateUnavailableError(e)) {
+          rethrow;
         }
-        rethrow;
+        _errorMonitoring.reportError(
+          'TemplateTravelFormatPass.formatResearchFindings failed.',
+          stackTrace: st,
+          context: {'error': e},
+        );
+        throw TravelFormatPassException(e);
       }
     }
     throw StateError('Unexpected format pass state');

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:equatable/equatable.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'unsplash_service.g.dart';
@@ -125,10 +126,31 @@ class UnsplashPhotoUrls {
   }
 }
 
+/// Links to Unsplash that credit a photo, as the Unsplash API guidelines ask:
+/// they carry the app name and `utm_medium=referral`.
+abstract class UnsplashLinks {
+  /// The app name. Must be the name the app is registered with at Unsplash.
+  static const String utmSource = 'travel_assistant';
+
+  static const String _utmMedium = 'referral';
+
+  static Map<String, String> get _utmParameters => {
+    'utm_source': utmSource,
+    'utm_medium': _utmMedium,
+  };
+
+  /// The Unsplash home page.
+  static Uri home() => Uri.https('unsplash.com', '/', _utmParameters);
+
+  /// The profile page of the photographer with the given [username].
+  static Uri profile(String username) =>
+      Uri.https('unsplash.com', '/@$username', _utmParameters);
+}
+
 /// Model class for an Unsplash user
-class UnsplashUser {
+class UnsplashUser extends Equatable {
   /// Creates an [UnsplashUser] instance
-  UnsplashUser({
+  const UnsplashUser({
     required this.name,
     required this.username,
     required this.portfolioUrl,
@@ -149,6 +171,9 @@ class UnsplashUser {
 
   /// The user's portfolio URL, if any
   final String? portfolioUrl;
+
+  @override
+  List<Object?> get props => [name, username, portfolioUrl];
 }
 
 /// Model class for a token response from Unsplash

@@ -165,6 +165,47 @@ void main() {
       );
     });
 
+    test('does not report a failure a pass already reported', () async {
+      final monitoring = _RecordingClient();
+      final repository = _repositoryFailingWith(
+        TravelResearchPassException(
+          'Research pass failed.',
+          cause: _FakeClientException(),
+        ),
+        monitoring: monitoring,
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(isA<FirebaseConnectionError>()),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(monitoring.reportedErrors, isEmpty);
+    });
+
+    test('maps a server error wrapped by the format pass', () async {
+      final repository = _repositoryFailingWith(
+        TravelFormatPassException(ServerException('rejected')),
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(isA<FirebaseAppCheckError>()),
+      );
+    });
+
+    test('maps an interrupted request wrapped by the format pass', () async {
+      final repository = _repositoryFailingWith(
+        TravelFormatPassException(_FakeClientException()),
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(isA<FirebaseConnectionError>()),
+      );
+    });
+
     test('reports the failure exactly once', () async {
       final monitoring = _RecordingClient();
       final repository = _repositoryFailingWith(

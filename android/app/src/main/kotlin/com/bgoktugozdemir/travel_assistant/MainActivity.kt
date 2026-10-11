@@ -1,4 +1,4 @@
-package com.example.travel_assistant
+package com.bgoktugozdemir.travel_assistant
 
 import io.flutter.embedding.android.FlutterActivity
 

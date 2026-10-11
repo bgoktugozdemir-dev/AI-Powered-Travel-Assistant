@@ -11,6 +11,9 @@ class _RecordingClient implements AnalyticsClient {
   final List<String> searches = [];
 
   @override
+  String get name => 'RecordingClient';
+
+  @override
   Future<void> logSearchDepartureAirport(String query) async {
     if (failure case final failure?) {
       throw failure;
@@ -50,6 +53,19 @@ void main() {
 
     expect(uncaught, isEmpty);
     expect(failures.single, isA<StateError>());
+  });
+
+  test('the failure callback gets the client, whose name is stable', () async {
+    final clients = <AnalyticsClient>[];
+    final facade = AnalyticsFacade(
+      [_RecordingClient(failure: StateError('boom'))],
+      onError: (error, stackTrace, client) => clients.add(client),
+    );
+
+    facade.logSearchDepartureAirport('ist');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(clients.single.name, 'RecordingClient');
   });
 
   test('a throwing failure callback does not surface either', () async {

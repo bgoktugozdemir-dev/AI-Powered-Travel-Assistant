@@ -3,6 +3,13 @@ import 'dart:async';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
 abstract class AnalyticsClient {
+  /// A stable, human readable name of this client, for example in error
+  /// reports.
+  ///
+  /// Use this instead of `runtimeType`, which dart2js minifies in release
+  /// builds (`minified:aB`).
+  String get name;
+
   /// Identifies a user in analytics with the given [userId].
   FutureOr<void> identifyUser(String userId);
 

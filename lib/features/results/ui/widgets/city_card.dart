@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_assistant/common/utils/helpers/formatters.dart';
 import 'package:travel_assistant/common/models/response/city.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
+import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/ui/travel_card.dart';
+import 'package:travel_assistant/features/results/ui/widgets/unsplash_credit.dart';
 import 'package:travel_assistant/l10n/app_localizations.dart';
 
 abstract class _Constants {
@@ -24,6 +26,7 @@ class CityCard extends StatelessWidget {
   const CityCard({
     required this.city,
     required this.cityImageInBytes,
+    this.photographer,
     super.key,
   });
 
@@ -32,6 +35,9 @@ class CityCard extends StatelessWidget {
 
   /// The city image.
   final String? cityImageInBytes;
+
+  /// The photographer of [cityImageInBytes], credited on the image.
+  final UnsplashUser? photographer;
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +150,17 @@ class CityCard extends StatelessWidget {
                 bottom: crowdLevelBarHeight + 8,
                 child: _buildCityNameOnImage(context, crowdLevelColor),
               ),
+              // Unsplash requires crediting the photographer.
+              if (photographer case final photographer?)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  right: 8,
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: UnsplashCredit(photographer: photographer),
+                  ),
+                ),
             ],
           );
         },
@@ -210,12 +227,14 @@ class CityCard extends StatelessWidget {
       direction: Axis.horizontal,
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
+      runSpacing: 8,
       children: [
-        Expanded(
-          child: Text(
-            Formatters.cityCountry(city.name, city.country),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+        // No Expanded: it only works in a Flex (Row/Column) and throws inside a
+        // Wrap. The Wrap already gives the text the full width and moves the
+        // time difference chip to the next line when both do not fit.
+        Text(
+          Formatters.cityCountry(city.name, city.country),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         if (city.time != null) _buildTimeDifference(context),
       ],

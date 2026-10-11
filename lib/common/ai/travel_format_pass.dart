@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
@@ -6,6 +7,20 @@ import 'package:travel_assistant/common/utils/helpers/parser_utils.dart';
 
 abstract class _Constants {
   static const int maxFormatRetries = 3;
+}
+
+/// Thrown when the format pass cannot complete successfully.
+///
+/// The pass reports the failure to error monitoring before throwing this, so
+/// callers must not report it again ([AlreadyReportedError]). The original
+/// error is kept as [cause].
+class TravelFormatPassException implements Exception, AlreadyReportedError {
+  const TravelFormatPassException(this.cause);
+
+  final Object cause;
+
+  @override
+  String toString() => 'TravelFormatPassException($cause)';
 }
 
 /// Pass 2 orchestrator: schema-bound formatting into TravelDetails.
@@ -53,14 +68,15 @@ class TravelFormatPass implements TravelFormatPassRunner {
             e,
             context: {'retryCount': retryCount},
           );
-          rethrow;
+          throw TravelFormatPassException(e);
         }
       } catch (e, st) {
         _errorMonitoring.reportError(
-          'TravelFormatPass.formatResearchFindings failed: $e',
+          'TravelFormatPass.formatResearchFindings failed.',
           stackTrace: st,
+          context: {'error': e},
         );
-        rethrow;
+        throw TravelFormatPassException(e);
       }
     }
     throw StateError('Unexpected format pass state');

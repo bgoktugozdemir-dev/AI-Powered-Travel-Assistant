@@ -5,6 +5,8 @@ import 'package:travel_assistant/common/repositories/weather_repository.dart';
 import 'package:travel_assistant/common/services/open_meteo_service.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
+import '../../support/recording_error_monitoring_client.dart';
+
 class _FakeOpenMeteoService implements OpenMeteoService {
   _FakeOpenMeteoService({required this.response, this.shouldThrow = false});
 
@@ -199,5 +201,26 @@ void main() {
     );
 
     expect(result, isNull);
+  });
+
+  test('reports a failure with the real error under the error key', () async {
+    WeatherRepository.clearCache();
+    final monitoring = RecordingErrorMonitoringClient();
+    final repo = WeatherRepository(
+      _FakeOpenMeteoService(response: sampleResponse, shouldThrow: true),
+      _FakeFirebaseRemoteConfigRepository(cacheWeatherData: true),
+      ErrorMonitoringFacade([monitoring]),
+    );
+
+    await repo.getWeatherForecast(
+      latitude: 41,
+      longitude: 29,
+      startDate: DateTime(2026, 6, 1),
+      endDate: DateTime(2026, 6, 2),
+    );
+
+    expect(monitoring.reports, hasLength(1));
+    expect(monitoring.reports.single.error, isA<String>());
+    expect(monitoring.reports.single.context?['error'], isA<Exception>());
   });
 }

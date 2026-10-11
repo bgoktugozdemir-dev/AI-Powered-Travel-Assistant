@@ -651,5 +651,31 @@
   "errorConnectionInterrupted": "The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.",
   "@errorConnectionInterrupted": {
     "description": "Error message when the request to the AI backend was interrupted, e.g. because the browser tab was backgrounded or the network dropped."
+  },
+  "startupErrorTitle": "We couldn't start Travel Assistant",
+  "@startupErrorTitle": {
+    "description": "Title of the screen shown when the app fails to start."
+  },
+  "startupErrorMessage": "Something went wrong while loading the app. Please check your internet connection and try again.",
+  "@startupErrorMessage": {
+    "description": "Explanation on the screen shown when the app fails to start."
+  },
+  "startupErrorRetry": "Try again",
+  "@startupErrorRetry": {
+    "description": "Button on the start-up error screen. Reloads the page on the web and starts the app again elsewhere."
+  },
+  "unsplashPhotoCredit": "Photo by {photographer} on {unsplash}",
+  "@unsplashPhotoCredit": {
+    "description": "Credit line under a city photo, as the Unsplash API guidelines require. Both placeholders become links.",
+    "placeholders": {
+      "photographer": {
+        "type": "String",
+        "example": "Jane Doe"
+      },
+      "unsplash": {
+        "type": "String",
+        "example": "Unsplash"
+      }
+    }
   }
 }
