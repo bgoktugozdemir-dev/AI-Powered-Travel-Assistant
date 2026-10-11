@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:travel_assistant/common/ai/template_errors.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
     show TravelFormatPassRunner;
@@ -13,8 +14,21 @@ abstract class _Constants {
   static const String formatPassName = 'format';
 }
 
+/// Template fallbacks already reported in this app session, as
+/// `<pass>:<templateId>`, so a misconfigured template is reported once instead
+/// of on every trip.
+final Set<String> _reportedFallbacks = {};
+
+/// Forgets the fallbacks reported in this session. For tests only.
+@visibleForTesting
+void resetReportedTemplateFallbacks() => _reportedFallbacks.clear();
+
 /// Runs [runTemplate] and falls back to [runFallback] when the template is
 /// unavailable (see [isTemplateUnavailableError]). Any other error propagates.
+///
+/// A fallback is also reported as a warning: the app keeps working, but the
+/// template (or the model it uses) is misconfigured, e.g. a model that isn't
+/// served in the app's location.
 Future<T> _runWithTemplateFallback<T>({
   required String passName,
   required String templateId,
@@ -28,15 +42,25 @@ Future<T> _runWithTemplateFallback<T>({
     if (!isTemplateUnavailableError(e)) {
       rethrow;
     }
+    const message =
+        'Prompt template unavailable, falling back to client-built prompt.';
+    final details = {
+      'pass': passName,
+      'templateId': templateId,
+      'error': e.toString(),
+    };
     errorMonitoring.addBreadcrumb(
-      'Prompt template unavailable, falling back to client-built prompt.',
+      message,
       category: _Constants.breadcrumbCategory,
-      data: {
-        'pass': passName,
-        'templateId': templateId,
-        'error': e.toString(),
-      },
+      data: details,
     );
+    if (_reportedFallbacks.add('$passName:$templateId')) {
+      errorMonitoring.captureMessage(
+        message,
+        level: 'warning',
+        context: details,
+      );
+    }
     return runFallback();
   }
 }

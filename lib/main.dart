@@ -56,9 +56,10 @@ import 'package:travel_assistant/features/travel_form/error/travel_form_error.da
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
 
 abstract class _Constants {
-  /// Firebase AI Logic location. Matches the former `FirebaseAI.vertexAI()`
-  /// default (`us-central1`); `agentPlatform()` would default to `global`.
-  static const String firebaseAILocation = 'us-central1';
+  /// Firebase AI Logic location, also used for server prompt templates.
+  /// Newer models such as `gemini-3.8-flash` are not served in regional
+  /// locations like `us-central1`, so the `global` location is used.
+  static const String firebaseAILocation = 'global';
 
   /// How long an HTTP client waits to connect to a server.
   static const Duration connectTimeout = Duration(seconds: 15);
@@ -144,7 +145,10 @@ Future<MyApp> _initializeApp() async {
   final errorMonitoringFacade = ErrorMonitoringFacade(errorMonitoringClients);
   _uncaughtErrorReporter.errorMonitoring = errorMonitoringFacade;
 
-  await _activateAppCheck(firebaseRemoteConfigRepository, errorMonitoringFacade);
+  await _activateAppCheck(
+    firebaseRemoteConfigRepository,
+    errorMonitoringFacade,
+  );
 
   final analyticsClients = await _getAnalyticsClients(
     firebaseRemoteConfigRepository,
@@ -408,9 +412,6 @@ class MyApp extends StatelessWidget {
             final firebaseRemoteConfigRepository = context
                 .read<FirebaseRemoteConfigRepository>();
             // App Check is attached automatically (activated in `main`).
-            // `agentPlatform()` defaults to the `global` location whereas the
-            // deprecated `vertexAI()` defaulted to `us-central1`, so the
-            // previous location is pinned explicitly to keep behavior as is.
             final agentPlatform = FirebaseAI.agentPlatform(
               app: Firebase.app(),
               location: _Constants.firebaseAILocation,

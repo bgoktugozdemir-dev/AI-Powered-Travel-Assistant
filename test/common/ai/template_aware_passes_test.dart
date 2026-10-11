@@ -36,6 +36,16 @@ class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
 
 class _RecordingErrorMonitoringClient implements ErrorMonitoringClient {
   final List<String> breadcrumbs = [];
+  final List<String?> warningLevels = [];
+
+  @override
+  void captureMessage(
+    String message, {
+    String? level,
+    Map<String, dynamic>? context,
+  }) {
+    warningLevels.add(level);
+  }
 
   @override
   void addBreadcrumb(
@@ -95,6 +105,7 @@ void main() {
   late ErrorMonitoringFacade errorMonitoring;
 
   setUp(() {
+    resetReportedTemplateFallbacks();
     monitoringClient = _RecordingErrorMonitoringClient();
     errorMonitoring = ErrorMonitoringFacade([monitoringClient]);
   });
@@ -185,7 +196,29 @@ void main() {
       expect(template.callCount, 1);
       expect(fallback.callCount, 1);
       expect(monitoringClient.breadcrumbs, hasLength(1));
+      expect(monitoringClient.warningLevels, ['warning']);
     });
+
+    test(
+      'reports a fallback once per session, breadcrumbs every time',
+      () async {
+        TemplateAwareResearchPass failingPass() => build(
+          templatePass: _FakeResearchPass(
+            'template',
+            errorToThrow: ServerException(
+              'Template research-template not found',
+            ),
+          ),
+          fallbackPass: _FakeResearchPass('fallback'),
+        );
+
+        await run(failingPass());
+        await run(failingPass());
+
+        expect(monitoringClient.breadcrumbs, hasLength(2));
+        expect(monitoringClient.warningLevels, ['warning']);
+      },
+    );
 
     test('does not fall back on other server errors', () async {
       final appCheckError = TravelResearchPassException(
@@ -205,6 +238,7 @@ void main() {
 
       expect(fallback.callCount, 0);
       expect(monitoringClient.breadcrumbs, isEmpty);
+      expect(monitoringClient.warningLevels, isEmpty);
     });
 
     test('does not fall back on non-server errors', () async {
@@ -319,6 +353,7 @@ void main() {
       expect(template.callCount, 1);
       expect(fallback.callCount, 1);
       expect(monitoringClient.breadcrumbs, hasLength(1));
+      expect(monitoringClient.warningLevels, ['warning']);
     });
 
     test('does not fall back on other server errors', () async {
@@ -333,6 +368,7 @@ void main() {
 
       expect(fallback.callCount, 0);
       expect(monitoringClient.breadcrumbs, isEmpty);
+      expect(monitoringClient.warningLevels, isEmpty);
     });
 
     test('does not fall back on unparsable output', () async {
