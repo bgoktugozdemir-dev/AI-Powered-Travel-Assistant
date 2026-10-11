@@ -3,9 +3,11 @@
 import 'dart:async';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_firebase_remote_config/sentry_firebase_remote_config.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_report.dart';
 
 abstract class _Constants {
   /// Set sampleRate to 1.0 to capture 100% of transactions for error monitoring.
@@ -38,6 +40,16 @@ abstract class _Constants {
   /// The `attachViewHierarchy` options are resource-intensive and
   /// may impact performance and storage, especially in production environments
   static bool attachViewHierarchy = false;
+
+  /// Exact message of the reCAPTCHA error that is dropped in [filterEvent].
+  static const String recaptchaAlreadyRendered =
+      'reCAPTCHA has already been rendered in this element';
+
+  /// Tag holding the human readable message of a report.
+  static const String reportMessageTag = 'report_message';
+
+  /// Sentry truncates tag values at 200 characters.
+  static const int maxTagLength = 200;
 }
 
 class SentryErrorMonitoringClient implements ErrorMonitoringClient {
@@ -94,14 +106,11 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
             ..recordHttpBreadcrumbs = !debug
             // Use the [beforeSend] callback to filter which events are sent
             ..beforeSend = (event, hint) async {
-              // Don't send event if [sendToSentry] is false or it is a debug build
-              final shouldSend = sendToSentry ?? !debug;
-              if (!shouldSend) {
-                return null;
-              }
-
-              // For all other events, return the event as is
-              return event;
+              return filterEvent(
+                event,
+                // Don't send events if [sendToSentry] is false or it is a debug build
+                shouldSend: sendToSentry ?? !debug,
+              );
             }
             ..beforeCaptureScreenshot = (event, hint, debounce) async {
               // If debounce is active, skip capturing
@@ -148,6 +157,33 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
     });
   }
 
+  /// Decides whether [event] is sent. Returns `null` to drop it.
+  @visibleForTesting
+  static SentryEvent? filterEvent(
+    SentryEvent event, {
+    required bool shouldSend,
+  }) {
+    if (!shouldSend) {
+      return null;
+    }
+
+    final exceptions = event.exceptions;
+    if (exceptions != null &&
+        exceptions.any(
+          (exception) =>
+              exception.value?.contains(_Constants.recaptchaAlreadyRendered) ??
+              false,
+        )) {
+      // Thrown by the Firebase App Check reCAPTCHA widget when a link-preview
+      // crawler (e.g. Meta's) executes the page. Not actionable and never
+      // seen from real users, so don't let it create issues.
+      return null;
+    }
+
+    // For all other events, return the event as is
+    return event;
+  }
+
   @override
   Future<void> reportError(
     Object error, {
@@ -156,17 +192,11 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }) async {
     if (!_enabled) return;
 
-    await Sentry.captureException(
+    await _capture(
       error,
+      level: SentryLevel.error,
       stackTrace: stackTrace,
-      withScope: (scope) {
-        scope.level = SentryLevel.error;
-        if (context != null) {
-          for (final entry in context.entries) {
-            scope.setContexts(entry.key, entry.value);
-          }
-        }
-      },
+      context: context,
     );
   }
 
@@ -178,15 +208,41 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
   }) async {
     if (!_enabled) return;
 
-    await Sentry.captureException(
+    await _capture(
       exception,
+      level: SentryLevel.fatal,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+
+  /// Captures the real exception (see [resolveErrorReport]) so Sentry shows
+  /// its actual type and message, and keeps the human message as a tag and
+  /// context.
+  Future<void> _capture(
+    Object error, {
+    required SentryLevel level,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? context,
+  }) async {
+    final report = resolveErrorReport(error, context: context);
+
+    await Sentry.captureException(
+      report.error,
       stackTrace: stackTrace,
       withScope: (scope) {
-        scope.level = SentryLevel.fatal;
-        if (context != null) {
-          for (final entry in context.entries) {
-            scope.setContexts(entry.key, entry.value);
-          }
+        scope.level = level;
+        if (report.message case final message?) {
+          scope.setTag(
+            _Constants.reportMessageTag,
+            message.length > _Constants.maxTagLength
+                ? message.substring(0, _Constants.maxTagLength)
+                : message,
+          );
+          scope.setContexts('report', {'message': message});
+        }
+        for (final entry in report.context.entries) {
+          scope.setContexts(entry.key, entry.value);
         }
       },
     );

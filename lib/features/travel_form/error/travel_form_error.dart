@@ -1,3 +1,5 @@
+import 'package:travel_assistant/common/error/firebase_error.dart';
+
 sealed class TravelFormError {
   const TravelFormError();
 }
@@ -57,3 +59,16 @@ class CountryServiceError extends TravelFormError {
 class PlatformOrBrowserError extends TravelFormError {
   const PlatformOrBrowserError();
 }
+
+/// The request to the AI backend was interrupted (offline, or the browser
+/// suspended the backgrounded tab), as opposed to the backend failing.
+class ConnectionInterruptedError extends TravelFormError {
+  const ConnectionInterruptedError();
+}
+
+/// Maps an error thrown while submitting the form to what the user is told.
+TravelFormError travelFormErrorFor(Object error) => switch (error) {
+  FirebaseConnectionError() => const ConnectionInterruptedError(),
+  FirebaseError() => const ServerError(),
+  _ => const GeneralTravelFormError(),
+};

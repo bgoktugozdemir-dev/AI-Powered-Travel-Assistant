@@ -6,6 +6,7 @@ import 'package:travel_assistant/common/ai/travel_format_pass.dart'
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
     show TravelResearchPassException, TravelResearchPassRunner;
 import 'package:travel_assistant/common/error/firebase_error.dart';
+import 'package:travel_assistant/common/error/network_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
@@ -119,9 +120,17 @@ class FirebaseAIRepository {
       if (_isServerException(e)) {
         throw FirebaseAppCheckError();
       }
-      throw Exception('Failed to generate text: $e');
+      if (isNetworkInterruption(_rootCause(e))) {
+        throw FirebaseConnectionError();
+      }
+      throw AiGenerationException(e);
     }
   }
+
+  Object _rootCause(Object error) =>
+      error is TravelResearchPassException && error.cause != null
+      ? error.cause!
+      : error;
 
   /// Whether [error] is (or wraps) a Firebase AI [ServerException], which is
   /// how App Check / backend rejections surface from the SDK.

@@ -11,6 +11,12 @@ abstract class ErrorMonitoringClient {
   FutureOr<void> setUser(String userId);
 
   /// Reports an error with optional [stackTrace] and [context].
+  ///
+  /// Pass the caught exception as [error] whenever possible so it is monitored
+  /// with its real type and message. For call sites that want to describe what
+  /// failed, `reportError('Failed to X.', context: {'error': e})` is
+  /// supported too: the string is kept as the report message and
+  /// `context['error']` is what gets captured (see `resolveErrorReport`).
   FutureOr<void> reportError(
     Object error, {
     StackTrace? stackTrace,

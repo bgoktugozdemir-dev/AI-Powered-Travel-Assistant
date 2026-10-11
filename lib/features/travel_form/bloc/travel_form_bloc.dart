@@ -660,16 +660,20 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       emit(
         state.copyWith(
           formSubmissionStatus: FormSubmissionStatus.failure,
-          error: e is FirebaseError ? () => ServerError() : () => GeneralTravelFormError(),
+          error: () => travelFormErrorFor(e),
         ),
       );
-      _errorMonitoringFacade.reportError(
-        'Failed to submit travel form.',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-        },
-      );
+      // The AI repository already reported its own failures with full
+      // context; reporting them again here would create a duplicate issue.
+      if (e is! AlreadyReportedError) {
+        _errorMonitoringFacade.reportError(
+          'Failed to submit travel form.',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+          },
+        );
+      }
     }
   }
 
