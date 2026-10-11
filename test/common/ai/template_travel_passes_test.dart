@@ -6,7 +6,6 @@ import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
 import 'package:travel_assistant/common/ai/travel_template_client.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
-import 'package:travel_assistant/common/models/response/open_meteo_response.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/weather_repository.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
@@ -21,13 +20,13 @@ class _FakeCurrencyRepository implements CurrencyRepository {
 
 class _FakeWeatherRepository implements WeatherRepository {
   @override
-  Future<OpenMeteoResponse?> getWeatherForecast({
+  Future<WeatherForecastResult> getWeatherForecast({
     required double latitude,
     required double longitude,
     required DateTime startDate,
     required DateTime endDate,
     String timezone = 'auto',
-  }) async => null;
+  }) async => const WeatherForecastFailed();
 }
 
 GenerateContentResponse _response(List<Part> parts) {

@@ -5,9 +5,9 @@ import 'dart:async';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:sentry_firebase_remote_config/sentry_firebase_remote_config.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_report.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/remote_config_feature_flags.dart';
 
 abstract class _Constants {
   /// Set sampleRate to 1.0 to capture 100% of transactions for error monitoring.
@@ -123,18 +123,15 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
               // Capture if it's a fatal event
               return event.level == SentryLevel.fatal;
             };
-
-          // Add Firebase Remote Config integration if available
-          if (firebaseRemoteConfig != null) {
-            options.addIntegration(
-              SentryFirebaseRemoteConfigIntegration(
-                firebaseRemoteConfig: firebaseRemoteConfig,
-              ),
-            );
-          }
         },
         appRunner: appRunner,
       );
+
+      // Not `SentryFirebaseRemoteConfigIntegration`: it subscribes to the
+      // Remote Config realtime stream, see [RemoteConfigFeatureFlags].
+      if (firebaseRemoteConfig != null) {
+        await RemoteConfigFeatureFlags.report(firebaseRemoteConfig);
+      }
     } catch (e) {
       if (debug) {
         rethrow;
