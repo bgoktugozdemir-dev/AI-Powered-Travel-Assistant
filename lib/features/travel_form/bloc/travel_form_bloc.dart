@@ -280,14 +280,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
       );
       _analyticsFacade.logSearchDepartureAirport(event.searchTerm);
     } catch (e, stackTrace) {
-      _errorMonitoringFacade.reportError(
-        'Failed to get departure airport suggestions.',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-          'searchTerm': event.searchTerm,
-        },
-      );
+      // The airport repository already reported its own failures.
+      if (e is! AlreadyReportedError) {
+        _errorMonitoringFacade.reportError(
+          'Failed to get departure airport suggestions.',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'searchTerm': event.searchTerm,
+          },
+        );
+      }
       emit(
         state.copyWith(
           isDepartureAirportLoading: false,
@@ -362,14 +365,17 @@ class TravelFormBloc extends Bloc<TravelFormEvent, TravelFormState> {
           error: () => GeneralTravelFormError(),
         ),
       );
-      _errorMonitoringFacade.reportError(
-        'Failed to get arrival airport suggestions.',
-        stackTrace: stackTrace,
-        context: {
-          'error': e,
-          'searchTerm': event.searchTerm,
-        },
-      );
+      // The airport repository already reported its own failures.
+      if (e is! AlreadyReportedError) {
+        _errorMonitoringFacade.reportError(
+          'Failed to get arrival airport suggestions.',
+          stackTrace: stackTrace,
+          context: {
+            'error': e,
+            'searchTerm': event.searchTerm,
+          },
+        );
+      }
     }
   }
 

@@ -22,6 +22,7 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 
 import '../../../common/ai/travel_details_fixture.dart';
+import '../../../support/recording_error_monitoring_client.dart';
 
 class _FakeRemoteConfig extends Fake implements FirebaseRemoteConfigRepository {
   @override
@@ -40,9 +41,15 @@ class _FakeRemoteConfig extends Fake implements FirebaseRemoteConfigRepository {
 class _FakeAirportRepository extends Fake implements AirportRepository {
   final List<String> queries = [];
 
+  /// Thrown by every search when set.
+  Object? error;
+
   @override
   Future<List<Airport>> searchAirports(String query) async {
     queries.add(query);
+    if (error case final error?) {
+      throw error;
+    }
     return const [];
   }
 }
@@ -118,15 +125,17 @@ void main() {
   late _FakeAirportRepository airportRepository;
   late _FakeCountryService countryService;
   late _FakeAIRepository aiRepository;
+  late RecordingErrorMonitoringClient monitoring;
   late TravelFormBloc bloc;
 
   setUp(() {
+    monitoring = RecordingErrorMonitoringClient();
     airportRepository = _FakeAirportRepository();
     countryService = _FakeCountryService();
     aiRepository = _FakeAIRepository();
     bloc = TravelFormBloc(
       analyticsFacade: const AnalyticsFacade([]),
-      errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      errorMonitoringFacade: ErrorMonitoringFacade([monitoring]),
       airportRepository: airportRepository,
       travelPurposeService: _FakeTravelPurposeService(),
       firebaseAIRepository: aiRepository,
@@ -163,6 +172,33 @@ void main() {
 
       await Future<void>.delayed(const Duration(milliseconds: 550));
       expect(airportRepository.queries, ['new y']);
+    });
+  });
+
+  group('airport search errors', () {
+    Future<void> searchDepartureAndArrival() async {
+      bloc
+        ..add(const TravelFormDepartureAirportSearchTermChanged('ist'))
+        ..add(const TravelFormArrivalAirportSearchTermChanged('new'));
+      await Future<void>.delayed(const Duration(milliseconds: 450));
+    }
+
+    test('does not report again what the repository already reported', () async {
+      airportRepository.error = const AirportSearchException('Failed.');
+
+      await searchDepartureAndArrival();
+
+      expect(airportRepository.queries, hasLength(2));
+      expect(monitoring.reports, isEmpty);
+      expect(bloc.state.error, isNotNull);
+    });
+
+    test('reports an unexpected error', () async {
+      airportRepository.error = StateError('unexpected');
+
+      await searchDepartureAndArrival();
+
+      expect(monitoring.reports, hasLength(2));
     });
   });
 

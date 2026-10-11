@@ -1,5 +1,6 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/weather_repository.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
@@ -10,7 +11,10 @@ abstract class _Constants {
 }
 
 /// Thrown when research pass cannot complete successfully.
-class TravelResearchPassException implements Exception {
+///
+/// The pass reports the failure to error monitoring before throwing this, so
+/// callers must not report it again ([AlreadyReportedError]).
+class TravelResearchPassException implements Exception, AlreadyReportedError {
   const TravelResearchPassException(this.message, {this.cause});
 
   final String message;
@@ -114,14 +118,18 @@ class TravelResearchPass implements TravelResearchPassRunner {
       return await _loop.run(
         sendMessage: chat.sendMessage,
         firstMessage: Content.text(userPrompt),
-        onRoundsExhausted: () => _errorMonitoring.reportError(
-          'TravelResearchPass max tool call rounds exceeded',
+        // The exception thrown after this callback is reported below, so this
+        // only leaves a breadcrumb.
+        onRoundsExhausted: () => _errorMonitoring.addBreadcrumb(
+          'TravelResearchPass max tool call rounds exceeded.',
+          category: 'Firebase AI',
         ),
       );
     } catch (e, st) {
       _errorMonitoring.reportError(
-        'TravelResearchPass.generateResearchFindings failed: $e',
+        'TravelResearchPass.generateResearchFindings failed.',
         stackTrace: st,
+        context: {'error': e},
       );
       if (e is TravelResearchPassException) {
         rethrow;

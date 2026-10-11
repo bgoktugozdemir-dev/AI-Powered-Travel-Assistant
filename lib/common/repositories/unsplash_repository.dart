@@ -5,6 +5,7 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 abstract class _Constants {
   static const String cityKey = '{city}';
   static const String countryKey = '{country}';
+  static const String breadcrumbCategory = 'Unsplash';
 }
 
 class UnsplashRepository {
@@ -34,7 +35,20 @@ class UnsplashRepository {
         perPage: 1,
       );
 
-      return response.results.first;
+      final photo = response.results.firstOrNull;
+      if (photo == null) {
+        // An unusual city or query can have no photo. That is an expected
+        // outcome, not an error: the results screen works without a photo.
+        _errorMonitoringFacade.addBreadcrumb(
+          'No Unsplash photo found for the city.',
+          category: _Constants.breadcrumbCategory,
+          data: {
+            'cityName': cityName,
+            'countryName': countryName,
+          },
+        );
+      }
+      return photo;
     } catch (e, stackTrace) {
       _errorMonitoringFacade.reportError(
         'Error getting city view from Unsplash',
