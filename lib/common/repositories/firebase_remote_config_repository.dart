@@ -26,7 +26,7 @@ abstract class _Constants {
 
 enum RemoteConfigs {
   /// Key for the AI model.
-  aiModel(key: 'ai_model', defaultValue: 'gemini-2.0-flash'),
+  aiModel(key: 'ai_model', defaultValue: 'gemini-3.5-flash-lite'),
 
   /// Key for the AI system prompt.
   aiSystemPrompt(key: 'ai_system_prompt', defaultValue: ''),
@@ -36,6 +36,22 @@ enum RemoteConfigs {
 
   /// Key for the AI format prompt in two-pass flow.
   aiFormatSystemPrompt(key: 'ai_format_system_prompt', defaultValue: ''),
+
+  /// Whether Firebase AI Logic server prompt templates are used instead of
+  /// client-built prompts. Falls back to the client-built path when off.
+  aiUsePromptTemplates(key: 'ai_use_prompt_templates', defaultValue: false),
+
+  /// Server prompt template ID for the research pass.
+  aiResearchTemplateId(
+    key: 'ai_research_template_id',
+    defaultValue: 'travel-research',
+  ),
+
+  /// Server prompt template ID for the format pass.
+  aiFormatTemplateId(
+    key: 'ai_format_template_id',
+    defaultValue: 'travel-format',
+  ),
 
   /// Key for the Recaptcha site key.
   recaptchaSiteKey(key: 'recaptcha_site_key', defaultValue: ''),
@@ -200,6 +216,20 @@ class FirebaseRemoteConfigRepository {
   /// Fetches the AI format system prompt.
   String get aiFormatSystemPrompt =>
       firebaseRemoteConfig.getString(RemoteConfigs.aiFormatSystemPrompt.key);
+
+  /// Whether server prompt templates should be used for the AI passes.
+  ///
+  /// Returns false unless explicitly enabled in Remote Config.
+  bool get aiUsePromptTemplates =>
+      firebaseRemoteConfig.getBool(RemoteConfigs.aiUsePromptTemplates.key);
+
+  /// Fetches the research pass server prompt template ID.
+  String get aiResearchTemplateId =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiResearchTemplateId.key);
+
+  /// Fetches the format pass server prompt template ID.
+  String get aiFormatTemplateId =>
+      firebaseRemoteConfig.getString(RemoteConfigs.aiFormatTemplateId.key);
 
   /// Fetches the Recaptcha site key from Firebase Remote Config.
   ///

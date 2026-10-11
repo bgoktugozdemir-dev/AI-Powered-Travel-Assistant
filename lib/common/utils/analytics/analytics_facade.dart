@@ -1,10 +1,23 @@
 import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 
+/// Called when an analytics client throws while handling an event.
+typedef AnalyticsFailureCallback =
+    void Function(
+      Object error,
+      StackTrace stackTrace,
+      AnalyticsClient client,
+    );
+
 class AnalyticsFacade implements AnalyticsClient {
-  const AnalyticsFacade(this._clients);
+  const AnalyticsFacade(this._clients, {this.onError});
 
   final List<AnalyticsClient> _clients;
+
+  /// Receives failures of individual clients. Analytics must never break the
+  /// app or each other, so failures are isolated per client instead of
+  /// surfacing as unhandled errors.
+  final AnalyticsFailureCallback? onError;
 
   @override
   void identifyUser(String userId) {
@@ -141,8 +154,16 @@ class AnalyticsFacade implements AnalyticsClient {
   Future<void> _dispatch(
     Future<void> Function(AnalyticsClient client) work,
   ) async {
-    for (var client in _clients) {
-      await work(client);
+    for (final client in _clients) {
+      try {
+        await work(client);
+      } catch (error, stackTrace) {
+        try {
+          onError?.call(error, stackTrace, client);
+        } catch (_) {
+          // Reporting an analytics failure must not fail either.
+        }
+      }
     }
   }
 }

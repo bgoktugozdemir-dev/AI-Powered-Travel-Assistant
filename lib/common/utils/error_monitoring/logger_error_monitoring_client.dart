@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_report.dart';
 
 abstract class _Constants {
   static const String defaultCategory = 'app';
@@ -72,10 +73,11 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
   }) {
     if (!_enabled) return;
 
-    final combinedContext = _buildContext(context);
+    final report = resolveErrorReport(error, context: context);
+    final combinedContext = _buildContext(report.context);
     _logger.e(
-      'Error reported: $error',
-      error: error,
+      'Error reported: ${report.message ?? report.error}',
+      error: report.error,
       stackTrace: stackTrace,
     );
     if (combinedContext.isNotEmpty) {

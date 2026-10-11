@@ -28,6 +28,59 @@ abstract class TravelResearchPassRunner {
   });
 }
 
+/// Drives the function-calling conversation of the research pass.
+///
+/// Shared by the client-built prompt path ([TravelResearchPass]) and the
+/// server prompt template path, which only differ in how a chat is started.
+class ResearchToolLoop {
+  const ResearchToolLoop({required FunctionCallDispatcher dispatcher})
+    : _dispatcher = dispatcher;
+
+  final FunctionCallDispatcher _dispatcher;
+
+  /// Sends [firstMessage] and keeps answering the model's function calls
+  /// until it produces the final research text.
+  ///
+  /// [onRoundsExhausted] runs right before a
+  /// [TravelResearchPassException] is thrown for exceeding the tool-call
+  /// round limit.
+  Future<String> run({
+    required Future<GenerateContentResponse> Function(Content message)
+    sendMessage,
+    required Content firstMessage,
+    void Function()? onRoundsExhausted,
+  }) async {
+    var roundCount = 0;
+    var response = await sendMessage(firstMessage);
+
+    while (roundCount < _Constants.maxToolCallRounds) {
+      roundCount++;
+      final functionCalls = response.functionCalls.toList();
+      if (functionCalls.isEmpty) {
+        final text = response.text;
+        if (text == null || text.isEmpty) {
+          throw const TravelResearchPassException(
+            'Research pass completed without response text.',
+          );
+        }
+        return text;
+      }
+
+      final functionResponses = <Part>[];
+      for (final call in functionCalls) {
+        functionResponses.add(await _dispatcher.dispatch(call));
+      }
+
+      response = await sendMessage(Content.multi(functionResponses));
+    }
+
+    onRoundsExhausted?.call();
+    throw const TravelResearchPassException(
+      'Research pass exceeded maximum tool-call rounds.',
+    );
+  }
+}
+
 class TravelResearchPass implements TravelResearchPassRunner {
   TravelResearchPass({
     required FirebaseAIService firebaseAIService,
@@ -35,14 +88,16 @@ class TravelResearchPass implements TravelResearchPassRunner {
     required WeatherRepository weatherRepository,
     required ErrorMonitoringFacade errorMonitoring,
   }) : _firebaseAIService = firebaseAIService,
-       _dispatcher = FunctionCallDispatcher(
-         currencyRepository: currencyRepository,
-         weatherRepository: weatherRepository,
+       _loop = ResearchToolLoop(
+         dispatcher: FunctionCallDispatcher(
+           currencyRepository: currencyRepository,
+           weatherRepository: weatherRepository,
+         ),
        ),
        _errorMonitoring = errorMonitoring;
 
   final FirebaseAIService _firebaseAIService;
-  final FunctionCallDispatcher _dispatcher;
+  final ResearchToolLoop _loop;
   final ErrorMonitoringFacade _errorMonitoring;
 
   @override
@@ -56,37 +111,12 @@ class TravelResearchPass implements TravelResearchPassRunner {
       );
 
       final chat = model.startChat();
-      var roundCount = 0;
-      var response = await chat.sendMessage(
-        Content.text(userPrompt),
-      );
-
-      while (roundCount < _Constants.maxToolCallRounds) {
-        roundCount++;
-        final functionCalls = response.functionCalls.toList();
-        if (functionCalls.isEmpty) {
-          final text = response.text;
-          if (text == null || text.isEmpty) {
-            throw const TravelResearchPassException(
-              'Research pass completed without response text.',
-            );
-          }
-          return text;
-        }
-
-        final functionResponses = <Part>[];
-        for (final call in functionCalls) {
-          functionResponses.add(await _dispatcher.dispatch(call));
-        }
-
-        response = await chat.sendMessage(Content.multi(functionResponses));
-      }
-
-      _errorMonitoring.reportError(
-        'TravelResearchPass max tool call rounds exceeded',
-      );
-      throw const TravelResearchPassException(
-        'Research pass exceeded maximum tool-call rounds.',
+      return await _loop.run(
+        sendMessage: chat.sendMessage,
+        firstMessage: Content.text(userPrompt),
+        onRoundsExhausted: () => _errorMonitoring.reportError(
+          'TravelResearchPass max tool call rounds exceeded',
+        ),
       );
     } catch (e, st) {
       _errorMonitoring.reportError(

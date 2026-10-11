@@ -644,5 +644,9 @@
   "errorPlatformOrBrowser": "Bir tarayıcı veya platform hatası oluştu. Bu, bir tarayıcı eklentisinden veya desteklenmeyen bir ortamdan kaynaklanıyor olabilir. Lütfen eklentileri devre dışı bırakmayı veya başka bir tarayıcı kullanmayı deneyin.",
   "@errorPlatformOrBrowser": {
     "description": "Tarayıcı veya platform ile ilgili sorunlar için hata mesajı."
+  },
+  "errorConnectionInterrupted": "Seyahat planınız hazırlanırken bağlantı kesildi. Sekme arka plana geçtiğinde bu durum yaşanabilir. Lütfen bu sekmeyi açık tutun ve tekrar deneyin.",
+  "@errorConnectionInterrupted": {
+    "description": "Yapay zeka sunucusuna giden istek kesildiğinde (ör. sekme arka plana geçtiğinde veya ağ koptuğunda) gösterilen hata mesajı."
   }
 }

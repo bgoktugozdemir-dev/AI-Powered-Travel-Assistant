@@ -482,4 +482,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorPlatformOrBrowser =>
       'A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.';
+
+  @override
+  String get errorConnectionInterrupted =>
+      'The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.';
 }

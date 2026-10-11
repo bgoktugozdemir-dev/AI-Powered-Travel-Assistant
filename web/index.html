@@ -60,6 +60,27 @@
   <!-- Preload critical resources -->
   <link rel="preload" href="flutter_bootstrap.js" as="script">
 
+  <!--
+    Drop one known, harmless error thrown by Firebase App Check's reCAPTCHA
+    widget when link-preview crawlers (e.g. Meta's) execute the page. It comes
+    from the Sentry JS SDK's own global handler, which Dart's beforeSend never
+    sees, so it has to be stopped before that handler runs. Keep this script
+    ahead of everything else and keep the match exact.
+  -->
+  <script>
+    (function () {
+      var ignoredMessage = 'reCAPTCHA has already been rendered in this element';
+      window.addEventListener('error', function (event) {
+        var message = (event && event.message) ||
+          (event && event.error && event.error.message) || '';
+        if (String(message).indexOf(ignoredMessage) !== -1) {
+          event.stopImmediatePropagation();
+          event.preventDefault();
+        }
+      }, true);
+    })();
+  </script>
+
   <!-- Mixpanel Analytics -->
   <script src="./assets/packages/mixpanel_flutter/assets/mixpanel.js"></script>
 

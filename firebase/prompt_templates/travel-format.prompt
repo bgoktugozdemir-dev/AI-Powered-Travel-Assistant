@@ -1,0 +1,461 @@
+---
+# Firebase AI Logic server prompt template: format pass (pass 2 of 2).
+# Template ID: travel-format (Remote Config: ai_format_template_id)
+# Single-turn template. Turns the findings of the research template into the
+# TravelDetails JSON the app parses (lib/common/models/response/travel_details.dart).
+model: gemini-3.8-flash
+config:
+  candidateCount: 1
+input:
+  schema:
+    travel_information:
+      type: string
+      description: JSON-encoded trip details (airports, dates, nationality, purposes, locale).
+      maxLength: 4000
+    research_findings:
+      type: string
+      description: Plain-text findings produced by the research template.
+# Structured output: must stay equivalent to TravelDetails.aiSchema
+# (lib/common/models/response/travel_details.dart). test/common/ai/prompt_template_drift_test.dart
+# fails when they drift apart.
+# Written as plain JSON Schema instead of Picoschema: the Picoschema version was rejected
+# by the template backend ("schema at top-level requires unspecified property 'spots'",
+# likely because those array items have a property named `description`), and output
+# enums are not supported by server prompt templates, so required_documents.type is a
+# string whose description lists the allowed values.
+output:
+  format: json
+  schema:
+    type: object
+    properties:
+      city:
+        type: object
+        properties:
+          name:
+            type: string
+          country:
+            type: string
+          crowd_level:
+            type: integer
+          time:
+            type:
+              - object
+              - "null"
+            properties:
+              departure_timezone:
+                type: string
+              arrival_timezone:
+                type: string
+              difference_in_hours:
+                type: integer
+            required:
+              - departure_timezone
+              - arrival_timezone
+              - difference_in_hours
+          weather:
+            type: array
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                weather:
+                  type: string
+                temperature:
+                  type: number
+              required:
+                - date
+                - weather
+                - temperature
+        required:
+          - name
+          - country
+          - crowd_level
+          - weather
+      required_documents:
+        type: object
+        properties:
+          type:
+            type: string
+            description: "Document the traveler needs for entry. One of: passport, e_visa,
+              visa, id_card, other."
+          message:
+            type: string
+          steps:
+            type:
+              - array
+              - "null"
+            items:
+              type: string
+          more_information:
+            type:
+              - string
+              - "null"
+        required:
+          - type
+          - message
+      currency:
+        type: object
+        properties:
+          code:
+            type: string
+          name:
+            type: string
+          exchange_rate:
+            type: number
+          arrival_average_living_cost_per_day:
+            type: number
+          departure_currency_code:
+            type:
+              - string
+              - "null"
+          departure_average_living_cost_per_day:
+            type:
+              - number
+              - "null"
+        required:
+          - code
+          - name
+          - exchange_rate
+          - arrival_average_living_cost_per_day
+      flight_options:
+        type: object
+        properties:
+          cheapest:
+            type: object
+            properties:
+              departure:
+                type: object
+                properties:
+                  airline:
+                    type: string
+                  departure_airport:
+                    type: string
+                  arrival_airport:
+                    type: string
+                  flight_number:
+                    type: string
+                  departure_time:
+                    type: string
+                    description: Departure timestamp in ISO 8601 datetime format.
+                  arrival_time:
+                    type: string
+                    description: Arrival timestamp in ISO 8601 datetime format.
+                  duration:
+                    type: integer
+                    description: Total flight duration in minutes.
+                  price:
+                    type: number
+                  currency:
+                    type: string
+                  stops:
+                    type: integer
+                  layover_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        airport:
+                          type: string
+                        duration_minutes:
+                          type: integer
+                      required:
+                        - airport
+                        - duration_minutes
+                  more_information:
+                    type: string
+                required:
+                  - airline
+                  - departure_airport
+                  - arrival_airport
+                  - flight_number
+                  - departure_time
+                  - arrival_time
+                  - duration
+                  - price
+                  - currency
+                  - stops
+                  - layover_details
+                  - more_information
+              arrival:
+                type: object
+                properties:
+                  airline:
+                    type: string
+                  departure_airport:
+                    type: string
+                  arrival_airport:
+                    type: string
+                  flight_number:
+                    type: string
+                  departure_time:
+                    type: string
+                    description: Departure timestamp in ISO 8601 datetime format.
+                  arrival_time:
+                    type: string
+                    description: Arrival timestamp in ISO 8601 datetime format.
+                  duration:
+                    type: integer
+                    description: Total flight duration in minutes.
+                  price:
+                    type: number
+                  currency:
+                    type: string
+                  stops:
+                    type: integer
+                  layover_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        airport:
+                          type: string
+                        duration_minutes:
+                          type: integer
+                      required:
+                        - airport
+                        - duration_minutes
+                  more_information:
+                    type: string
+                required:
+                  - airline
+                  - departure_airport
+                  - arrival_airport
+                  - flight_number
+                  - departure_time
+                  - arrival_time
+                  - duration
+                  - price
+                  - currency
+                  - stops
+                  - layover_details
+                  - more_information
+              booking_url:
+                type: string
+            required:
+              - departure
+              - arrival
+              - booking_url
+          comfortable:
+            type: object
+            properties:
+              departure:
+                type: object
+                properties:
+                  airline:
+                    type: string
+                  departure_airport:
+                    type: string
+                  arrival_airport:
+                    type: string
+                  flight_number:
+                    type: string
+                  departure_time:
+                    type: string
+                    description: Departure timestamp in ISO 8601 datetime format.
+                  arrival_time:
+                    type: string
+                    description: Arrival timestamp in ISO 8601 datetime format.
+                  duration:
+                    type: integer
+                    description: Total flight duration in minutes.
+                  price:
+                    type: number
+                  currency:
+                    type: string
+                  stops:
+                    type: integer
+                  layover_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        airport:
+                          type: string
+                        duration_minutes:
+                          type: integer
+                      required:
+                        - airport
+                        - duration_minutes
+                  more_information:
+                    type: string
+                required:
+                  - airline
+                  - departure_airport
+                  - arrival_airport
+                  - flight_number
+                  - departure_time
+                  - arrival_time
+                  - duration
+                  - price
+                  - currency
+                  - stops
+                  - layover_details
+                  - more_information
+              arrival:
+                type: object
+                properties:
+                  airline:
+                    type: string
+                  departure_airport:
+                    type: string
+                  arrival_airport:
+                    type: string
+                  flight_number:
+                    type: string
+                  departure_time:
+                    type: string
+                    description: Departure timestamp in ISO 8601 datetime format.
+                  arrival_time:
+                    type: string
+                    description: Arrival timestamp in ISO 8601 datetime format.
+                  duration:
+                    type: integer
+                    description: Total flight duration in minutes.
+                  price:
+                    type: number
+                  currency:
+                    type: string
+                  stops:
+                    type: integer
+                  layover_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        airport:
+                          type: string
+                        duration_minutes:
+                          type: integer
+                      required:
+                        - airport
+                        - duration_minutes
+                  more_information:
+                    type: string
+                required:
+                  - airline
+                  - departure_airport
+                  - arrival_airport
+                  - flight_number
+                  - departure_time
+                  - arrival_time
+                  - duration
+                  - price
+                  - currency
+                  - stops
+                  - layover_details
+                  - more_information
+              booking_url:
+                type: string
+            required:
+              - departure
+              - arrival
+              - booking_url
+        required:
+          - cheapest
+          - comfortable
+      tax_information:
+        type: object
+        properties:
+          has_tax_free_options:
+            type: boolean
+          tax_rate:
+            type: number
+          refundable_tax_rate:
+            type: number
+          tax_refund_information:
+            type:
+              - string
+              - "null"
+        required:
+          - has_tax_free_options
+          - tax_rate
+          - refundable_tax_rate
+      spots:
+        type: array
+        items:
+          type: object
+          properties:
+            place:
+              type: string
+            description:
+              type: string
+            requirements:
+              type:
+                - string
+                - "null"
+          required:
+            - place
+            - description
+      travel_plan:
+        type: array
+        items:
+          type: object
+          properties:
+            date:
+              type: string
+              description: Travel day as YYYY-MM-DD or ISO 8601 datetime. Date-only values are
+                normalized to 00:00:00Z. Datetime values must include
+                timezone/offset.
+            events:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  time:
+                    type: string
+                  location:
+                    type: string
+                  description:
+                    type: string
+                  requirements:
+                    type:
+                      - string
+                      - "null"
+                required:
+                  - name
+                  - time
+                  - location
+                  - description
+          required:
+            - date
+            - events
+      recommendations:
+        type: array
+        items:
+          type: string
+    required:
+      - city
+      - required_documents
+      - currency
+      - flight_options
+      - tax_information
+      - spots
+      - travel_plan
+      - recommendations
+---
+
+{{role "system"}}
+Format given findings into TravelDetails JSON matching schema exactly.
+
+The input has two parts: the trip details as JSON and the research findings as plain text. Use only information that is present in the research findings. Do not add facts of your own and do not change numbers.
+
+Rules:
+- Return a single JSON object and nothing else: no markdown fences, no explanations.
+- Use the key names, types and nesting of the schema exactly.
+- Dates and times use ISO 8601. Flight times include a timezone offset. Travel plan dates are YYYY-MM-DD.
+- Flight duration is an integer number of minutes.
+- crowd_level is an integer percentage from 0 to 100.
+- required_documents.type must be one of the allowed values of the schema.
+- exchange_rate is how many units of the arrival currency one unit of the departure currency buys. The departure living cost is in the departure currency and the arrival living cost is in the arrival currency.
+- Use null for optional fields whose information is missing from the findings.
+- Write all text values in the language given by the locale field of the trip details.
+
+{{role "user"}}
+User Input:
+{{travel_information}}
+
+Research Findings:
+{{research_findings}}
