@@ -487,4 +487,14 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get errorConnectionInterrupted =>
       'Seyahat planınız hazırlanırken bağlantı kesildi. Sekme arka plana geçtiğinde bu durum yaşanabilir. Lütfen bu sekmeyi açık tutun ve tekrar deneyin.';
+
+  @override
+  String get startupErrorTitle => 'Seyahat Asistanı başlatılamadı';
+
+  @override
+  String get startupErrorMessage =>
+      'Uygulama yüklenirken bir sorun oluştu. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get startupErrorRetry => 'Tekrar dene';
 }

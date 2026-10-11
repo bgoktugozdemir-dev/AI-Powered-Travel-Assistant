@@ -895,6 +895,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.'**
   String get errorConnectionInterrupted;
+
+  /// Title of the screen shown when the app fails to start.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t start Travel Assistant'**
+  String get startupErrorTitle;
+
+  /// Explanation on the screen shown when the app fails to start.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong while loading the app. Please check your internet connection and try again.'**
+  String get startupErrorMessage;
+
+  /// Button on the start-up error screen. Reloads the page on the web and starts the app again elsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get startupErrorRetry;
 }
 
 class _AppLocalizationsDelegate

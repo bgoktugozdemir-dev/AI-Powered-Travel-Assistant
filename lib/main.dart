@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
 import 'package:travel_assistant/common/ai/template_aware_passes.dart';
 import 'package:travel_assistant/common/ai/template_travel_passes.dart';
@@ -44,6 +45,7 @@ import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_moni
 import 'package:travel_assistant/common/utils/error_monitoring/uncaught_error_reporter.dart';
 import 'package:travel_assistant/common/utils/network/sentry_dio_interceptor.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
+import 'package:travel_assistant/features/startup/ui/startup_error_app.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
 import 'package:travel_assistant/features/travel_form/ui/travel_form_screen.dart';
 import 'package:travel_assistant/firebase_options.dart';
@@ -57,6 +59,18 @@ abstract class _Constants {
   /// Firebase AI Logic location. Matches the former `FirebaseAI.vertexAI()`
   /// default (`us-central1`); `agentPlatform()` would default to `global`.
   static const String firebaseAILocation = 'us-central1';
+
+  /// How long an HTTP client waits to connect to a server.
+  static const Duration connectTimeout = Duration(seconds: 15);
+
+  /// How long an HTTP client waits for data from a server.
+  static const Duration receiveTimeout = Duration(seconds: 30);
+
+  /// Browser errors that are shown to the user instead of only logged.
+  static const List<String> platformErrorMarkers = [
+    'Illegal invocation',
+    'document.createEvent',
+  ];
 }
 
 final UncaughtErrorReporter _uncaughtErrorReporter = UncaughtErrorReporter();
@@ -65,72 +79,7 @@ Future<void> main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-      AppSecrets.validate();
-
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-
-      final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
-        firebaseRemoteConfig: FirebaseRemoteConfig.instance,
-      );
-      await firebaseRemoteConfigRepository.initialize();
-
-      // Activate Firebase App Check
-      //
-      // This must run before the first `FirebaseAI.agentPlatform()` call:
-      // firebase_ai resolves App Check through
-      // `app.getService<FirebaseAppCheck>()`, which is registered once
-      // `FirebaseAppCheck.instance` is first accessed.
-      await FirebaseAppCheck.instance.activate(
-        providerWeb: ReCaptchaV3Provider(
-          firebaseRemoteConfigRepository.recaptchaSiteKey,
-        ),
-        providerAndroid: kDebugMode
-            ? const AndroidDebugProvider()
-            : const AndroidPlayIntegrityProvider(),
-        providerApple: kDebugMode
-            ? const AppleDebugProvider()
-            : const AppleDeviceCheckProvider(),
-      );
-
-      final analyticsClients = await _getAnalyticsClients(
-        firebaseRemoteConfigRepository,
-      );
-      final errorMonitoringClients = await _getErrorMonitoringClients(
-        firebaseRemoteConfigRepository,
-      );
-      _uncaughtErrorReporter.errorMonitoring = ErrorMonitoringFacade(
-        errorMonitoringClients,
-      );
-
-      runApp(
-        SentryWidget(
-          child: MyApp(
-            firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-            analyticsClients: analyticsClients,
-            errorMonitoringClients: errorMonitoringClients,
-          ),
-        ),
-      );
-
-      // Global error handler for web platform/browser errors
-      if (kIsWeb) {
-        FlutterError.onError = (FlutterErrorDetails details) {
-          final errorString = details.exceptionAsString();
-          if (errorString.contains('Illegal invocation') ||
-              errorString.contains('document.createEvent')) {
-            showDialog(
-              context: navigatorKey.currentContext!,
-              builder: (context) => const TravelFormErrorDialog(
-                error: PlatformOrBrowserError(),
-              ),
-            );
-          } else {
-            FlutterError.dumpErrorToConsole(details);
-          }
-        };
-      }
+      await _startApp();
     },
     (error, stackTrace) async {
       // Last line of defence for errors nothing else handled. Reports to error
@@ -140,8 +89,150 @@ Future<void> main() async {
   );
 }
 
+/// Initializes the app and runs it.
+///
+/// If initialization fails, [StartupErrorApp] is shown. Without it the HTML
+/// loading indicator of the web page would stay on screen forever.
+Future<void> _startApp() async {
+  final MyApp app;
+  try {
+    app = await _initializeApp();
+  } catch (error, stackTrace) {
+    _uncaughtErrorReporter.report(error, stackTrace);
+    runApp(const StartupErrorApp(onRetry: _retryStartup));
+    return;
+  }
+
+  _installWebErrorHandler();
+  runApp(SentryWidget(child: app));
+}
+
+Future<void> _retryStartup() async {
+  if (kIsWeb) {
+    // Reload the page: a clean page is more reliable than initializing again
+    // next to whatever the failed attempt left behind. Without the fragment
+    // the browser loads the page again instead of only scrolling to the
+    // fragment.
+    await launchUrl(Uri.base.removeFragment(), webOnlyWindowName: '_self');
+    return;
+  }
+  await _startApp();
+}
+
+/// Initializes everything the app needs before the first frame.
+Future<MyApp> _initializeApp() async {
+  AppSecrets.validate();
+
+  // A retry runs this again, and Firebase may have been initialized by then.
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
+    firebaseRemoteConfig: FirebaseRemoteConfig.instance,
+  );
+  // Does not throw: if the fetch fails (offline, timeout) the defaults are used.
+  await firebaseRemoteConfigRepository.initialize();
+
+  // Error monitoring starts first so that the steps below can report problems.
+  // Its DSN comes from Remote Config.
+  final errorMonitoringClients = await _getErrorMonitoringClients(
+    firebaseRemoteConfigRepository,
+  );
+  final errorMonitoringFacade = ErrorMonitoringFacade(errorMonitoringClients);
+  _uncaughtErrorReporter.errorMonitoring = errorMonitoringFacade;
+
+  await _activateAppCheck(firebaseRemoteConfigRepository, errorMonitoringFacade);
+
+  final analyticsClients = await _getAnalyticsClients(
+    firebaseRemoteConfigRepository,
+    errorMonitoringFacade,
+  );
+
+  return MyApp(
+    firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+    analyticsClients: analyticsClients,
+    errorMonitoringClients: errorMonitoringClients,
+  );
+}
+
+/// Activates Firebase App Check.
+///
+/// This must run before the first `FirebaseAI.agentPlatform()` call:
+/// firebase_ai resolves App Check through
+/// `app.getService<FirebaseAppCheck>()`, which is registered once
+/// `FirebaseAppCheck.instance` is first accessed.
+Future<void> _activateAppCheck(
+  FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+  ErrorMonitoringFacade errorMonitoringFacade,
+) async {
+  final recaptchaSiteKey = firebaseRemoteConfigRepository.recaptchaSiteKey;
+  if (kIsWeb && recaptchaSiteKey.isEmpty) {
+    // The reCAPTCHA provider fails in an opaque way without a site key. The
+    // rest of the app works, so skip App Check: AI requests are then rejected
+    // by the backend, which the travel form reports as an App Check error.
+    errorMonitoringFacade.captureMessage(
+      'Firebase App Check was not activated: the reCAPTCHA site key is empty.',
+      level: 'error',
+      context: {
+        'remoteConfigKey': RemoteConfigs.recaptchaSiteKey.key,
+      },
+    );
+    return;
+  }
+
+  await FirebaseAppCheck.instance.activate(
+    providerWeb: ReCaptchaV3Provider(recaptchaSiteKey),
+    providerAndroid: kDebugMode
+        ? const AndroidDebugProvider()
+        : const AndroidPlayIntegrityProvider(),
+    providerApple: kDebugMode
+        ? const AppleDebugProvider()
+        : const AppleDeviceCheckProvider(),
+  );
+}
+
+/// Keeps showing known browser errors to the user, without replacing the
+/// handler that reports Flutter errors to error monitoring.
+void _installWebErrorHandler() {
+  if (!kIsWeb) {
+    return;
+  }
+
+  // Sentry (see `_getErrorMonitoringClients`) installed its own handler.
+  // Overwriting it would stop Flutter errors from being reported.
+  final previous = FlutterError.onError;
+  FlutterError.onError = (FlutterErrorDetails details) {
+    final errorString = details.exceptionAsString();
+    if (_Constants.platformErrorMarkers.any(errorString.contains)) {
+      _showPlatformErrorDialog();
+    }
+    (previous ?? FlutterError.presentError)(details);
+  };
+}
+
+bool _isPlatformErrorDialogVisible = false;
+
+void _showPlatformErrorDialog() {
+  final context = navigatorKey.currentContext;
+  if (context == null || !context.mounted || _isPlatformErrorDialogVisible) {
+    return;
+  }
+
+  _isPlatformErrorDialogVisible = true;
+  showDialog<void>(
+    context: context,
+    builder: (context) => const TravelFormErrorDialog(
+      error: PlatformOrBrowserError(),
+    ),
+  ).whenComplete(() => _isPlatformErrorDialogVisible = false);
+}
+
 Future<List<AnalyticsClient>> _getAnalyticsClients(
   FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
+  ErrorMonitoringFacade errorMonitoringFacade,
 ) async {
   if (kDebugMode) {
     return [
@@ -149,41 +240,47 @@ Future<List<AnalyticsClient>> _getAnalyticsClients(
     ];
   }
 
+  final firebaseAnalyticsClient = FirebaseAnalyticsClient(
+    analytics: FirebaseAnalytics.instance,
+  );
   final mixpanelProjectToken =
       firebaseRemoteConfigRepository.mixpanelProjectToken;
   if (mixpanelProjectToken.isEmpty) {
-    return [
-      FirebaseAnalyticsClient(
-        analytics: FirebaseAnalytics.instance,
-      ),
-    ];
+    return [firebaseAnalyticsClient];
   }
 
-  final mixpanel = await Mixpanel.init(
-    mixpanelProjectToken,
-    trackAutomaticEvents: true,
-  );
-
-  return [
-    MixpanelAnalyticsClient(
-      mixpanel: mixpanel,
-    ),
-    FirebaseAnalyticsClient(
-      analytics: FirebaseAnalytics.instance,
-    ),
-  ];
+  try {
+    final mixpanel = await Mixpanel.init(
+      mixpanelProjectToken,
+      trackAutomaticEvents: true,
+    );
+    return [
+      MixpanelAnalyticsClient(
+        mixpanel: mixpanel,
+      ),
+      firebaseAnalyticsClient,
+    ];
+  } catch (error, stackTrace) {
+    // Analytics must not stop the app from starting.
+    errorMonitoringFacade.reportError(
+      'Mixpanel failed to initialize.',
+      stackTrace: stackTrace,
+      context: {'error': error},
+    );
+    return [firebaseAnalyticsClient];
+  }
 }
 
 Future<List<ErrorMonitoringClient>> _getErrorMonitoringClients(
   FirebaseRemoteConfigRepository firebaseRemoteConfigRepository,
 ) async {
-  late final List<ErrorMonitoringClient> clients;
-
   if (kDebugMode) {
-    clients = [
+    return [
       LoggerErrorMonitoringClient(),
     ];
-  } else {
+  }
+
+  try {
     final sentryClient = SentryErrorMonitoringClient();
     await sentryClient.init(
       dsn: firebaseRemoteConfigRepository.sentryDsn,
@@ -194,12 +291,27 @@ Future<List<ErrorMonitoringClient>> _getErrorMonitoringClients(
       attachScreenshot: true,
       attachViewHierarchy: true,
     );
-    clients = [
+    return [
       sentryClient,
     ];
+  } catch (error, stackTrace) {
+    // Error monitoring must not stop the app from starting.
+    debugPrint('Error monitoring failed to initialize: $error\n$stackTrace');
+    return [
+      LoggerErrorMonitoringClient(),
+    ];
   }
+}
 
-  return clients;
+/// Creates an HTTP client with timeouts, so that a stalled server cannot keep
+/// a request (and the loading screen) waiting forever.
+Dio _createDio() {
+  return Dio(
+    BaseOptions(
+      connectTimeout: _Constants.connectTimeout,
+      receiveTimeout: _Constants.receiveTimeout,
+    ),
+  )..addSentryInterceptor();
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -253,7 +365,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final imageService = ImageToBase64Service(dio: dio);
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
 
@@ -265,7 +377,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final openMeteoService = OpenMeteoService(dio);
             final firebaseRemoteConfigRepository = context
                 .read<FirebaseRemoteConfigRepository>();
@@ -279,7 +391,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final freeCurrencyApiService = FreeCurrencyApiService(dio);
             final firebaseRemoteConfigRepository = context
                 .read<FirebaseRemoteConfigRepository>();
@@ -362,7 +474,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final apiService = AirportApiService(dio);
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return AirportRepository(
@@ -373,7 +485,7 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final unsplashService = UnsplashService(dio);
             final firebaseRemoteConfigRepository = context
                 .read<FirebaseRemoteConfigRepository>();
@@ -387,7 +499,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) {
-            final dio = Dio()..addSentryInterceptor();
+            final dio = _createDio();
             final countryService = CountryService(dio: dio);
             final firebaseAIRepository = context.read<FirebaseAIRepository>();
             final airportRepository = context.read<AirportRepository>();

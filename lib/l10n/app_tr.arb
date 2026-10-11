@@ -648,5 +648,17 @@
   "errorConnectionInterrupted": "Seyahat planınız hazırlanırken bağlantı kesildi. Sekme arka plana geçtiğinde bu durum yaşanabilir. Lütfen bu sekmeyi açık tutun ve tekrar deneyin.",
   "@errorConnectionInterrupted": {
     "description": "Yapay zeka sunucusuna giden istek kesildiğinde (ör. sekme arka plana geçtiğinde veya ağ koptuğunda) gösterilen hata mesajı."
+  },
+  "startupErrorTitle": "Seyahat Asistanı başlatılamadı",
+  "@startupErrorTitle": {
+    "description": "Uygulama başlatılamadığında gösterilen ekranın başlığı."
+  },
+  "startupErrorMessage": "Uygulama yüklenirken bir sorun oluştu. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.",
+  "@startupErrorMessage": {
+    "description": "Uygulama başlatılamadığında gösterilen ekrandaki açıklama."
+  },
+  "startupErrorRetry": "Tekrar dene",
+  "@startupErrorRetry": {
+    "description": "Başlatma hatası ekranındaki düğme. Webde sayfayı yeniler, diğer platformlarda uygulamayı yeniden başlatır."
   }
 }

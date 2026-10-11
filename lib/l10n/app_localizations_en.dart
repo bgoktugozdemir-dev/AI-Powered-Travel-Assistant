@@ -486,4 +486,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorConnectionInterrupted =>
       'The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.';
+
+  @override
+  String get startupErrorTitle => 'We couldn\'t start Travel Assistant';
+
+  @override
+  String get startupErrorMessage =>
+      'Something went wrong while loading the app. Please check your internet connection and try again.';
+
+  @override
+  String get startupErrorRetry => 'Try again';
 }
