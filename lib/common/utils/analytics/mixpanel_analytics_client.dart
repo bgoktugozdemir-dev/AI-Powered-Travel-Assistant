@@ -200,8 +200,8 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  void logLLMPrompt(String model, String prompt) {
-    _mixpanel.track(
+  Future<void> logLLMPrompt(String model, String prompt) async {
+    await _mixpanel.track(
       _Constants.llmPromptEventName,
       properties: {
         _Constants.modelParameterName: model,
@@ -211,13 +211,13 @@ class MixpanelAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  void logLLMResponse(
+  Future<void> logLLMResponse(
     String model,
     String prompt,
     String response,
     int durationMs,
-  ) {
-    _mixpanel.track(
+  ) async {
+    await _mixpanel.track(
       _Constants.llmResponseEventName,
       properties: {
         _Constants.modelParameterName: model,

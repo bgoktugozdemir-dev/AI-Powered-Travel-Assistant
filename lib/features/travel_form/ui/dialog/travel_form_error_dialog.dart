@@ -60,5 +60,6 @@ class TravelFormErrorDialog extends StatelessWidget {
     CountryServiceError() => l10n.countryServiceErrorMessage,
     ServerError() => l10n.errorServer,
     PlatformOrBrowserError() => l10n.errorPlatformOrBrowser,
+    ConnectionInterruptedError() => l10n.errorConnectionInterrupted,
   };
 }

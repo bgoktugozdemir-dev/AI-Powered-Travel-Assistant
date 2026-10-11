@@ -483,4 +483,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get errorPlatformOrBrowser =>
       'Bir tarayıcı veya platform hatası oluştu. Bu, bir tarayıcı eklentisinden veya desteklenmeyen bir ortamdan kaynaklanıyor olabilir. Lütfen eklentileri devre dışı bırakmayı veya başka bir tarayıcı kullanmayı deneyin.';
+
+  @override
+  String get errorConnectionInterrupted =>
+      'Seyahat planınız hazırlanırken bağlantı kesildi. Sekme arka plana geçtiğinde bu durum yaşanabilir. Lütfen bu sekmeyi açık tutun ve tekrar deneyin.';
 }

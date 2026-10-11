@@ -37,6 +37,7 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/logger_error_monitoring_client.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/sentry_error_monitoring_client.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/uncaught_error_reporter.dart';
 import 'package:travel_assistant/common/utils/network/sentry_dio_interceptor.dart';
 import 'package:travel_assistant/features/results/ui/results_screen.dart';
 import 'package:travel_assistant/features/travel_form/bloc/travel_form_bloc.dart';
@@ -47,6 +48,8 @@ import 'package:travel_assistant/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 import 'package:travel_assistant/features/travel_form/ui/dialog/travel_form_error_dialog.dart';
+
+final UncaughtErrorReporter _uncaughtErrorReporter = UncaughtErrorReporter();
 
 Future<void> main() async {
   await runZonedGuarded(
@@ -82,6 +85,9 @@ Future<void> main() async {
       final errorMonitoringClients = await _getErrorMonitoringClients(
         firebaseRemoteConfigRepository,
       );
+      _uncaughtErrorReporter.errorMonitoring = ErrorMonitoringFacade(
+        errorMonitoringClients,
+      );
 
       runApp(
         SentryWidget(
@@ -112,9 +118,9 @@ Future<void> main() async {
       }
     },
     (error, stackTrace) async {
-      // Error monitoring is handled by the facade in the app
-      // This is just a fallback for catastrophic failures
-      debugPrint('Global error handler: $error');
+      // Last line of defence for errors nothing else handled. Reports to error
+      // monitoring (guarded against recursion) and prints as a fallback.
+      _uncaughtErrorReporter.report(error, stackTrace);
     },
   );
 }
@@ -203,9 +209,27 @@ class MyApp extends StatelessWidget {
           value: firebaseRemoteConfigRepository,
         ),
         RepositoryProvider(
-          create: (_) =>
-              AnalyticsFacade(analyticsClients)
-                ..setAnalyticsCollectionEnabled(true),
+          create: (_) {
+            // A failing analytics client is reported once per distinct
+            // failure instead of once per event.
+            final reportedFailures = <String>{};
+            return AnalyticsFacade(
+              analyticsClients,
+              onError: (error, stackTrace, client) {
+                if (!reportedFailures.add('${client.runtimeType}: $error')) {
+                  return;
+                }
+                ErrorMonitoringFacade(errorMonitoringClients).reportError(
+                  'Analytics client failed.',
+                  stackTrace: stackTrace,
+                  context: {
+                    'error': error,
+                    'analyticsClient': client.runtimeType.toString(),
+                  },
+                );
+              },
+            )..setAnalyticsCollectionEnabled(true);
+          },
         ),
         RepositoryProvider(
           create: (_) => ErrorMonitoringFacade(

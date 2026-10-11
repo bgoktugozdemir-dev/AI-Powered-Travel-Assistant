@@ -889,6 +889,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.'**
   String get errorPlatformOrBrowser;
+
+  /// Error message when the request to the AI backend was interrupted, e.g. because the browser tab was backgrounded or the network dropped.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.'**
+  String get errorConnectionInterrupted;
 }
 
 class _AppLocalizationsDelegate
