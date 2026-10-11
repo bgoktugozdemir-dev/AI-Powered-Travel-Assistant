@@ -227,12 +227,14 @@ class CityCard extends StatelessWidget {
       direction: Axis.horizontal,
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
+      runSpacing: 8,
       children: [
-        Expanded(
-          child: Text(
-            Formatters.cityCountry(city.name, city.country),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+        // No Expanded: it only works in a Flex (Row/Column) and throws inside a
+        // Wrap. The Wrap already gives the text the full width and moves the
+        // time difference chip to the next line when both do not fit.
+        Text(
+          Formatters.cityCountry(city.name, city.country),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         if (city.time != null) _buildTimeDifference(context),
       ],
