@@ -433,6 +433,51 @@ flutter build ios --dart-define-from-file=env/secrets.json
 
 Never commit `env/secrets.json`; it is gitignored.
 
+## Deployment
+
+The web app is hosted on Firebase Hosting (project `travel-assistant-flutter`,
+config in `firebase.json` and `.firebaserc`). Publishing a GitHub release runs
+`.github/workflows/deploy.yml`, which analyzes, tests, builds the web app,
+uploads source maps to Sentry (then removes them from the build) and deploys to
+the live channel.
+
+### Releasing
+
+1. Bump `version` in `pubspec.yaml` (for example `1.2.5+18`) and merge it.
+2. Publish a GitHub release whose tag is that version, with or without a leading
+   `v` and without the build number (`v1.2.5`). The workflow stops if the tag and
+   the pubspec version disagree. The Sentry release is `travel_assistant@1.2.5+18`,
+   matching what the app reports at runtime.
+
+You can also run the workflow by hand from the default branch (Actions, Deploy
+web, Run workflow); `make deploy_web` does the same from your machine and needs
+`firebase login` and `SENTRY_AUTH_TOKEN`.
+
+### GitHub secrets
+
+Add these under Settings, Secrets and variables, Actions:
+
+| Secret | Value |
+| ------ | ----- |
+| `FIREBASE_OPTIONS_DART_B64` | The gitignored `lib/firebase_options.dart`, base64 encoded: `base64 -i lib/firebase_options.dart \| pbcopy` |
+| `FREE_CURRENCY_API_KEY` | The currency API key, same value as in `env/secrets.json` |
+| `SENTRY_AUTH_TOKEN` | A Sentry organization token with the release and source map upload scopes (org `bgoktugozdemir`, project `travel-assistant`) |
+| `FIREBASE_SERVICE_ACCOUNT_TRAVEL_ASSISTANT_FLUTTER` | The service account JSON key used to deploy |
+
+To create the service account, either run `firebase init hosting:github` (it
+creates the account and stores the secret in the repository for you; answer no
+when it offers to add workflow files), or create one in Google Cloud for project
+`travel-assistant-flutter` with the roles Firebase Hosting Admin and API Keys
+Viewer, create a JSON key and paste the whole file into the secret.
+
+### Custom domain
+
+In the Firebase console, open Hosting, Add custom domain, enter
+`travel.bgoktugozdemir.net` and add the DNS records it shows at your DNS
+provider. Firebase issues the certificate once the records resolve. After the
+cut-over, retire the old Apache site. Make sure the domain stays in the allowed
+domains of the web App Check reCAPTCHA key.
+
 ## Firebase AI Grounding Note
 
 The current SDK constraint is `firebase_ai: ^2.0.0`. This SDK line supports
