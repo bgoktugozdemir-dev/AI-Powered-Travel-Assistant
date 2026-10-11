@@ -248,8 +248,10 @@ in Firebase and can change without an app release. The templates are stored in
 5. Lock each template (lock icon) so it can be used from the app and wait a couple
    of minutes for it to propagate.
 
-Templates created in the console are available in all supported locations, which
-includes the `us-central1` location the app uses.
+The app calls Firebase AI Logic in the `global` location. Newer models such as
+`gemini-3.8-flash` are not available in regional locations like `us-central1`;
+a template whose model isn't served in the app's location fails with
+`NOT_FOUND` and the app falls back to the client-built prompts.
 
 **Structured output**
 
