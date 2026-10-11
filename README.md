@@ -221,8 +221,8 @@ in Firebase and can change without an app release. The templates are stored in
 
 | Pass | Template ID (default) | File | Inputs |
 | --- | --- | --- | --- |
-| Research (chat, tools) | `travel-research-v1-0-0` | `travel-research-v1-0-0.prompt` | `travel_information` |
-| Format (single turn) | `travel-format-v1-0-0` | `travel-format-v1-0-0.prompt` | `travel_information`, `research_findings` |
+| Research (chat, tools) | `travel-research` | `travel-research.prompt` | `travel_information` |
+| Format (single turn) | `travel-format` | `travel-format.prompt` | `travel_information`, `research_findings` |
 
 `travel_information` is the JSON-encoded trip (`TravelInformation.toJson()`) and
 `research_findings` is the text returned by the research pass.
@@ -268,8 +268,8 @@ result as a new template ID version.
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `ai_use_prompt_templates` | boolean | `false` | Master switch. Off: prompts are built in the app. |
-| `ai_research_template_id` | string | `travel-research-v1-0-0` | Research template ID. |
-| `ai_format_template_id` | string | `travel-format-v1-0-0` | Format template ID. |
+| `ai_research_template_id` | string | `travel-research` | Research template ID. |
+| `ai_format_template_id` | string | `travel-format` | Format template ID. |
 
 Publish `ai_use_prompt_templates = true` once both templates are uploaded and
 tested. To ship a prompt change safely, upload it as a new template ID (for

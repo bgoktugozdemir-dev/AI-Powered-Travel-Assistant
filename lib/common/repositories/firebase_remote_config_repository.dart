@@ -44,13 +44,13 @@ enum RemoteConfigs {
   /// Server prompt template ID for the research pass.
   aiResearchTemplateId(
     key: 'ai_research_template_id',
-    defaultValue: 'travel-research-v1-0-0',
+    defaultValue: 'travel-research',
   ),
 
   /// Server prompt template ID for the format pass.
   aiFormatTemplateId(
     key: 'ai_format_template_id',
-    defaultValue: 'travel-format-v1-0-0',
+    defaultValue: 'travel-format',
   ),
 
   /// Key for the Recaptcha site key.

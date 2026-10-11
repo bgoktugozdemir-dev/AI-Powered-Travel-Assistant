@@ -14,7 +14,7 @@ void main() {
       );
       expect(
         isTemplateUnavailableError(
-          ServerException('Template travel-research-v1-0-0 NOT_FOUND'),
+          ServerException('Template travel-research NOT_FOUND'),
         ),
         isTrue,
       );
