@@ -59,6 +59,18 @@ void main() {
     expect(client.reports, hasLength(1));
   });
 
+  test('reports a repeating failure once per distinct message', () {
+    final client = _FakeClient();
+    final reporter = UncaughtErrorReporter(errorMonitoring: client);
+
+    for (var i = 0; i < 3; i++) {
+      reporter.report(StateError('same'), StackTrace.current);
+    }
+    reporter.report(StateError('different'), StackTrace.current);
+
+    expect(client.reports, hasLength(2));
+  });
+
   test('does not recurse when reporting itself fails to report', () {
     late UncaughtErrorReporter reporter;
     final client = _FakeClient(
