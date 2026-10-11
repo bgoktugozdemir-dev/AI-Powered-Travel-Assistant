@@ -1,0 +1,134 @@
+name: Deploy web
+
+# Publishing a GitHub release builds the web app, uploads source maps to Sentry
+# and deploys build/web to the live Firebase Hosting channel. Setup and the
+# required secrets are described in the README ("Deployment").
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never run two production deploys at the same time, and never cancel one that
+# is already uploading: let the next one wait.
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to Firebase Hosting
+    # A manual run deploys to production too, so only allow it from the default
+    # branch. Releases are always allowed.
+    if: >-
+      github.event_name == 'release' ||
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          # sentry_dart_plugin associates commits with the release.
+          fetch-depth: 0
+
+      # The Sentry release is travel_assistant@<version>+<build>, taken from
+      # pubspec.yaml. Refuse to ship a release whose tag disagrees with it, or
+      # the tag and what Sentry (and users) see would drift apart.
+      - name: Check the release tag matches the pubspec version
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          pubspec_version="$(grep -m1 '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//; s/[[:space:]"]//g')"
+          version_name="${pubspec_version%%+*}"
+          tag_version="${RELEASE_TAG#v}"
+          echo "pubspec version: ${pubspec_version}"
+          echo "release tag:     ${RELEASE_TAG}"
+          if [ "${tag_version}" != "${version_name}" ] && [ "${tag_version}" != "${pubspec_version}" ]; then
+            echo "::error::Release tag '${RELEASE_TAG}' does not match the pubspec.yaml version '${pubspec_version}'. Bump the version in pubspec.yaml, merge it, then publish the release again."
+            exit 1
+          fi
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - run: flutter --version
+
+      # Both files are gitignored. lib/firebase_options.dart is the FlutterFire
+      # output (base64 keeps it a single-line secret), env/secrets.json feeds
+      # --dart-define-from-file. The values come in through env so they never
+      # appear in the script text, and nothing is echoed.
+      - name: Write Firebase options
+        env:
+          FIREBASE_OPTIONS_DART_B64: ${{ secrets.FIREBASE_OPTIONS_DART_B64 }}
+        run: |
+          if [ -z "${FIREBASE_OPTIONS_DART_B64}" ]; then
+            echo "::error::Secret FIREBASE_OPTIONS_DART_B64 is not set."
+            exit 1
+          fi
+          printf '%s' "${FIREBASE_OPTIONS_DART_B64}" | base64 -d > lib/firebase_options.dart
+
+      - name: Write compile-time secrets
+        env:
+          FREE_CURRENCY_API_KEY: ${{ secrets.FREE_CURRENCY_API_KEY }}
+        run: |
+          if [ -z "${FREE_CURRENCY_API_KEY}" ]; then
+            echo "::error::Secret FREE_CURRENCY_API_KEY is not set."
+            exit 1
+          fi
+          mkdir -p env
+          jq -n --arg key "${FREE_CURRENCY_API_KEY}" '{FREE_CURRENCY_API_KEY: $key}' > env/secrets.json
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project source
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build web
+        run: flutter build web --release --source-maps --dart-define-from-file=env/secrets.json
+
+      # sentry_flutter names the release at runtime from build/web/version.json
+      # (package_info_plus): <package_name>@<version>+<build_number>, and the
+      # dist is the build number. Derive the upload's release and dist from that
+      # same file, so they match by construction.
+      - name: Resolve the Sentry release
+        run: |
+          release="$(jq -r '"\(.package_name)@\(.version)+\(.build_number)"' build/web/version.json)"
+          dist="$(jq -r '.build_number' build/web/version.json)"
+          echo "Sentry release: ${release} (dist ${dist})"
+          echo "SENTRY_RELEASE=${release}" >> "${GITHUB_ENV}"
+          echo "SENTRY_DIST=${dist}" >> "${GITHUB_ENV}"
+
+      - name: Upload source maps to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: dart run sentry_dart_plugin
+
+      # Source maps expose the source code: they stay in Sentry only.
+      - name: Remove source maps from the build
+        run: |
+          find build/web -name '*.map' -type f -delete
+          if [ -n "$(find build/web -name '*.map' -type f)" ]; then
+            echo "::error::Source maps are still present in build/web."
+            exit 1
+          fi
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TRAVEL_ASSISTANT_FLUTTER }}
+          channelId: live
+          projectId: travel-assistant-flutter

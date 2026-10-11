@@ -147,7 +147,11 @@ flutter:
 sentry:
   project: travel-assistant
   org: bgoktugozdemir
-  auth_token: # Generate Token from Sentry and hide it
+  # The auth token is never stored here: set SENTRY_AUTH_TOKEN in the environment
+  # (GitHub secret in CI, shell variable locally).
+  # release and dist are not set either: the plugin defaults to
+  # `<name>@<version>` (+ dist from the build number), which is exactly what
+  # sentry_flutter reports at runtime on web, e.g. travel_assistant@1.2.4+17.
   # Disable automatic upload of debug symbols
   # upload_debug_symbols: false
   # Enable source context

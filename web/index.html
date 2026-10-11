@@ -123,16 +123,26 @@
   </div>
 
   <script>
-    // Only enable Firebase App Check debug token in development/debug environments
-    const isDebug = window.location.hostname === 'localhost' || 
-                   window.location.hostname === '127.0.0.1' ||
-                   window.location.hostname.includes('local') ||
-                   window.location.protocol === 'file:' ||
-                   window.location.port !== '';
-    
-    if (isDebug) {
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-    }
+    // Only enable the Firebase App Check debug token for local development.
+    // Never on Firebase Hosting (*.web.app, *.firebaseapp.com and preview
+    // channels such as <project>--<channel>-<hash>.web.app): a channel name may
+    // contain "local", so the hostname is matched exactly, not by substring.
+    (function () {
+      var host = window.location.hostname;
+      var isFirebaseHosting = /\.(web\.app|firebaseapp\.com)$/.test(host);
+      var isDebug = !isFirebaseHosting && (
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '[::1]' ||
+        host.endsWith('.localhost') ||
+        host.endsWith('.local') ||
+        window.location.protocol === 'file:' ||
+        window.location.port !== '');
+
+      if (isDebug) {
+        self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      }
+    })();
   </script>
 
   <style>
