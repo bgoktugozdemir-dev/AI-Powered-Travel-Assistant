@@ -49,6 +49,26 @@ void main() {
         same(event),
       );
     });
+
+    test('drops the reCAPTCHA already rendered error from crawlers', () {
+      final event = _eventWithException(
+        'Error: reCAPTCHA has already been rendered in this element',
+      );
+
+      expect(
+        SentryErrorMonitoringClient.filterEvent(event, shouldSend: true),
+        isNull,
+      );
+    });
+
+    test('does not drop other reCAPTCHA errors', () {
+      final event = _eventWithException('reCAPTCHA placeholder element');
+
+      expect(
+        SentryErrorMonitoringClient.filterEvent(event, shouldSend: true),
+        same(event),
+      );
+    });
   });
 
   group('SentryErrorMonitoringClient.reportError', () {

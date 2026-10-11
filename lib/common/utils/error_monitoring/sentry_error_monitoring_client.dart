@@ -41,6 +41,10 @@ abstract class _Constants {
   /// may impact performance and storage, especially in production environments
   static bool attachViewHierarchy = false;
 
+  /// Exact message of the reCAPTCHA error that is dropped in [filterEvent].
+  static const String recaptchaAlreadyRendered =
+      'reCAPTCHA has already been rendered in this element';
+
   /// Tag holding the human readable message of a report.
   static const String reportMessageTag = 'report_message';
 
@@ -160,6 +164,19 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
     required bool shouldSend,
   }) {
     if (!shouldSend) {
+      return null;
+    }
+
+    final exceptions = event.exceptions;
+    if (exceptions != null &&
+        exceptions.any(
+          (exception) =>
+              exception.value?.contains(_Constants.recaptchaAlreadyRendered) ??
+              false,
+        )) {
+      // Thrown by the Firebase App Check reCAPTCHA widget when a link-preview
+      // crawler (e.g. Meta's) executes the page. Not actionable and never
+      // seen from real users, so don't let it create issues.
       return null;
     }
 
