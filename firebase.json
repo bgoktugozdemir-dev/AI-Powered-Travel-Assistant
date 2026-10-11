@@ -1,0 +1,146 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "travel-assistant-flutter",
+          "appId": "1:274540461382:android:7333c3dd74a2074c74b947",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "travel-assistant-flutter",
+          "appId": "1:274540461382:ios:3cb48425413b87d174b947",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "travel-assistant-flutter",
+          "appId": "1:274540461382:ios:3cb48425413b87d174b947",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "travel-assistant-flutter",
+          "configurations": {
+            "android": "1:274540461382:android:7333c3dd74a2074c74b947",
+            "ios": "1:274540461382:ios:3cb48425413b87d174b947",
+            "macos": "1:274540461382:ios:3cb48425413b87d174b947",
+            "web": "1:274540461382:web:e6f1c003efe86c5574b947",
+            "windows": "1:274540461382:web:d294cef9e47e092774b947"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.map"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://www.gstatic.com https://www.google.com/recaptcha/ https://browser.sentry-cdn.com https://cdn.mxpnl.com https://www.googletagmanager.com https://apis.google.com https://cdn.firebase.com https://api.mixpanel.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.freecurrencyapi.com https://api.open-meteo.com https://data.opendatasoft.com https://raw.githubusercontent.com https://api.unsplash.com https://images.unsplash.com https://*.googleapis.com https://*.firebase.com wss://*.firebase.com https://www.gstatic.com https://fonts.gstatic.com https://www.google.com/recaptcha/ https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://*.googletagmanager.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io https://api.mixpanel.com https://api-js.mixpanel.com; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self';"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      },
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/@(index.html|main.dart.js|flutter.js|flutter_bootstrap.js|flutter_service_worker.js|version.json|manifest.json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/assets/@(AssetManifest.bin|AssetManifest.bin.json|AssetManifest.json|FontManifest.json|NOTICES)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/assets/**/*.@(otf|ttf|woff|woff2)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "/canvaskit/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "/icons/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=2592000"
+          }
+        ]
+      },
+      {
+        "source": "/favicon.png",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=2592000"
+          }
+        ]
+      }
+    ]
+  }
+}

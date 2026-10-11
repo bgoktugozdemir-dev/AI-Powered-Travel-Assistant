@@ -51,7 +51,8 @@ GoogleService-Info.plist
 firebase_options.dart
 firebase_app_id_file.json
 firebase-service-account.json
-firebase.json
+# firebase.json (Hosting config + FlutterFire app IDs) is committed on purpose:
+# it holds no secrets and the deploy workflow needs it.
 
 # Environment files
 .env
