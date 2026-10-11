@@ -71,7 +71,7 @@ class FunctionCallDispatcher {
     final endDate = DateTime.parse(args['end_date'] as String);
     final timezone = args['timezone'] as String? ?? 'auto';
 
-    final response = await _weatherRepository.getWeatherForecast(
+    final result = await _weatherRepository.getWeatherForecast(
       latitude: latitude,
       longitude: longitude,
       startDate: startDate,
@@ -79,28 +79,46 @@ class FunctionCallDispatcher {
       timezone: timezone,
     );
 
-    if (response == null) {
-      return {
-        'error': 'Failed to fetch weather data',
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+    switch (result) {
+      case WeatherForecastFailed():
+        return {
+          'error': 'Failed to fetch weather data',
+          'latitude': latitude,
+          'longitude': longitude,
+        };
+      case WeatherForecastBeyondWindow(:final lastForecastDate):
+        return {
+          'error':
+              'Forecast unavailable: the requested dates are beyond the '
+              '${WeatherRepository.forecastWindowDays}-day forecast window.',
+          'forecast_available_until': _formatDate(lastForecastDate),
+          'hint': 'Describe the typical weather for these dates instead.',
+          'latitude': latitude,
+          'longitude': longitude,
+        };
+      case WeatherForecastFound(:final response, :final clampedEndDate):
+        return {
+          'latitude': response.latitude,
+          'longitude': response.longitude,
+          'timezone': response.timezone,
+          if (clampedEndDate != null)
+            'note':
+                'The forecast ends on ${_formatDate(clampedEndDate)}: later '
+                'dates are beyond the '
+                '${WeatherRepository.forecastWindowDays}-day forecast window.',
+          'current': {
+            'temperature': response.current.temperature,
+            'weather_code': response.current.weatherCode,
+            'relative_humidity': response.current.relativeHumidity,
+          },
+          'hourly': {
+            'time': response.hourly.time,
+            'temperature_2m': response.hourly.temperature2m,
+            'weather_code': response.hourly.weatherCode,
+          },
+        };
     }
-
-    return {
-      'latitude': response.latitude,
-      'longitude': response.longitude,
-      'timezone': response.timezone,
-      'current': {
-        'temperature': response.current.temperature,
-        'weather_code': response.current.weatherCode,
-        'relative_humidity': response.current.relativeHumidity,
-      },
-      'hourly': {
-        'time': response.hourly.time,
-        'temperature_2m': response.hourly.temperature2m,
-        'weather_code': response.hourly.weatherCode,
-      },
-    };
   }
+
+  String _formatDate(DateTime date) => date.toIso8601String().split('T').first;
 }
