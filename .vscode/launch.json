@@ -11,20 +11,27 @@
             "args": [
                 "-d",
                 "chrome",
-                "--web-experimental-hot-reload"
+                "--web-experimental-hot-reload",
+                "--dart-define-from-file=env/secrets.json"
             ]
         },
         {
             "name": "travel_assistant (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=env/secrets.json"
+            ]
         },
         {
             "name": "travel_assistant (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--dart-define-from-file=env/secrets.json"
+            ]
         }
     ]
 }
