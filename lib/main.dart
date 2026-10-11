@@ -10,8 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/ai/template_aware_passes.dart';
+import 'package:travel_assistant/common/ai/template_travel_passes.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
+import 'package:travel_assistant/common/ai/travel_template_client.dart';
 import 'package:travel_assistant/common/config/app_secrets.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
@@ -283,14 +287,43 @@ class MyApp extends StatelessWidget {
             final weatherRepository = context.read<WeatherRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
-            final travelResearchPass = TravelResearchPass(
-              firebaseAIService: firebaseAIService,
-              currencyRepository: currencyRepository,
-              weatherRepository: weatherRepository,
+            // Server prompt templates are preferred when enabled in Remote
+            // Config; the client-built passes stay as the fallback.
+            final templateClient = FirebaseTravelTemplateClient(
+              firebaseAI: agentPlatform,
+            );
+            final travelResearchPass = TemplateAwareResearchPass(
+              templatePass: TemplateTravelResearchPass(
+                templateClient: templateClient,
+                dispatcher: FunctionCallDispatcher(
+                  currencyRepository: currencyRepository,
+                  weatherRepository: weatherRepository,
+                ),
+                templateId: () =>
+                    firebaseRemoteConfigRepository.aiResearchTemplateId,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              fallbackPass: TravelResearchPass(
+                firebaseAIService: firebaseAIService,
+                currencyRepository: currencyRepository,
+                weatherRepository: weatherRepository,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
             );
-            final travelFormatPass = TravelFormatPass(
-              firebaseAIService: firebaseAIService,
+            final travelFormatPass = TemplateAwareFormatPass(
+              templatePass: TemplateTravelFormatPass(
+                templateClient: templateClient,
+                templateId: () =>
+                    firebaseRemoteConfigRepository.aiFormatTemplateId,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              fallbackPass: TravelFormatPass(
+                firebaseAIService: firebaseAIService,
+                errorMonitoring: errorMonitoringFacade,
+              ),
+              remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
             );
             return FirebaseAIRepository(
