@@ -240,7 +240,11 @@ in Firebase and can change without an app release. The templates are stored in
    Remote Config values for template calls.
 4. Save, then use **Create formatted test request** and **Run prompt test**. For
    the research template use `{"travel_information": "{\"departure_airport\":\"IST\",\"arrival_airport\":\"JFK\",\"travel_date_range\":{\"start\":\"2026-07-01T00:00:00.000\",\"end\":\"2026-07-10T00:00:00.000\"},\"nationality\":\"TR\",\"travel_purposes\":[\"Sightseeing\"],\"locale\":\"en\"}"}`.
-   For the format template also pass a `research_findings` string.
+   For the format template also pass a `research_findings` string. In the
+   formatted test request check that the JSON in the prompt shows plain `"`
+   characters. If it shows `&quot;`, the renderer HTML-escapes variables: use
+   `{{{travel_information}}}` and `{{{research_findings}}}` (triple braces) in both
+   templates.
 5. Lock each template (lock icon) so it can be used from the app and wait a couple
    of minutes for it to propagate.
 
