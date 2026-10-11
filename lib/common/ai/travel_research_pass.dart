@@ -20,7 +20,7 @@ class TravelResearchPassException implements Exception {
   String toString() => 'TravelResearchPassException($message)';
 }
 
-/// Pass 1 orchestrator: tool-enabled research + grounding.
+/// Pass 1 orchestrator: function-calling research (live FX and weather).
 abstract class TravelResearchPassRunner {
   Future<String> generateResearchFindings({
     required String userPrompt,

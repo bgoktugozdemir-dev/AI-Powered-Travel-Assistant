@@ -45,10 +45,6 @@ class TravelFormatPass implements TravelFormatPassRunner {
           ),
         ]);
         final text = response.text ?? '{}';
-        final parsed = ParserUtils.parseTravelDetails(text);
-        if (parsed != null) {
-          return parsed;
-        }
         return ParserUtils.parseTravelDetailsOrThrow(text);
       } on FormatException catch (e) {
         retryCount++;
