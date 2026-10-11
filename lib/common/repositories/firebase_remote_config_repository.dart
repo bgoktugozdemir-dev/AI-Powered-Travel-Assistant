@@ -30,7 +30,7 @@ abstract class _Constants {
 
 enum RemoteConfigs {
   /// Key for the AI model.
-  aiModel(key: 'ai_model', defaultValue: 'gemini-2.0-flash'),
+  aiModel(key: 'ai_model', defaultValue: 'gemini-3.5-flash-lite'),
 
   /// Key for the AI system prompt.
   aiSystemPrompt(key: 'ai_system_prompt', defaultValue: ''),
