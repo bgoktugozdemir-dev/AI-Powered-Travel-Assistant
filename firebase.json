@@ -88,6 +88,15 @@
         ]
       },
       {
+        "source": "**/!(*.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
         "source": "/@(index.html|main.dart.js|flutter.js|flutter_bootstrap.js|flutter_service_worker.js|version.json|manifest.json)",
         "headers": [
           {
