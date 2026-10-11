@@ -17,8 +17,8 @@ import 'package:yaml/yaml.dart';
 /// property names, types, nesting, optional/nullable and enum values.
 abstract class _Constants {
   static const String templatesDirectory = 'firebase/prompt_templates';
-  static const String researchTemplate = 'travel-research-v1-0-0.prompt';
-  static const String formatTemplate = 'travel-format-v1-0-0.prompt';
+  static const String researchTemplate = 'travel-research.prompt';
+  static const String formatTemplate = 'travel-format.prompt';
 
   /// `name`, optional `?`, optional `(type, description)` of a Picoschema key.
   static final RegExp picoKey = RegExp(

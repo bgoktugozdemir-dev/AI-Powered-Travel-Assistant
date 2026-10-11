@@ -1,6 +1,6 @@
 ---
 # Firebase AI Logic server prompt template: format pass (pass 2 of 2).
-# Template ID: travel-format-v1-0-0 (Remote Config: ai_format_template_id)
+# Template ID: travel-format (Remote Config: ai_format_template_id)
 # Single-turn template. Turns the findings of the research template into the
 # TravelDetails JSON the app parses (lib/common/models/response/travel_details.dart).
 model: gemini-3.8-flash

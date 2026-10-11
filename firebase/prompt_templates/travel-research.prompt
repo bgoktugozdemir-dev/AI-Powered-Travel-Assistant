@@ -1,6 +1,6 @@
 ---
 # Firebase AI Logic server prompt template: research pass (pass 1 of 2).
-# Template ID: travel-research-v1-0-0 (Remote Config: ai_research_template_id)
+# Template ID: travel-research (Remote Config: ai_research_template_id)
 # Chat template with function calling. The app executes the functions below on
 # the device (see lib/common/ai/function_call_dispatcher.dart) and sends the
 # results back, so keep the function names and parameters in sync with
