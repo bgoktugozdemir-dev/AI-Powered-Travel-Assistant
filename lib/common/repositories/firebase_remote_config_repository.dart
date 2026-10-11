@@ -93,7 +93,12 @@ enum RemoteConfigs {
     defaultValue: '{"response_mime_type":"application/json"}',
   ),
 
-  /// Navigate to next step after selecting travel purpose.
+  /// Go to the next step right after a choice is made in the airport, date
+  /// and nationality steps.
+  ///
+  /// The name is historical: it does not affect the travel purpose step, which
+  /// allows several choices. The key is kept so the value in the Remote Config
+  /// console keeps working.
   navigateToNextStepAfterSelectingTravelPurpose(
     key: 'navigate_to_next_step_after_selecting_travel_purpose',
     defaultValue: false,
@@ -373,9 +378,11 @@ class FirebaseRemoteConfigRepository {
   bool get showRecommendationsCard =>
       firebaseRemoteConfig.getBool(RemoteConfigs.showRecommendationsCard.key);
 
-  /// Fetches the navigate to next step after selecting travel purpose from Firebase Remote Config.
+  /// Whether the form goes to the next step right after a choice is made in
+  /// the airport, date and nationality steps (see
+  /// [RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose]).
   ///
-  /// Returns true if the navigate to next step after selecting travel purpose should be shown, otherwise false.
+  /// Returns false unless enabled in Remote Config.
   bool get navigateToNextStepAfterSelectingTravelPurpose =>
       firebaseRemoteConfig.getBool(
         RemoteConfigs.navigateToNextStepAfterSelectingTravelPurpose.key,
