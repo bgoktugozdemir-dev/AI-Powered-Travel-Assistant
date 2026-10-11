@@ -3,6 +3,41 @@ import 'package:travel_assistant/common/utils/helpers/parser_utils.dart';
 
 void main() {
   group('ParserUtils regression', () {
+    test('extracts JSON from markdown code fence', () {
+      const text = '''
+Here is the response:
+```json
+{"city":{"name":"Amsterdam"}}
+```
+''';
+
+      final jsonText = ParserUtils.extractJsonFromText(text);
+
+      expect(jsonText, '{"city":{"name":"Amsterdam"}}');
+    });
+
+    test('extracts direct JSON from surrounding text', () {
+      const text = 'Use this payload: {"city":{"name":"Amsterdam"}} Thanks.';
+
+      final jsonText = ParserUtils.extractJsonFromText(text);
+
+      expect(jsonText, '{"city":{"name":"Amsterdam"}}');
+    });
+
+    test('throws FormatException when JSON is missing', () {
+      expect(
+        () => ParserUtils.extractJsonFromText('No JSON here.'),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('throws FormatException when decoded JSON is not an object', () {
+      expect(
+        () => ParserUtils.parseTravelDetailsOrThrow('[1, 2, 3]'),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
     test('parses minimum valid TravelDetails JSON', () {
       const jsonText = '''
 {

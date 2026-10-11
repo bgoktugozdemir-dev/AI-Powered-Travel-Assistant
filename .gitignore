@@ -134,3 +134,6 @@ coverage/
 # Other
 .sentryclirc
 .sentry-info
+
+# Local compile-time secrets (copy from env/secrets.example.json)
+env/secrets.json

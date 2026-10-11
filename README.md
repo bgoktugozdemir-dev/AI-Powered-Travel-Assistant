@@ -328,6 +328,46 @@ flutter test
 # Start developing!
 ```
 
+## Building with API Secrets
+
+This project uses compile-time secrets via `--dart-define-from-file`.
+
+1. Copy the secrets template:
+```bash
+cp env/secrets.example.json env/secrets.json
+```
+
+2. Fill in real API keys in `env/secrets.json`:
+```json
+{
+  "FREE_CURRENCY_API_KEY": "your_key_here"
+}
+```
+
+3. Run with secrets:
+```bash
+flutter run --dart-define-from-file=env/secrets.json
+```
+
+4. Build with secrets:
+```bash
+flutter build apk --dart-define-from-file=env/secrets.json
+flutter build ios --dart-define-from-file=env/secrets.json
+```
+
+Never commit `env/secrets.json`; it is gitignored.
+
+## Firebase AI Grounding Note
+
+The current SDK constraint is `firebase_ai: ^2.0.0`. This SDK line supports
+function declarations for tool calling, but does not expose Google Search
+grounding or URL Context tool registration methods yet.
+
+The research pass currently uses function-calling for live FX and weather
+data. Google Search and URL Context grounding should be enabled after
+upgrading to a `firebase_ai` version that provides `Tool.googleSearch()` and
+`Tool.urlContext()`.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -1,3 +1,5 @@
+// ignore_for_file: experimental_member_use
+
 import 'dart:async';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';

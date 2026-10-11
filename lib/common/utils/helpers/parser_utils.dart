@@ -12,26 +12,43 @@ abstract class _Constants {
 abstract class ParserUtils {
   static TravelDetails? parseTravelDetails(String text) {
     try {
-      // Extract JSON from the response using the proper method
-      final jsonText = _extractJsonFromMarkdown(text);
-      final jsonData = jsonDecode(jsonText) as Map<String, dynamic>;
-
-      return TravelDetails.fromJson(jsonData);
+      return parseTravelDetailsOrThrow(text);
     } catch (e) {
       debugPrint('Error parsing travel details response: $e');
       return null;
     }
   }
 
-  static String _extractJsonFromMarkdown(String text) {
+  static TravelDetails parseTravelDetailsOrThrow(String text) {
+    try {
+      final jsonText = extractJsonFromText(text);
+      final decodedJson = jsonDecode(jsonText);
+      if (decodedJson is! Map<String, dynamic>) {
+        throw const FormatException('Travel details JSON must be an object');
+      }
+      return TravelDetails.fromJson(decodedJson);
+    } on FormatException {
+      rethrow;
+    } catch (e) {
+      throw FormatException('Failed to parse travel details JSON: $e');
+    }
+  }
+
+  static String extractJsonFromText(String text) {
     // Extract JSON from markdown code blocks if present
-    final jsonMatch = RegExp(_Constants.jsonInMarkdownPattern, dotAll: true).firstMatch(text);
+    final jsonMatch = RegExp(
+      _Constants.jsonInMarkdownPattern,
+      dotAll: true,
+    ).firstMatch(text);
     if (jsonMatch != null) {
       return jsonMatch.group(1)!;
     }
 
     // Try to find JSON object in the text
-    final directJsonMatch = RegExp(_Constants.directJsonPattern, dotAll: true).firstMatch(text);
+    final directJsonMatch = RegExp(
+      _Constants.directJsonPattern,
+      dotAll: true,
+    ).firstMatch(text);
     if (directJsonMatch != null) {
       return directJsonMatch.group(0)!;
     }

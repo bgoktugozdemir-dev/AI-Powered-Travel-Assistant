@@ -119,7 +119,6 @@ class LoggerErrorMonitoringClient implements ErrorMonitoringClient {
     }
   }
 
-  @override
   void addAIBreadcrumb(Map<String, dynamic> request, Map<String, dynamic> response) {
     _logger.d('👨‍💻 AI Request: $request');
     _logger.d('🤖 AI Response: $response');

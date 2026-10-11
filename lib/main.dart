@@ -10,17 +10,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:travel_assistant/common/ai/travel_format_pass.dart';
+import 'package:travel_assistant/common/ai/travel_research_pass.dart';
+import 'package:travel_assistant/common/config/app_secrets.dart';
 import 'package:travel_assistant/common/repositories/airport_repository.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_ai_repository.dart';
 import 'package:travel_assistant/common/repositories/image_repository.dart';
 import 'package:travel_assistant/common/repositories/unsplash_repository.dart';
+import 'package:travel_assistant/common/repositories/weather_repository.dart';
 import 'package:travel_assistant/common/services/airport_api_service.dart';
 import 'package:travel_assistant/common/services/country_service.dart';
 import 'package:travel_assistant/common/services/free_currency_api_service.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
 import 'package:travel_assistant/common/services/image_to_base64_service.dart';
+import 'package:travel_assistant/common/services/open_meteo_service.dart';
 import 'package:travel_assistant/common/services/travel_purpose_service.dart';
 import 'package:travel_assistant/common/services/unsplash_service.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
@@ -47,6 +52,7 @@ Future<void> main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      AppSecrets.validate();
 
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -62,8 +68,12 @@ Future<void> main() async {
         webProvider: ReCaptchaV3Provider(
           firebaseRemoteConfigRepository.recaptchaSiteKey,
         ),
-        androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
+        androidProvider: kDebugMode
+            ? AndroidProvider.debug
+            : AndroidProvider.playIntegrity,
+        appleProvider: kDebugMode
+            ? AppleProvider.debug
+            : AppleProvider.deviceCheck,
       );
 
       final analyticsClients = await _getAnalyticsClients(
@@ -87,13 +97,13 @@ Future<void> main() async {
       if (kIsWeb) {
         FlutterError.onError = (FlutterErrorDetails details) {
           final errorString = details.exceptionAsString();
-          if (errorString.contains('Illegal invocation') || errorString.contains('document.createEvent')) {
+          if (errorString.contains('Illegal invocation') ||
+              errorString.contains('document.createEvent')) {
             showDialog(
               context: navigatorKey.currentContext!,
-              builder:
-                  (context) => const TravelFormErrorDialog(
-                    error: PlatformOrBrowserError(),
-                  ),
+              builder: (context) => const TravelFormErrorDialog(
+                error: PlatformOrBrowserError(),
+              ),
             );
           } else {
             FlutterError.dumpErrorToConsole(details);
@@ -118,7 +128,8 @@ Future<List<AnalyticsClient>> _getAnalyticsClients(
     ];
   }
 
-  final mixpanelProjectToken = firebaseRemoteConfigRepository.mixpanelProjectToken;
+  final mixpanelProjectToken =
+      firebaseRemoteConfigRepository.mixpanelProjectToken;
   if (mixpanelProjectToken.isEmpty) {
     return [
       FirebaseAnalyticsClient(
@@ -192,13 +203,14 @@ class MyApp extends StatelessWidget {
           value: firebaseRemoteConfigRepository,
         ),
         RepositoryProvider(
-          create: (_) => AnalyticsFacade(analyticsClients)..setAnalyticsCollectionEnabled(true),
+          create: (_) =>
+              AnalyticsFacade(analyticsClients)
+                ..setAnalyticsCollectionEnabled(true),
         ),
         RepositoryProvider(
-          create:
-              (_) => ErrorMonitoringFacade(
-                errorMonitoringClients,
-              ),
+          create: (_) => ErrorMonitoringFacade(
+            errorMonitoringClients,
+          ),
         ),
         RepositoryProvider(
           create: (context) {
@@ -214,6 +226,36 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) {
+            final dio = Dio()..addSentryInterceptor();
+            final openMeteoService = OpenMeteoService(dio);
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+            return WeatherRepository(
+              openMeteoService,
+              firebaseRemoteConfigRepository,
+              errorMonitoringFacade,
+            );
+          },
+        ),
+        RepositoryProvider(
+          create: (context) {
+            final dio = Dio()..addSentryInterceptor();
+            final freeCurrencyApiService = FreeCurrencyApiService(dio);
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
+            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
+            return CurrencyRepository(
+              freeCurrencyApiService: freeCurrencyApiService,
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              errorMonitoringFacade: errorMonitoringFacade,
+            );
+          },
+        ),
+        RepositoryProvider(
+          create: (context) {
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final vertexAI = FirebaseAI.vertexAI(
               appCheck: FirebaseAppCheck.instance,
               app: Firebase.app(),
@@ -222,10 +264,25 @@ class MyApp extends StatelessWidget {
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               firebaseAI: vertexAI,
             );
+            final currencyRepository = context.read<CurrencyRepository>();
+            final weatherRepository = context.read<WeatherRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
-            return FirebaseAIRepository(
+            final travelResearchPass = TravelResearchPass(
               firebaseAIService: firebaseAIService,
+              currencyRepository: currencyRepository,
+              weatherRepository: weatherRepository,
+              errorMonitoring: errorMonitoringFacade,
+            );
+            final travelFormatPass = TravelFormatPass(
+              firebaseAIService: firebaseAIService,
+              errorMonitoring: errorMonitoringFacade,
+            );
+            return FirebaseAIRepository(
+              modelName: firebaseAIService.model,
+              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
+              travelResearchPass: travelResearchPass,
+              travelFormatPass: travelFormatPass,
               analyticsFacade: analyticsFacade,
               errorMonitoringFacade: errorMonitoringFacade,
             );
@@ -246,23 +303,11 @@ class MyApp extends StatelessWidget {
           create: (context) {
             final dio = Dio()..addSentryInterceptor();
             final unsplashService = UnsplashService(dio);
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
             return UnsplashRepository(
               unsplashService: unsplashService,
-              firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
-              errorMonitoringFacade: errorMonitoringFacade,
-            );
-          },
-        ),
-        RepositoryProvider(
-          create: (context) {
-            final dio = Dio()..addSentryInterceptor();
-            final freeCurrencyApiService = FreeCurrencyApiService(dio);
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
-            final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
-            return CurrencyRepository(
-              freeCurrencyApiService: freeCurrencyApiService,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               errorMonitoringFacade: errorMonitoringFacade,
             );
@@ -276,7 +321,8 @@ class MyApp extends StatelessWidget {
             final airportRepository = context.read<AirportRepository>();
             final unsplashRepository = context.read<UnsplashRepository>();
             final currencyRepository = context.read<CurrencyRepository>();
-            final firebaseRemoteConfigRepository = context.read<FirebaseRemoteConfigRepository>();
+            final firebaseRemoteConfigRepository = context
+                .read<FirebaseRemoteConfigRepository>();
             final imageRepository = context.read<ImageRepository>();
             final analyticsFacade = context.read<AnalyticsFacade>();
             final errorMonitoringFacade = context.read<ErrorMonitoringFacade>();
