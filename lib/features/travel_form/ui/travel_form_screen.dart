@@ -51,41 +51,6 @@ class _TravelFormScreenState extends State<TravelFormScreen>
   ];
 
   @override
-  void initState() {
-    super.initState();
-    // context.read<TravelFormBloc>().add(TravelFormStarted()); // Moved to MyApp
-
-    // Listen to BLoC state changes to update TextEditingControllers and handle navigation
-    context.read<TravelFormBloc>().stream.listen((state) {
-      // Departure airport controller update
-      if (state.selectedDepartureAirport != null &&
-          _departureAirportController.text !=
-              state.departureAirportSearchTerm) {
-        _departureAirportController.text = state.departureAirportSearchTerm;
-        _departureAirportController.selection = TextSelection.fromPosition(
-          TextPosition(offset: _departureAirportController.text.length),
-        );
-      }
-      // Arrival airport controller update
-      if (state.selectedArrivalAirport != null &&
-          _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
-        _arrivalAirportController.text = state.arrivalAirportSearchTerm;
-        _arrivalAirportController.selection = TextSelection.fromPosition(
-          TextPosition(offset: _arrivalAirportController.text.length),
-        );
-      }
-
-      // Navigate to results screen if form submission is successful
-      if (state.formSubmissionStatus == FormSubmissionStatus.success &&
-          mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const ResultsScreen()),
-        );
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _departureAirportController.dispose();
     _arrivalAirportController.dispose();
@@ -97,135 +62,178 @@ class _TravelFormScreenState extends State<TravelFormScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    // Listeners are tied to the widget's lifecycle: they stop when the screen
+    // is disposed (e.g. after it is replaced by the results screen), so they
+    // never touch the disposed text controllers.
     return BlocListener<TravelFormBloc, TravelFormState>(
       listenWhen:
-          (previous, current) => previous.currentStep != current.currentStep,
-      listener: (context, state) {
-        _pageController.animateToPage(
-          state.currentStep,
-          duration: _Constants.pageTransitionDuration,
-          curve: _Constants.pageTransitionCurve,
-        );
-      },
+          (previous, current) =>
+              previous.selectedDepartureAirport !=
+                  current.selectedDepartureAirport ||
+              previous.departureAirportSearchTerm !=
+                  current.departureAirportSearchTerm ||
+              previous.selectedArrivalAirport !=
+                  current.selectedArrivalAirport ||
+              previous.arrivalAirportSearchTerm !=
+                  current.arrivalAirportSearchTerm,
+      listener: (context, state) => _syncAirportControllers(state),
       child: BlocListener<TravelFormBloc, TravelFormState>(
         listenWhen:
-            (previous, current) =>
-                previous.formSubmissionStatus != current.formSubmissionStatus,
+            (previous, current) => previous.currentStep != current.currentStep,
         listener: (context, state) {
-          if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
-            showLoadingOverlay(
-              context,
-              loadingAsset: AppAssets.flightSearchIndicatorLottie,
-              label: l10n.submittingForm,
-            );
-          } else {
-            hideLoadingOverlay();
-          }
+          _pageController.animateToPage(
+            state.currentStep,
+            duration: _Constants.pageTransitionDuration,
+            curve: _Constants.pageTransitionCurve,
+          );
         },
-        child: BlocConsumer<TravelFormBloc, TravelFormState>(
-          listenWhen: (previous, current) => previous.error != current.error,
+        child: BlocListener<TravelFormBloc, TravelFormState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.formSubmissionStatus != current.formSubmissionStatus,
           listener: (context, state) {
-            context.read<AnalyticsFacade>().logTravelFormError(
-              state.error?.toString() ?? "Error occurred",
-              state.currentStep.toString(),
-            );
-            if (state.error != null) {
-              showGeneralDialog(
-                context: context,
-                pageBuilder: (context, animation, secondaryAnimation) {
-                  return TravelFormErrorDialog(error: state.error!);
-                },
+            if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
+              showLoadingOverlay(
+                context,
+                loadingAsset: AppAssets.flightSearchIndicatorLottie,
+                label: l10n.submittingForm,
+              );
+              return;
+            }
+
+            hideLoadingOverlay();
+
+            // Show the results once the plan is ready.
+            if (state.formSubmissionStatus == FormSubmissionStatus.success) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const ResultsScreen()),
               );
             }
           },
-          buildWhen:
-              (previous, current) =>
-                  previous.currentStep != current.currentStep ||
-                  previous.countryServiceStatus != current.countryServiceStatus,
-          builder: (context, state) {
-            // Show error screen if country service failed
-            if (state.countryServiceStatus == CountryServiceStatus.failure) {
-              return const CountryServiceErrorScreen();
-            }
+          child: BlocConsumer<TravelFormBloc, TravelFormState>(
+            listenWhen: (previous, current) => previous.error != current.error,
+            listener: (context, state) {
+              context.read<AnalyticsFacade>().logTravelFormError(
+                state.error?.toString() ?? "Error occurred",
+                state.currentStep.toString(),
+              );
+              if (state.error != null) {
+                showGeneralDialog(
+                  context: context,
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return TravelFormErrorDialog(error: state.error!);
+                  },
+                );
+              }
+            },
+            buildWhen:
+                (previous, current) =>
+                    previous.currentStep != current.currentStep ||
+                    previous.countryServiceStatus != current.countryServiceStatus,
+            builder: (context, state) {
+              // Show error screen if country service failed
+              if (state.countryServiceStatus == CountryServiceStatus.failure) {
+                return const CountryServiceErrorScreen();
+              }
 
-            // Update text controller if search term changed from outside (e.g. after selection)
-            // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
-            if (_departureAirportController.text !=
-                    state.departureAirportSearchTerm &&
-                state.currentStep == 0) {
-              // To avoid listener loop if typing, only update if it's different and relevant
-              // A more robust way might be to only set this when an item is *selected*.
-              // For now, this is a simplified sync.
-            }
+              // Update text controller if search term changed from outside (e.g. after selection)
+              // This ensures the text field reflects the BLoC state if BLoC directly changes searchTerm.
+              if (_departureAirportController.text !=
+                      state.departureAirportSearchTerm &&
+                  state.currentStep == 0) {
+                // To avoid listener loop if typing, only update if it's different and relevant
+                // A more robust way might be to only set this when an item is *selected*.
+                // For now, this is a simplified sync.
+              }
 
-            // Show loading indicator when submitting
-            final bool isSubmitting =
-                state.formSubmissionStatus == FormSubmissionStatus.submitting;
-            return Scaffold(
-              appBar: AppBar(
-                leading:
-                    state.currentStep > 0
-                        ? IconButton(
-                          key: const Key(_Constants.buttonPreviousStep),
-                          tooltip: l10n.navigationPrevious,
-                          onPressed:
-                              isSubmitting
-                                  ? null
-                                  : () {
-                                    context.read<TravelFormBloc>().add(
-                                      TravelFormPreviousStepRequested(
-                                        source:
-                                            SubmitTravelDetailsSource.appBar,
-                                      ),
-                                    );
-                                  },
-                          icon: const Icon(Icons.arrow_back),
-                        )
-                        : null,
-                title: Text(l10n.travelFormStepTitle(state.currentStep + 1)),
-                actions: [
-                  if (state.currentStep < state.totalSteps - 1)
-                    IconButton(
-                      key: const Key(_Constants.buttonNextStep),
-                      tooltip: l10n.navigationNext,
-                      onPressed: _onNextButtonPressed(context, state, l10n),
-                      icon: const Icon(Icons.arrow_forward),
-                    )
-                  else if (state.currentStep == state.totalSteps - 1)
-                    IconButton(
-                      key: const Key(_Constants.buttonSubmitAppbar),
-                      tooltip: l10n.navigationSubmit,
-                      onPressed:
-                          isSubmitting
-                              ? null
-                              : () => _onSubmitButtonPressed(
-                                context,
-                                state,
-                                l10n,
-                                SubmitTravelDetailsSource.appBar,
-                              ),
-                      icon: const Icon(Icons.send),
-                    ),
-                ],
-              ),
-              resizeToAvoidBottomInset: true,
-              body: PageView(
-                controller: _pageController,
-                pageSnapping: false,
-                physics: const NeverScrollableScrollPhysics(),
-                children: _travelFormSteps,
-              ),
-              floatingActionButton: _buildFloatingActionButton(
-                context,
-                state,
-                l10n,
-                isSubmitting,
-              ),
-            );
-          },
+              // Show loading indicator when submitting
+              final bool isSubmitting =
+                  state.formSubmissionStatus == FormSubmissionStatus.submitting;
+              return Scaffold(
+                appBar: AppBar(
+                  leading:
+                      state.currentStep > 0
+                          ? IconButton(
+                            key: const Key(_Constants.buttonPreviousStep),
+                            tooltip: l10n.navigationPrevious,
+                            onPressed:
+                                isSubmitting
+                                    ? null
+                                    : () {
+                                      context.read<TravelFormBloc>().add(
+                                        TravelFormPreviousStepRequested(
+                                          source:
+                                              SubmitTravelDetailsSource.appBar,
+                                        ),
+                                      );
+                                    },
+                            icon: const Icon(Icons.arrow_back),
+                          )
+                          : null,
+                  title: Text(l10n.travelFormStepTitle(state.currentStep + 1)),
+                  actions: [
+                    if (state.currentStep < state.totalSteps - 1)
+                      IconButton(
+                        key: const Key(_Constants.buttonNextStep),
+                        tooltip: l10n.navigationNext,
+                        onPressed: _onNextButtonPressed(context, state, l10n),
+                        icon: const Icon(Icons.arrow_forward),
+                      )
+                    else if (state.currentStep == state.totalSteps - 1)
+                      IconButton(
+                        key: const Key(_Constants.buttonSubmitAppbar),
+                        tooltip: l10n.navigationSubmit,
+                        onPressed:
+                            isSubmitting
+                                ? null
+                                : () => _onSubmitButtonPressed(
+                                  context,
+                                  state,
+                                  l10n,
+                                  SubmitTravelDetailsSource.appBar,
+                                ),
+                        icon: const Icon(Icons.send),
+                      ),
+                  ],
+                ),
+                resizeToAvoidBottomInset: true,
+                body: PageView(
+                  controller: _pageController,
+                  pageSnapping: false,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: _travelFormSteps,
+                ),
+                floatingActionButton: _buildFloatingActionButton(
+                  context,
+                  state,
+                  l10n,
+                  isSubmitting,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  /// Keeps the text fields in sync when the BLoC changes the search term, e.g.
+  /// after an airport was selected from the suggestions.
+  void _syncAirportControllers(TravelFormState state) {
+    if (state.selectedDepartureAirport != null &&
+        _departureAirportController.text != state.departureAirportSearchTerm) {
+      _departureAirportController.text = state.departureAirportSearchTerm;
+      _departureAirportController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _departureAirportController.text.length),
+      );
+    }
+    if (state.selectedArrivalAirport != null &&
+        _arrivalAirportController.text != state.arrivalAirportSearchTerm) {
+      _arrivalAirportController.text = state.arrivalAirportSearchTerm;
+      _arrivalAirportController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _arrivalAirportController.text.length),
+      );
+    }
   }
 
   void Function()? _onNextButtonPressed(
