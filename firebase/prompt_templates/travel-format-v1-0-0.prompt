@@ -15,6 +15,119 @@ input:
     research_findings:
       type: string
       description: Plain-text findings produced by the research template.
+# Structured output: must stay equivalent to TravelDetails.aiSchema
+# (lib/common/models/response/travel_details.dart). test/common/ai/prompt_template_drift_test.dart
+# fails when the property sets drift apart.
+output:
+  format: json
+  schema:
+    city(object):
+      name: string
+      country: string
+      crowd_level: integer
+      time?(object):
+        departure_timezone: string
+        arrival_timezone: string
+        difference_in_hours: integer
+      weather(array):
+        date: string
+        weather: string
+        temperature: number
+    required_documents(object):
+      type(enum, Document the traveler needs for entry): [passport, e_visa, visa, id_card, other]
+      message: string
+      steps?(array): string
+      more_information?: string
+    currency(object):
+      code: string
+      name: string
+      exchange_rate: number
+      arrival_average_living_cost_per_day: number
+      departure_currency_code?: string
+      departure_average_living_cost_per_day?: number
+    flight_options(object):
+      cheapest(object):
+        departure(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        arrival(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        booking_url: string
+      comfortable(object):
+        departure(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        arrival(object):
+          airline: string
+          departure_airport: string
+          arrival_airport: string
+          flight_number: string
+          departure_time: string, Departure timestamp in ISO 8601 datetime format.
+          arrival_time: string, Arrival timestamp in ISO 8601 datetime format.
+          duration: integer, Total flight duration in minutes.
+          price: number
+          currency: string
+          stops: integer
+          layover_details(array):
+            airport: string
+            duration_minutes: integer
+          more_information: string
+        booking_url: string
+    tax_information(object):
+      has_tax_free_options: boolean
+      tax_rate: number
+      refundable_tax_rate: number
+      tax_refund_information?: string
+    spots(array):
+      place: string
+      description: string
+      requirements?: string
+    travel_plan(array):
+      date: string, Travel day as YYYY-MM-DD or ISO 8601 datetime. Date-only values are normalized to 00:00:00Z. Datetime values must include timezone/offset.
+      events(array):
+        name: string
+        time: string
+        location: string
+        description: string
+        requirements?: string
+    recommendations(array): string
 ---
 
 {{role "system"}}

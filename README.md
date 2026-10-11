@@ -247,6 +247,18 @@ in Firebase and can change without an app release. The templates are stored in
 Templates created in the console are available in all supported locations, which
 includes the `us-central1` location the app uses.
 
+**Structured output**
+
+The format template declares `output.format: json` and an `output.schema`
+(Picoschema syntax) that is equivalent to `TravelDetails.aiSchema`, so Gemini is
+constrained to the JSON the app parses. `TravelDetails.aiSchema` stays in the code
+for the in-app fallback path. Because two copies of the schema exist,
+`test/common/ai/prompt_template_drift_test.dart` compares them (property names,
+types, nesting, optional/nullable, enum values) and also checks the research
+template tools against `lib/common/ai/function_declarations.dart`. When you change
+the response models, update the `.prompt` file, make the test pass and upload the
+result as a new template ID version.
+
 **Enable them in Remote Config**
 
 | Parameter | Type | Default | Purpose |
