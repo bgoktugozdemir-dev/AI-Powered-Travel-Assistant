@@ -861,14 +861,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
-  sentry_firebase_remote_config:
-    dependency: "direct main"
-    description:
-      name: sentry_firebase_remote_config
-      sha256: af130004ba62723690709662d681e0feef226ad4e73fc45acbe5587825f49fca
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.30.1"
   sentry_flutter:
     dependency: "direct main"
     description:

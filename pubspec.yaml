@@ -76,7 +76,6 @@ dependencies:
   # threw "Stack Overflow". 2.4.4 is the first release that converts them.
   mixpanel_flutter: 2.4.4
   sentry_flutter: ^9.0.0
-  sentry_firebase_remote_config: ^9.0.0
 
 # Add dependency override to fix flutter_math_fork compatibility issue
 dependency_overrides:
