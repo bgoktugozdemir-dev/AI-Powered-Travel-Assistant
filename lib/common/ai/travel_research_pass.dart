@@ -1,5 +1,6 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/ai/resource_exhausted_retry.dart';
 import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
@@ -118,9 +119,13 @@ class TravelResearchPass implements TravelResearchPassRunner {
 
       final chat = model.startChat();
       return await _loop.run(
-        sendMessage: (message) => collectStreamedResponse(
-          chat.sendMessageStream(message),
-          onDone: timingBreadcrumb(_errorMonitoring, 'research'),
+        sendMessage: (message) => retryOnResourceExhausted(
+          () => collectStreamedResponse(
+            chat.sendMessageStream(message),
+            onDone: requestBreadcrumb(_errorMonitoring, 'research'),
+          ),
+          errorMonitoring: _errorMonitoring,
+          requestName: 'research',
         ),
         firstMessage: Content.text(userPrompt),
         // The exception thrown after this callback is reported below, so this

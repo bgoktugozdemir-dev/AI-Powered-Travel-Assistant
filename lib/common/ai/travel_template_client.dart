@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/ai/resource_exhausted_retry.dart';
 import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
@@ -38,8 +39,9 @@ abstract interface class TravelTemplateClient {
 /// [TravelTemplateClient] backed by `FirebaseAI.templateGenerativeModel()`.
 ///
 /// Requests are streamed and collected (see [collectStreamedResponse]) so a
-/// long generation is not cut off by Safari. Each request leaves its timing
-/// as a breadcrumb.
+/// long generation is not cut off by Safari, and retried while the backend
+/// is rate limited (see [retryOnResourceExhausted]). Each request leaves its
+/// stats as a breadcrumb.
 class FirebaseTravelTemplateClient implements TravelTemplateClient {
   /// Creates a client that talks to templates through [firebaseAI].
   FirebaseTravelTemplateClient({
@@ -65,10 +67,15 @@ class FirebaseTravelTemplateClient implements TravelTemplateClient {
     String templateId, {
     required Map<String, Object?> inputs,
   }) {
-    return collectStreamedResponse(
-      // ignore: experimental_member_use
-      _model.generateContentStream(templateId, inputs: inputs),
-      onDone: timingBreadcrumb(_errorMonitoring, 'template:$templateId'),
+    final requestName = 'template:$templateId';
+    return retryOnResourceExhausted(
+      () => collectStreamedResponse(
+        // ignore: experimental_member_use
+        _model.generateContentStream(templateId, inputs: inputs),
+        onDone: requestBreadcrumb(_errorMonitoring, requestName),
+      ),
+      errorMonitoring: _errorMonitoring,
+      requestName: requestName,
     );
   }
 
@@ -80,22 +87,32 @@ class FirebaseTravelTemplateClient implements TravelTemplateClient {
     final session = _model.startChat(templateId, inputs: inputs);
     return _FirebaseTravelTemplateChat(
       session,
-      onDone: timingBreadcrumb(_errorMonitoring, 'template-chat:$templateId'),
+      errorMonitoring: _errorMonitoring,
+      requestName: 'template-chat:$templateId',
     );
   }
 }
 
 class _FirebaseTravelTemplateChat implements TravelTemplateChat {
-  const _FirebaseTravelTemplateChat(this._session, {required this.onDone});
+  const _FirebaseTravelTemplateChat(
+    this._session, {
+    required this.errorMonitoring,
+    required this.requestName,
+  });
 
   final TemplateChatSession _session;
-  final void Function(StreamedResponseTiming timing) onDone;
+  final ErrorMonitoringFacade errorMonitoring;
+  final String requestName;
 
   @override
   Future<GenerateContentResponse> sendMessage(Content message) {
-    return collectStreamedResponse(
-      _session.sendMessageStream(message),
-      onDone: onDone,
+    return retryOnResourceExhausted(
+      () => collectStreamedResponse(
+        _session.sendMessageStream(message),
+        onDone: requestBreadcrumb(errorMonitoring, requestName),
+      ),
+      errorMonitoring: errorMonitoring,
+      requestName: requestName,
     );
   }
 }

@@ -261,7 +261,9 @@ class SentryErrorMonitoringClient implements ErrorMonitoringClient {
         message: message,
         category: category,
         data: data,
-        timestamp: DateTime.now(),
+        // Sentry reads the timestamp as UTC; a local time shows up shifted by
+        // the user's offset.
+        timestamp: DateTime.now().toUtc(),
       ),
     );
   }

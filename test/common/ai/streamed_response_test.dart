@@ -1,4 +1,7 @@
 import 'package:firebase_ai/firebase_ai.dart';
+// UsageMetadata has no public constructor; this parses it as the SDK does.
+// ignore: implementation_imports
+import 'package:firebase_ai/src/api.dart' show parseUsageMetadata;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_assistant/common/ai/streamed_response.dart';
 
@@ -78,7 +81,7 @@ void main() {
     });
 
     test('reports the timing of a completed request', () async {
-      final timings = <StreamedResponseTiming>[];
+      final timings = <StreamedResponseStats>[];
 
       await collectStreamedResponse(
         Stream.fromIterable([
@@ -95,8 +98,42 @@ void main() {
       expect(timing.longestSilenceMs, lessThanOrEqualTo(timing.totalMs));
     });
 
+    test('reports the token usage of the last chunk carrying it', () async {
+      final stats = <StreamedResponseStats>[];
+
+      await collectStreamedResponse(
+        Stream.fromIterable([
+          _chunk([const TextPart('a')]),
+          GenerateContentResponse(
+            [
+              Candidate(
+                Content.model([const TextPart('b')]),
+                null,
+                null,
+                FinishReason.stop,
+                null,
+              ),
+            ],
+            null,
+            usageMetadata: parseUsageMetadata({
+              'promptTokenCount': 10,
+              'candidatesTokenCount': 20,
+              'thoughtsTokenCount': 30,
+              'totalTokenCount': 60,
+            }),
+          ),
+        ]),
+        onDone: stats.add,
+      );
+
+      expect(stats.single.toJson(), containsPair('thoughtsTokens', 30));
+      expect(stats.single.promptTokens, 10);
+      expect(stats.single.outputTokens, 20);
+      expect(stats.single.totalTokens, 60);
+    });
+
     test('reports the timing of a failed request', () async {
-      final timings = <StreamedResponseTiming>[];
+      final timings = <StreamedResponseStats>[];
 
       await expectLater(
         collectStreamedResponse(
