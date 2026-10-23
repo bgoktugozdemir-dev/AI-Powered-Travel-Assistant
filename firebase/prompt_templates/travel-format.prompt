@@ -3,9 +3,15 @@
 # Template ID: travel-format (Remote Config: ai_format_template_id)
 # Single-turn template. Turns the findings of the research template into the
 # TravelDetails JSON the app parses (lib/common/models/response/travel_details.dart).
-model: gemini-3.8-flash
+# gemini-3.8-flash was slow and capacity-starved on the global location
+# (13-92 output tokens/s, single requests over 4 minutes), while
+# gemini-3.5-flash runs at ~150 tokens/s. gemini-3.5-flash-lite is faster
+# still but wrote plans with only one or two activities a day.
+model: gemini-3.5-flash
 config:
   candidateCount: 1
+  thinkingConfig:
+    thinkingLevel: low
 input:
   schema:
     travel_information:
