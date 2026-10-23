@@ -130,6 +130,13 @@ Future<MyApp> _initializeApp() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
+  if (kIsWeb) {
+    // firebase_ai sends the X-Firebase-AppId header, which Firebase AI Logic
+    // monitoring needs to attribute requests to the app, only when automatic
+    // data collection is enabled. On web this flag defaults to false and is
+    // only read by the Dart SDKs, so AI monitoring stayed empty without it.
+    await Firebase.app().setAutomaticDataCollectionEnabled(true);
+  }
 
   final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
     firebaseRemoteConfig: FirebaseRemoteConfig.instance,
