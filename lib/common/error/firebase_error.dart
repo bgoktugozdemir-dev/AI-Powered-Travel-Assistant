@@ -4,7 +4,12 @@ abstract interface class AlreadyReportedError {}
 
 abstract class FirebaseError extends Error implements AlreadyReportedError {}
 
+/// The AI backend rejected the request's App Check token.
 class FirebaseAppCheckError extends FirebaseError {}
+
+/// The AI backend rejected or failed the request for a reason other than
+/// App Check, e.g. it was unavailable.
+class FirebaseServerError extends FirebaseError {}
 
 /// The request to the AI backend was interrupted before a response arrived
 /// (for example the browser suspended a backgrounded tab, or the network

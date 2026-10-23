@@ -1,6 +1,7 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/ai/template_travel_passes.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
@@ -253,6 +254,27 @@ void main() {
         ),
       );
       expect(client.generatedInputs, hasLength(3));
+    });
+
+    test('does not retry a server response it could not read', () async {
+      final client = _FakeTemplateClient(
+        generateResponses: [
+          const UnreadableResponseException(FormatException('<html>')),
+          _textResponse(travelDetailsFixtureText()),
+        ],
+      );
+
+      await expectLater(
+        () => run(build(client)),
+        throwsA(
+          isA<TravelFormatPassException>().having(
+            (e) => e.cause,
+            'cause',
+            isA<UnreadableResponseException>(),
+          ),
+        ),
+      );
+      expect(client.generatedInputs, hasLength(1));
     });
 
     test('rethrows server errors without retrying', () async {

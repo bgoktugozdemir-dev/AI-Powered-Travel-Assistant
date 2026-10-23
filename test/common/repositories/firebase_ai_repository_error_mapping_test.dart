@@ -183,12 +183,25 @@ void main() {
       );
     });
 
-    test('still maps ServerException to FirebaseAppCheckError', () async {
-      final repository = _repositoryFailingWith(ServerException('rejected'));
+    test('maps an App Check rejection to FirebaseAppCheckError', () async {
+      final repository = _repositoryFailingWith(
+        ServerException('Firebase App Check token is invalid.'),
+      );
 
       await expectLater(
         () => repository.generateTravelPlan(_travelInformation()),
         throwsA(isA<FirebaseAppCheckError>()),
+      );
+    });
+
+    test('maps other server errors to FirebaseServerError', () async {
+      final repository = _repositoryFailingWith(
+        ServerException('The service is currently unavailable.'),
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(isA<FirebaseServerError>()),
       );
     });
 
@@ -233,7 +246,7 @@ void main() {
 
       await expectLater(
         () => repository.generateTravelPlan(_travelInformation()),
-        throwsA(isA<FirebaseAppCheckError>()),
+        throwsA(isA<FirebaseServerError>()),
       );
     });
 
@@ -297,6 +310,7 @@ void main() {
         travelFormErrorFor(FirebaseAppCheckError()),
         isA<ServerError>(),
       );
+      expect(travelFormErrorFor(FirebaseServerError()), isA<ServerError>());
     });
 
     test('falls back to the general error', () {

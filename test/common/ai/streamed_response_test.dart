@@ -60,10 +60,56 @@ void main() {
     });
 
     test('propagates a stream error', () async {
+      final error = Exception('Load failed');
+
       await expectLater(
-        collectStreamedResponse(Stream.error(Exception('Load failed'))),
+        collectStreamedResponse(Stream.error(error)),
+        throwsA(same(error)),
+      );
+    });
+
+    test('reports an unreadable response apart from bad output', () async {
+      await expectLater(
+        collectStreamedResponse(
+          Stream.error(const FormatException('<html>')),
+        ),
+        throwsA(isA<UnreadableResponseException>()),
+      );
+    });
+
+    test('reports the timing of a completed request', () async {
+      final timings = <StreamedResponseTiming>[];
+
+      await collectStreamedResponse(
+        Stream.fromIterable([
+          _chunk([const TextPart('a')]),
+          _chunk([const TextPart('b')]),
+        ]),
+        onDone: timings.add,
+      );
+
+      final timing = timings.single;
+      expect(timing.chunkCount, 2);
+      expect(timing.failed, isFalse);
+      expect(timing.firstChunkMs, isNotNull);
+      expect(timing.longestSilenceMs, lessThanOrEqualTo(timing.totalMs));
+    });
+
+    test('reports the timing of a failed request', () async {
+      final timings = <StreamedResponseTiming>[];
+
+      await expectLater(
+        collectStreamedResponse(
+          Stream.error(Exception('Load failed')),
+          onDone: timings.add,
+        ),
         throwsA(isA<Exception>()),
       );
+
+      final timing = timings.single;
+      expect(timing.chunkCount, 0);
+      expect(timing.failed, isTrue);
+      expect(timing.firstChunkMs, isNull);
     });
   });
 }

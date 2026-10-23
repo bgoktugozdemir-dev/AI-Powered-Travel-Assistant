@@ -1,5 +1,6 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/ai/streamed_response.dart';
+import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
 /// Chat session bound to a server prompt template.
 ///
@@ -37,13 +38,18 @@ abstract interface class TravelTemplateClient {
 /// [TravelTemplateClient] backed by `FirebaseAI.templateGenerativeModel()`.
 ///
 /// Requests are streamed and collected (see [collectStreamedResponse]) so a
-/// long generation is not cut off by Safari.
+/// long generation is not cut off by Safari. Each request leaves its timing
+/// as a breadcrumb.
 class FirebaseTravelTemplateClient implements TravelTemplateClient {
   /// Creates a client that talks to templates through [firebaseAI].
-  FirebaseTravelTemplateClient({required FirebaseAI firebaseAI})
-    : _firebaseAI = firebaseAI;
+  FirebaseTravelTemplateClient({
+    required FirebaseAI firebaseAI,
+    required ErrorMonitoringFacade errorMonitoring,
+  }) : _firebaseAI = firebaseAI,
+       _errorMonitoring = errorMonitoring;
 
   final FirebaseAI _firebaseAI;
+  final ErrorMonitoringFacade _errorMonitoring;
 
   // ignore: experimental_member_use
   late final TemplateGenerativeModel _model = _createModel();
@@ -59,10 +65,10 @@ class FirebaseTravelTemplateClient implements TravelTemplateClient {
     String templateId, {
     required Map<String, Object?> inputs,
   }) {
-    // ignore: experimental_member_use
     return collectStreamedResponse(
       // ignore: experimental_member_use
       _model.generateContentStream(templateId, inputs: inputs),
+      onDone: timingBreadcrumb(_errorMonitoring, 'template:$templateId'),
     );
   }
 
@@ -72,17 +78,24 @@ class FirebaseTravelTemplateClient implements TravelTemplateClient {
     required Map<String, Object?> inputs,
   }) {
     final session = _model.startChat(templateId, inputs: inputs);
-    return _FirebaseTravelTemplateChat(session);
+    return _FirebaseTravelTemplateChat(
+      session,
+      onDone: timingBreadcrumb(_errorMonitoring, 'template-chat:$templateId'),
+    );
   }
 }
 
 class _FirebaseTravelTemplateChat implements TravelTemplateChat {
-  const _FirebaseTravelTemplateChat(this._session);
+  const _FirebaseTravelTemplateChat(this._session, {required this.onDone});
 
   final TemplateChatSession _session;
+  final void Function(StreamedResponseTiming timing) onDone;
 
   @override
   Future<GenerateContentResponse> sendMessage(Content message) {
-    return collectStreamedResponse(_session.sendMessageStream(message));
+    return collectStreamedResponse(
+      _session.sendMessageStream(message),
+      onDone: onDone,
+    );
   }
 }

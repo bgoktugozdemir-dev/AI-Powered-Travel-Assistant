@@ -118,8 +118,10 @@ class TravelResearchPass implements TravelResearchPassRunner {
 
       final chat = model.startChat();
       return await _loop.run(
-        sendMessage: (message) =>
-            collectStreamedResponse(chat.sendMessageStream(message)),
+        sendMessage: (message) => collectStreamedResponse(
+          chat.sendMessageStream(message),
+          onDone: timingBreadcrumb(_errorMonitoring, 'research'),
+        ),
         firstMessage: Content.text(userPrompt),
         // The exception thrown after this callback is reported below, so this
         // only leaves a breadcrumb.

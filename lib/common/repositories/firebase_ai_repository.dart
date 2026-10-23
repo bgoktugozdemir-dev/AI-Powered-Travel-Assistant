@@ -15,6 +15,9 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/common/utils/helpers/app_background_watch.dart';
 
 abstract class _Constants {
+  /// Matches "App Check", "AppCheck" and "app-check" in a server message.
+  static final RegExp appCheckPattern = RegExp(r'app.?check');
+
   static const String defaultResearchPrompt =
       'You are a travel research assistant. Use the provided functions to '
       'collect up-to-date weather and currency findings, and your own knowledge '
@@ -144,8 +147,10 @@ class FirebaseAIRepository {
       if (e is FirebaseError) {
         rethrow;
       }
-      if (_isServerException(e)) {
-        throw FirebaseAppCheckError();
+      if (_rootCause(e) case ServerException(:final message)) {
+        throw _isAppCheckRejection(message)
+            ? FirebaseAppCheckError()
+            : FirebaseServerError();
       }
       if (isNetworkInterruption(_rootCause(e))) {
         throw FirebaseConnectionError(
@@ -165,8 +170,9 @@ class FirebaseAIRepository {
     _ => error,
   };
 
-  /// Whether [error] is (or wraps) a Firebase AI [ServerException], which is
-  /// how App Check / backend rejections surface from the SDK.
-  bool _isServerException(Object error) =>
-      _rootCause(error) is ServerException;
+  /// Whether a Firebase AI [ServerException] message is an App Check
+  /// rejection. The SDK reduces every HTTP error body to that message, and
+  /// other server failures (e.g. 503) arrive as a [ServerException] too.
+  bool _isAppCheckRejection(String message) =>
+      _Constants.appCheckPattern.hasMatch(message.toLowerCase());
 }

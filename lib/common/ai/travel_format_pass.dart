@@ -62,6 +62,7 @@ class TravelFormatPass implements TravelFormatPassRunner {
               'User Input:\n$userPrompt\n\nResearch Findings:\n$researchFindings',
             ),
           ]),
+          onDone: timingBreadcrumb(_errorMonitoring, 'format'),
         );
         final text = response.text ?? '{}';
         return ParserUtils.parseTravelDetailsOrThrow(text);
