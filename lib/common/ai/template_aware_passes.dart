@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:travel_assistant/common/ai/ai_pass_run.dart';
 import 'package:travel_assistant/common/ai/template_errors.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
     show TravelFormatPassRunner;
@@ -65,6 +66,21 @@ Future<T> _runWithTemplateFallback<T>({
   }
 }
 
+/// Records which path [run] takes and leaves it as a breadcrumb, so a failure
+/// the pass reports later shows the template or model it ran with.
+void _recordRun(
+  AiPassRun run,
+  AiRunRecorder? runRecorder,
+  ErrorMonitoringFacade errorMonitoring,
+) {
+  runRecorder?.record(run);
+  errorMonitoring.addBreadcrumb(
+    'AI pass started.',
+    category: _Constants.breadcrumbCategory,
+    data: {'pass': run.pass, 'run': run.label},
+  );
+}
+
 /// Research pass that prefers a server prompt template over the client-built
 /// prompt.
 ///
@@ -78,15 +94,18 @@ class TemplateAwareResearchPass implements TravelResearchPassRunner {
     required TravelResearchPassRunner fallbackPass,
     required FirebaseRemoteConfigRepository remoteConfig,
     required ErrorMonitoringFacade errorMonitoring,
+    AiRunRecorder? runRecorder,
   }) : _templatePass = templatePass,
        _fallbackPass = fallbackPass,
        _remoteConfig = remoteConfig,
-       _errorMonitoring = errorMonitoring;
+       _errorMonitoring = errorMonitoring,
+       _runRecorder = runRecorder;
 
   final TravelResearchPassRunner _templatePass;
   final TravelResearchPassRunner _fallbackPass;
   final FirebaseRemoteConfigRepository _remoteConfig;
   final ErrorMonitoringFacade _errorMonitoring;
+  final AiRunRecorder? _runRecorder;
 
   @override
   Future<String> generateResearchFindings({
@@ -94,15 +113,33 @@ class TemplateAwareResearchPass implements TravelResearchPassRunner {
     required String systemPrompt,
   }) {
     final templateId = _remoteConfig.aiResearchTemplateId;
-    Future<String> runFallback() => _fallbackPass.generateResearchFindings(
-      userPrompt: userPrompt,
-      systemPrompt: systemPrompt,
-    );
+    Future<String> runFallback() {
+      _recordRun(
+        AiPassRun.client(
+          pass: _Constants.researchPassName,
+          model: _remoteConfig.aiModel,
+        ),
+        _runRecorder,
+        _errorMonitoring,
+      );
+      return _fallbackPass.generateResearchFindings(
+        userPrompt: userPrompt,
+        systemPrompt: systemPrompt,
+      );
+    }
 
     if (!_remoteConfig.aiUsePromptTemplates || templateId.isEmpty) {
       return runFallback();
     }
 
+    _recordRun(
+      AiPassRun.template(
+        pass: _Constants.researchPassName,
+        templateId: templateId,
+      ),
+      _runRecorder,
+      _errorMonitoring,
+    );
     return _runWithTemplateFallback(
       passName: _Constants.researchPassName,
       templateId: templateId,
@@ -124,15 +161,18 @@ class TemplateAwareFormatPass implements TravelFormatPassRunner {
     required TravelFormatPassRunner fallbackPass,
     required FirebaseRemoteConfigRepository remoteConfig,
     required ErrorMonitoringFacade errorMonitoring,
+    AiRunRecorder? runRecorder,
   }) : _templatePass = templatePass,
        _fallbackPass = fallbackPass,
        _remoteConfig = remoteConfig,
-       _errorMonitoring = errorMonitoring;
+       _errorMonitoring = errorMonitoring,
+       _runRecorder = runRecorder;
 
   final TravelFormatPassRunner _templatePass;
   final TravelFormatPassRunner _fallbackPass;
   final FirebaseRemoteConfigRepository _remoteConfig;
   final ErrorMonitoringFacade _errorMonitoring;
+  final AiRunRecorder? _runRecorder;
 
   @override
   Future<TravelDetails> formatResearchFindings({
@@ -141,16 +181,31 @@ class TemplateAwareFormatPass implements TravelFormatPassRunner {
     required String systemPrompt,
   }) {
     final templateId = _remoteConfig.aiFormatTemplateId;
-    Future<TravelDetails> runFallback() => _fallbackPass.formatResearchFindings(
-      userPrompt: userPrompt,
-      researchFindings: researchFindings,
-      systemPrompt: systemPrompt,
-    );
+    Future<TravelDetails> runFallback() {
+      _recordRun(
+        AiPassRun.client(
+          pass: _Constants.formatPassName,
+          model: _remoteConfig.aiModel,
+        ),
+        _runRecorder,
+        _errorMonitoring,
+      );
+      return _fallbackPass.formatResearchFindings(
+        userPrompt: userPrompt,
+        researchFindings: researchFindings,
+        systemPrompt: systemPrompt,
+      );
+    }
 
     if (!_remoteConfig.aiUsePromptTemplates || templateId.isEmpty) {
       return runFallback();
     }
 
+    _recordRun(
+      AiPassRun.template(pass: _Constants.formatPassName, templateId: templateId),
+      _runRecorder,
+      _errorMonitoring,
+    );
     return _runWithTemplateFallback(
       passName: _Constants.formatPassName,
       templateId: templateId,

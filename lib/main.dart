@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:travel_assistant/common/ai/ai_pass_run.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
 import 'package:travel_assistant/common/ai/template_aware_passes.dart';
 import 'package:travel_assistant/common/ai/template_travel_passes.dart';
@@ -446,6 +447,7 @@ class MyApp extends StatelessWidget {
               firebaseAI: agentPlatform,
               errorMonitoring: errorMonitoringFacade,
             );
+            final aiRunRecorder = AiRunRecorder();
             final travelResearchPass = TemplateAwareResearchPass(
               templatePass: TemplateTravelResearchPass(
                 templateClient: templateClient,
@@ -465,6 +467,7 @@ class MyApp extends StatelessWidget {
               ),
               remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
+              runRecorder: aiRunRecorder,
             );
             final travelFormatPass = TemplateAwareFormatPass(
               templatePass: TemplateTravelFormatPass(
@@ -479,14 +482,15 @@ class MyApp extends StatelessWidget {
               ),
               remoteConfig: firebaseRemoteConfigRepository,
               errorMonitoring: errorMonitoringFacade,
+              runRecorder: aiRunRecorder,
             );
             return FirebaseAIRepository(
-              modelName: firebaseAIService.model,
               firebaseRemoteConfigRepository: firebaseRemoteConfigRepository,
               travelResearchPass: travelResearchPass,
               travelFormatPass: travelFormatPass,
               analyticsFacade: analyticsFacade,
               errorMonitoringFacade: errorMonitoringFacade,
+              aiRunRecorder: aiRunRecorder,
             );
           },
         ),
