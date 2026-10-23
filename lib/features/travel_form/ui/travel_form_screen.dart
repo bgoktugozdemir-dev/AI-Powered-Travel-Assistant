@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_assistant/common/constants/app_assets.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/analytics/data/submit_travel_details_source.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
@@ -52,6 +51,8 @@ class _TravelFormScreenState extends State<TravelFormScreen>
 
   @override
   void dispose() {
+    // The overlay lives above this screen, so leaving it would keep it shown.
+    hideLoadingOverlay();
     _departureAirportController.dispose();
     _arrivalAirportController.dispose();
     _pageController.dispose();
@@ -93,9 +94,11 @@ class _TravelFormScreenState extends State<TravelFormScreen>
                   previous.formSubmissionStatus != current.formSubmissionStatus,
           listener: (context, state) {
             if (state.formSubmissionStatus == FormSubmissionStatus.submitting) {
+              // The default animation on purpose: the former globe animation
+              // grew CanvasKit's memory ~10 MB/s on the web until the renderer
+              // aborted after ~200 s, and plan generation can take that long.
               showLoadingOverlay(
                 context,
-                loadingAsset: AppAssets.flightSearchIndicatorLottie,
                 label: l10n.submittingForm,
               );
               return;

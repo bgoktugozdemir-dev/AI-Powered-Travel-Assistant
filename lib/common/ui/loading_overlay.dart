@@ -3,6 +3,10 @@ import 'package:lottie/lottie.dart';
 import 'package:travel_assistant/common/constants/app_assets.dart';
 import 'package:travel_assistant/common/utils/helpers/loading_overlay_helper.dart';
 
+abstract class _Constants {
+  static const double animationSize = 240;
+}
+
 class LoadingOverlay extends StatefulWidget {
   const LoadingOverlay({
     this.isDismissible = false,
@@ -42,8 +46,16 @@ class _LoadingOverlayState extends State<LoadingOverlay>
               spacing: 24,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Lottie.asset(
-                  widget.loadingAsset ?? AppAssets.loadingIndicatorLottie,
+                // Capped: without a size, Lottie takes the composition's own
+                // size (1000x1000 for the default one), which pushes the label
+                // off-screen on short viewports.
+                Flexible(
+                  child: Lottie.asset(
+                    widget.loadingAsset ?? AppAssets.loadingIndicatorLottie,
+                    width: _Constants.animationSize,
+                    height: _Constants.animationSize,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 if (widget.label != null)
                   Text(
