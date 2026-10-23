@@ -63,12 +63,19 @@ class PlatformOrBrowserError extends TravelFormError {
 /// The request to the AI backend was interrupted (offline, or the browser
 /// suspended the backgrounded tab), as opposed to the backend failing.
 class ConnectionInterruptedError extends TravelFormError {
-  const ConnectionInterruptedError();
+  const ConnectionInterruptedError({this.wentToBackground = false});
+
+  /// Whether the app was in the background when the request was interrupted.
+  /// Only then is the user told to keep the tab open.
+  final bool wentToBackground;
 }
 
 /// Maps an error thrown while submitting the form to what the user is told.
 TravelFormError travelFormErrorFor(Object error) => switch (error) {
-  FirebaseConnectionError() => const ConnectionInterruptedError(),
+  FirebaseConnectionError(:final wentToBackground) =>
+    ConnectionInterruptedError(
+      wentToBackground: wentToBackground,
+    ),
   FirebaseError() => const ServerError(),
   _ => const GeneralTravelFormError(),
 };

@@ -428,6 +428,7 @@ class MyApp extends StatelessWidget {
             // Config; the client-built passes stay as the fallback.
             final templateClient = FirebaseTravelTemplateClient(
               firebaseAI: agentPlatform,
+              errorMonitoring: errorMonitoringFacade,
             );
             final travelResearchPass = TemplateAwareResearchPass(
               templatePass: TemplateTravelResearchPass(

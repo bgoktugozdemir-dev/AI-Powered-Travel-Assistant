@@ -12,8 +12,12 @@ import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+import 'package:travel_assistant/common/utils/helpers/app_background_watch.dart';
 
 abstract class _Constants {
+  /// Matches "App Check", "AppCheck" and "app-check" in a server message.
+  static final RegExp appCheckPattern = RegExp(r'app.?check');
+
   static const String defaultResearchPrompt =
       'You are a travel research assistant. Use the provided functions to '
       'collect up-to-date weather and currency findings, and your own knowledge '
@@ -32,6 +36,7 @@ class FirebaseAIRepository {
     required this.travelFormatPass,
     required this.analyticsFacade,
     required this.errorMonitoringFacade,
+    this.startBackgroundWatch = LifecycleAppBackgroundWatch.start,
   });
 
   /// Model name used for analytics and diagnostics.
@@ -52,6 +57,11 @@ class FirebaseAIRepository {
   /// Error monitoring facade instance.
   final ErrorMonitoringFacade errorMonitoringFacade;
 
+  /// Watches whether the app leaves the foreground during a generation, which
+  /// tells an interrupted request caused by a suspended tab apart from other
+  /// connection failures.
+  final AppBackgroundWatchStarter startBackgroundWatch;
+
   /// Generates a travel plan with two-pass AI orchestration.
   Future<TravelDetails> generateTravelPlan(
     TravelInformation travelInformation,
@@ -59,6 +69,15 @@ class FirebaseAIRepository {
     final userPrompt = jsonEncode(travelInformation.toJson());
     analyticsFacade.logLLMPrompt(modelName, userPrompt);
     final stopwatch = Stopwatch()..start();
+    // Breadcrumbs are attached to the events reported afterwards, so a failure
+    // the passes report shows whether the app was backgrounded, and when.
+    final backgroundWatch = startBackgroundWatch(
+      onBackground: () => errorMonitoringFacade.addBreadcrumb(
+        'App went to the background while generating a travel plan.',
+        category: 'Firebase AI',
+        data: {'elapsedMs': stopwatch.elapsedMilliseconds},
+      ),
+    );
 
     try {
       final researchPrompt =
@@ -108,6 +127,7 @@ class FirebaseAIRepository {
         'prompt': userPrompt,
         'model': modelName,
         'durationMs': stopwatch.elapsedMilliseconds,
+        'wentToBackground': backgroundWatch.wentToBackground,
       };
       if (e is AlreadyReportedError) {
         // A pass already reported the failure. Keep what only this layer
@@ -127,13 +147,19 @@ class FirebaseAIRepository {
       if (e is FirebaseError) {
         rethrow;
       }
-      if (_isServerException(e)) {
-        throw FirebaseAppCheckError();
+      if (_rootCause(e) case ServerException(:final message)) {
+        throw _isAppCheckRejection(message)
+            ? FirebaseAppCheckError()
+            : FirebaseServerError();
       }
       if (isNetworkInterruption(_rootCause(e))) {
-        throw FirebaseConnectionError();
+        throw FirebaseConnectionError(
+          wentToBackground: backgroundWatch.wentToBackground,
+        );
       }
       throw AiGenerationException(e);
+    } finally {
+      backgroundWatch.dispose();
     }
   }
 
@@ -144,8 +170,9 @@ class FirebaseAIRepository {
     _ => error,
   };
 
-  /// Whether [error] is (or wraps) a Firebase AI [ServerException], which is
-  /// how App Check / backend rejections surface from the SDK.
-  bool _isServerException(Object error) =>
-      _rootCause(error) is ServerException;
+  /// Whether a Firebase AI [ServerException] message is an App Check
+  /// rejection. The SDK reduces every HTTP error body to that message, and
+  /// other server failures (e.g. 503) arrive as a [ServerException] too.
+  bool _isAppCheckRejection(String message) =>
+      _Constants.appCheckPattern.hasMatch(message.toLowerCase());
 }

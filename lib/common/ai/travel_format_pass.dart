@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
 import 'package:travel_assistant/common/services/firebase_ai_service.dart';
@@ -48,17 +49,21 @@ class TravelFormatPass implements TravelFormatPassRunner {
     required String researchFindings,
     required String systemPrompt,
   }) async {
+    final stopwatch = Stopwatch()..start();
     var retryCount = 0;
     while (retryCount < _Constants.maxFormatRetries) {
       try {
         final model = _firebaseAIService.buildFormatModel(
           systemPrompt: systemPrompt,
         );
-        final response = await model.generateContent([
-          Content.text(
-            'User Input:\n$userPrompt\n\nResearch Findings:\n$researchFindings',
-          ),
-        ]);
+        final response = await collectStreamedResponse(
+          model.generateContentStream([
+            Content.text(
+              'User Input:\n$userPrompt\n\nResearch Findings:\n$researchFindings',
+            ),
+          ]),
+          onDone: timingBreadcrumb(_errorMonitoring, 'format'),
+        );
         final text = response.text ?? '{}';
         return ParserUtils.parseTravelDetailsOrThrow(text);
       } on FormatException catch (e) {
@@ -66,7 +71,10 @@ class TravelFormatPass implements TravelFormatPassRunner {
         if (retryCount >= _Constants.maxFormatRetries) {
           _errorMonitoring.reportException(
             e,
-            context: {'retryCount': retryCount},
+            context: {
+              'retryCount': retryCount,
+              'durationMs': stopwatch.elapsedMilliseconds,
+            },
           );
           throw TravelFormatPassException(e);
         }
@@ -74,7 +82,7 @@ class TravelFormatPass implements TravelFormatPassRunner {
         _errorMonitoring.reportError(
           'TravelFormatPass.formatResearchFindings failed.',
           stackTrace: st,
-          context: {'error': e},
+          context: {'error': e, 'durationMs': stopwatch.elapsedMilliseconds},
         );
         throw TravelFormatPassException(e);
       }

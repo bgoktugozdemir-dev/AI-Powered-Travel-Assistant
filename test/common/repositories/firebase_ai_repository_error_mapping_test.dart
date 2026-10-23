@@ -17,6 +17,8 @@ import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 import 'package:travel_assistant/features/travel_form/error/travel_form_error.dart';
 
+import '../../support/fake_app_background_watch.dart';
+
 class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
   @override
   String get aiResearchSystemPrompt => '';
@@ -98,6 +100,7 @@ TravelInformation _travelInformation() => TravelInformation(
 FirebaseAIRepository _repositoryFailingWith(
   Object error, {
   _RecordingClient? monitoring,
+  bool wentToBackground = false,
 }) => FirebaseAIRepository(
   modelName: 'gemini-test',
   firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
@@ -105,6 +108,9 @@ FirebaseAIRepository _repositoryFailingWith(
   travelFormatPass: _UnusedFormatPass(),
   analyticsFacade: const AnalyticsFacade([]),
   errorMonitoringFacade: ErrorMonitoringFacade([?monitoring]),
+  startBackgroundWatch: fakeBackgroundWatch(
+    wentToBackground: wentToBackground,
+  ),
 );
 
 void main() {
@@ -115,6 +121,42 @@ void main() {
       await expectLater(
         () => repository.generateTravelPlan(_travelInformation()),
         throwsA(isA<FirebaseConnectionError>()),
+      );
+    });
+
+    test(
+      'does not blame the background when the app stayed in front',
+      () async {
+        final repository = _repositoryFailingWith(_FakeClientException());
+
+        await expectLater(
+          () => repository.generateTravelPlan(_travelInformation()),
+          throwsA(
+            isA<FirebaseConnectionError>().having(
+              (e) => e.wentToBackground,
+              'wentToBackground',
+              isFalse,
+            ),
+          ),
+        );
+      },
+    );
+
+    test('marks an interrupted request made while backgrounded', () async {
+      final repository = _repositoryFailingWith(
+        _FakeClientException(),
+        wentToBackground: true,
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(
+          isA<FirebaseConnectionError>().having(
+            (e) => e.wentToBackground,
+            'wentToBackground',
+            isTrue,
+          ),
+        ),
       );
     });
 
@@ -141,12 +183,25 @@ void main() {
       );
     });
 
-    test('still maps ServerException to FirebaseAppCheckError', () async {
-      final repository = _repositoryFailingWith(ServerException('rejected'));
+    test('maps an App Check rejection to FirebaseAppCheckError', () async {
+      final repository = _repositoryFailingWith(
+        ServerException('Firebase App Check token is invalid.'),
+      );
 
       await expectLater(
         () => repository.generateTravelPlan(_travelInformation()),
         throwsA(isA<FirebaseAppCheckError>()),
+      );
+    });
+
+    test('maps other server errors to FirebaseServerError', () async {
+      final repository = _repositoryFailingWith(
+        ServerException('The service is currently unavailable.'),
+      );
+
+      await expectLater(
+        () => repository.generateTravelPlan(_travelInformation()),
+        throwsA(isA<FirebaseServerError>()),
       );
     });
 
@@ -191,7 +246,7 @@ void main() {
 
       await expectLater(
         () => repository.generateTravelPlan(_travelInformation()),
-        throwsA(isA<FirebaseAppCheckError>()),
+        throwsA(isA<FirebaseServerError>()),
       );
     });
 
@@ -231,11 +286,31 @@ void main() {
       );
     });
 
+    test('tells the user to keep the tab open only when backgrounded', () {
+      expect(
+        travelFormErrorFor(FirebaseConnectionError(wentToBackground: true)),
+        isA<ConnectionInterruptedError>().having(
+          (e) => e.wentToBackground,
+          'wentToBackground',
+          isTrue,
+        ),
+      );
+      expect(
+        travelFormErrorFor(FirebaseConnectionError()),
+        isA<ConnectionInterruptedError>().having(
+          (e) => e.wentToBackground,
+          'wentToBackground',
+          isFalse,
+        ),
+      );
+    });
+
     test('keeps the server error for other firebase errors', () {
       expect(
         travelFormErrorFor(FirebaseAppCheckError()),
         isA<ServerError>(),
       );
+      expect(travelFormErrorFor(FirebaseServerError()), isA<ServerError>());
     });
 
     test('falls back to the general error', () {

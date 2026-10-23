@@ -890,11 +890,17 @@ abstract class AppLocalizations {
   /// **'A browser or platform error occurred. This may be caused by a browser extension or unsupported environment. Please try disabling extensions or use another browser.'**
   String get errorPlatformOrBrowser;
 
-  /// Error message when the request to the AI backend was interrupted, e.g. because the browser tab was backgrounded or the network dropped.
+  /// Error message when the request to the AI backend was interrupted, shown only when the app went to the background (browser tab hidden) while the request was in flight.
   ///
   /// In en, this message translates to:
   /// **'The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.'**
   String get errorConnectionInterrupted;
+
+  /// Error message when the request to the AI backend failed to complete while the app stayed in the foreground, e.g. the network dropped or the browser cut the request off.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection was lost while preparing your travel plan. Please check your internet connection and try again.'**
+  String get errorConnectionLost;
 
   /// Title of the screen shown when the app fails to start.
   ///
