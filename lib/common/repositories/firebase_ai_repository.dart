@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart' show ServerException;
+import 'package:travel_assistant/common/ai/ai_pass_run.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart'
     show TravelFormatPassException, TravelFormatPassRunner;
 import 'package:travel_assistant/common/ai/travel_research_pass.dart'
@@ -30,17 +31,14 @@ abstract class _Constants {
 class FirebaseAIRepository {
   /// Creates a [FirebaseAIRepository].
   const FirebaseAIRepository({
-    required this.modelName,
     required this.firebaseRemoteConfigRepository,
     required this.travelResearchPass,
     required this.travelFormatPass,
     required this.analyticsFacade,
     required this.errorMonitoringFacade,
     this.startBackgroundWatch = LifecycleAppBackgroundWatch.start,
+    this.aiRunRecorder,
   });
-
-  /// Model name used for analytics and diagnostics.
-  final String modelName;
 
   /// Remote config repository.
   final FirebaseRemoteConfigRepository firebaseRemoteConfigRepository;
@@ -62,12 +60,19 @@ class FirebaseAIRepository {
   /// connection failures.
   final AppBackgroundWatchStarter startBackgroundWatch;
 
+  /// Shared with the passes, which record the prompt path, template ID or
+  /// model each one ran with. Reported to analytics and error monitoring.
+  final AiRunRecorder? aiRunRecorder;
+
   /// Generates a travel plan with two-pass AI orchestration.
   Future<TravelDetails> generateTravelPlan(
     TravelInformation travelInformation,
   ) async {
     final userPrompt = jsonEncode(travelInformation.toJson());
-    analyticsFacade.logLLMPrompt(modelName, userPrompt);
+    aiRunRecorder?.reset();
+    // Which path a pass takes is only known once it runs (a template can
+    // fall back), so the prompt is logged with the configured paths.
+    analyticsFacade.logLLMPrompt(_configuredRuns(), userPrompt);
     final stopwatch = Stopwatch()..start();
     // Breadcrumbs are attached to the events reported afterwards, so a failure
     // the passes report shows whether the app was backgrounded, and when.
@@ -110,12 +115,12 @@ class FirebaseAIRepository {
           'prompt': userPrompt,
           'researchPrompt': researchPrompt,
           'formatPrompt': formatPrompt,
-          'model': modelName,
+          'aiRuns': _actualRuns(),
           'durationMs': stopwatch.elapsedMilliseconds,
         },
       );
       analyticsFacade.logLLMResponse(
-        modelName,
+        _actualRuns(),
         userPrompt,
         travelDetails.toString(),
         stopwatch.elapsedMilliseconds,
@@ -125,7 +130,7 @@ class FirebaseAIRepository {
       stopwatch.stop();
       final failureData = {
         'prompt': userPrompt,
-        'model': modelName,
+        'aiRuns': _actualRuns(),
         'durationMs': stopwatch.elapsedMilliseconds,
         'wentToBackground': backgroundWatch.wentToBackground,
       };
@@ -161,6 +166,31 @@ class FirebaseAIRepository {
     } finally {
       backgroundWatch.dispose();
     }
+  }
+
+  /// The paths the passes ran with, e.g.
+  /// `research=template:travel-research, format=template:travel-format`.
+  /// Falls back to the configured paths when the passes recorded none.
+  String _actualRuns() {
+    final runs = aiRunRecorder?.describe() ?? '';
+    return runs.isNotEmpty ? runs : _configuredRuns();
+  }
+
+  /// The paths Remote Config selects for the passes. A template pass still
+  /// falls back to the client-built prompt when its template is unavailable.
+  String _configuredRuns() {
+    final config = firebaseRemoteConfigRepository;
+    String run(String pass, String templateId) {
+      final aiRun = config.aiUsePromptTemplates && templateId.isNotEmpty
+          ? AiPassRun.template(pass: pass, templateId: templateId)
+          : AiPassRun.client(pass: pass, model: config.aiModel);
+      return '$pass=${aiRun.label}';
+    }
+
+    return [
+      run('research', config.aiResearchTemplateId),
+      run('format', config.aiFormatTemplateId),
+    ].join(', ');
   }
 
   /// The error a pass wrapped, or [error] itself.

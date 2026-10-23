@@ -1,6 +1,7 @@
 import 'package:firebase_ai/firebase_ai.dart' show ServerException;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:travel_assistant/common/ai/ai_pass_run.dart';
 import 'package:travel_assistant/common/ai/travel_format_pass.dart';
 import 'package:travel_assistant/common/ai/travel_research_pass.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
@@ -11,6 +12,7 @@ import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/models/travel_purpose.dart';
 import 'package:travel_assistant/common/repositories/firebase_ai_repository.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
+import 'package:travel_assistant/common/utils/analytics/analytics_client.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
@@ -24,7 +26,56 @@ class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
   String get aiFormatSystemPrompt => '';
 
   @override
+  bool get aiUsePromptTemplates => true;
+
+  @override
+  String get aiResearchTemplateId => 'research-template';
+
+  @override
+  String get aiFormatTemplateId => '';
+
+  @override
+  String get aiModel => 'gemini-test';
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => null;
+}
+
+/// Records the `model` argument of the LLM analytics events.
+class _RecordingAnalyticsClient implements AnalyticsClient {
+  final List<String> promptModels = [];
+  final List<String> responseModels = [];
+
+  @override
+  void logLLMPrompt(String model, String prompt) => promptModels.add(model);
+
+  @override
+  void logLLMResponse(
+    String model,
+    String prompt,
+    String response,
+    int durationMs,
+  ) => responseModels.add(model);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null;
+}
+
+/// Research pass that records a run like `TemplateAwareResearchPass` does.
+class _RecordingResearchPass implements TravelResearchPassRunner {
+  _RecordingResearchPass(this.recorder, this.run);
+
+  final AiRunRecorder recorder;
+  final AiPassRun run;
+
+  @override
+  Future<String> generateResearchFindings({
+    required String userPrompt,
+    required String systemPrompt,
+  }) async {
+    recorder.record(run);
+    return 'findings';
+  }
 }
 
 class _FakeResearchPass implements TravelResearchPassRunner {
@@ -213,7 +264,6 @@ void main() {
   test('orchestrates research then format pass', () async {
     final formatPass = _FakeFormatPass(_sampleTravelDetails());
     final repository = FirebaseAIRepository(
-      modelName: 'gemini-test',
       firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
       travelResearchPass: _FakeResearchPass(),
       travelFormatPass: formatPass,
@@ -230,10 +280,38 @@ void main() {
     expect(formatPass.callCount, 1);
   });
 
+  test('reports configured paths for the prompt, recorded ones for the '
+      'response', () async {
+    final analytics = _RecordingAnalyticsClient();
+    final recorder = AiRunRecorder()
+      ..record(const AiPassRun.client(pass: 'stale', model: 'old-model'));
+    final repository = FirebaseAIRepository(
+      firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
+      travelResearchPass: _RecordingResearchPass(
+        recorder,
+        const AiPassRun.client(pass: 'research', model: 'fallback-model'),
+      ),
+      travelFormatPass: _FakeFormatPass(_sampleTravelDetails()),
+      analyticsFacade: AnalyticsFacade([analytics]),
+      errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      startBackgroundWatch: fakeBackgroundWatch(),
+      aiRunRecorder: recorder,
+    );
+
+    await repository.generateTravelPlan(_sampleTravelInformation());
+    await Future<void>.delayed(Duration.zero);
+
+    expect(analytics.promptModels, [
+      'research=template:research-template, format=client:gemini-test',
+    ]);
+    // The previous generation's runs are dropped; the research pass fell
+    // back, and the fake format pass recorded nothing.
+    expect(analytics.responseModels, ['research=client:fallback-model']);
+  });
+
   test('wraps non-firebase errors from research pass', () async {
     final formatPass = _FakeFormatPass(_sampleTravelDetails());
     final repository = FirebaseAIRepository(
-      modelName: 'gemini-test',
       firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
       travelResearchPass: _FakeResearchPass(
         errorToThrow: const TravelResearchPassException('research failure'),
@@ -254,7 +332,6 @@ void main() {
   test('rethrows firebase errors without wrapping', () async {
     final formatPass = _FakeFormatPass(_sampleTravelDetails());
     final repository = FirebaseAIRepository(
-      modelName: 'gemini-test',
       firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
       travelResearchPass: _FakeResearchPass(
         errorToThrow: FirebaseAppCheckError(),
@@ -277,7 +354,6 @@ void main() {
     () async {
       final formatPass = _FakeFormatPass(_sampleTravelDetails());
       final repository = FirebaseAIRepository(
-        modelName: 'gemini-test',
         firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
         travelResearchPass: _FakeResearchPass(
           errorToThrow: TravelResearchPassException(

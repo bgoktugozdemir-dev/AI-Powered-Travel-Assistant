@@ -27,6 +27,18 @@ class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
   String get aiFormatSystemPrompt => '';
 
   @override
+  bool get aiUsePromptTemplates => true;
+
+  @override
+  String get aiResearchTemplateId => 'research-template';
+
+  @override
+  String get aiFormatTemplateId => '';
+
+  @override
+  String get aiModel => 'gemini-test';
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => null;
 }
 
@@ -102,7 +114,6 @@ FirebaseAIRepository _repositoryFailingWith(
   _RecordingClient? monitoring,
   bool wentToBackground = false,
 }) => FirebaseAIRepository(
-  modelName: 'gemini-test',
   firebaseRemoteConfigRepository: _FakeRemoteConfigRepository(),
   travelResearchPass: _FailingResearchPass(error),
   travelFormatPass: _UnusedFormatPass(),
