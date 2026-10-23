@@ -56,6 +56,7 @@ class TemplateTravelResearchPass implements TravelResearchPassRunner {
     required String userPrompt,
     required String systemPrompt,
   }) async {
+    final stopwatch = Stopwatch()..start();
     try {
       final chat = _templateClient.startChat(
         _templateId(),
@@ -77,7 +78,7 @@ class TemplateTravelResearchPass implements TravelResearchPassRunner {
         _errorMonitoring.reportError(
           'TemplateTravelResearchPass.generateResearchFindings failed.',
           stackTrace: st,
-          context: {'error': e},
+          context: {'error': e, 'durationMs': stopwatch.elapsedMilliseconds},
         );
       }
       if (e is TravelResearchPassException) {
@@ -117,6 +118,7 @@ class TemplateTravelFormatPass implements TravelFormatPassRunner {
     required String researchFindings,
     required String systemPrompt,
   }) async {
+    final stopwatch = Stopwatch()..start();
     var retryCount = 0;
     while (retryCount < _Constants.maxFormatRetries) {
       try {
@@ -134,7 +136,10 @@ class TemplateTravelFormatPass implements TravelFormatPassRunner {
         if (retryCount >= _Constants.maxFormatRetries) {
           _errorMonitoring.reportException(
             e,
-            context: {'retryCount': retryCount},
+            context: {
+              'retryCount': retryCount,
+              'durationMs': stopwatch.elapsedMilliseconds,
+            },
           );
           throw TravelFormatPassException(e);
         }
@@ -147,7 +152,7 @@ class TemplateTravelFormatPass implements TravelFormatPassRunner {
         _errorMonitoring.reportError(
           'TemplateTravelFormatPass.formatResearchFindings failed.',
           stackTrace: st,
-          context: {'error': e},
+          context: {'error': e, 'durationMs': stopwatch.elapsedMilliseconds},
         );
         throw TravelFormatPassException(e);
       }

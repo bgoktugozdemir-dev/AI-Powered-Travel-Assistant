@@ -8,8 +8,14 @@ class FirebaseAppCheckError extends FirebaseError {}
 
 /// The request to the AI backend was interrupted before a response arrived
 /// (for example the browser suspended a backgrounded tab, or the network
-/// dropped). Retrying while the app stays in the foreground usually works.
-class FirebaseConnectionError extends FirebaseError {}
+/// dropped).
+class FirebaseConnectionError extends FirebaseError {
+  FirebaseConnectionError({this.wentToBackground = false});
+
+  /// Whether the app left the foreground while the request was in flight, so
+  /// the browser suspending the tab is the likely cause.
+  final bool wentToBackground;
+}
 
 /// The AI pipeline failed for a reason that has no dedicated error type.
 ///

@@ -650,7 +650,11 @@
   },
   "errorConnectionInterrupted": "The connection was interrupted while preparing your travel plan. This can happen when the browser tab goes to the background. Please keep this tab open and try again.",
   "@errorConnectionInterrupted": {
-    "description": "Error message when the request to the AI backend was interrupted, e.g. because the browser tab was backgrounded or the network dropped."
+    "description": "Error message when the request to the AI backend was interrupted, shown only when the app went to the background (browser tab hidden) while the request was in flight."
+  },
+  "errorConnectionLost": "The connection was lost while preparing your travel plan. Please check your internet connection and try again.",
+  "@errorConnectionLost": {
+    "description": "Error message when the request to the AI backend failed to complete while the app stayed in the foreground, e.g. the network dropped or the browser cut the request off."
   },
   "startupErrorTitle": "We couldn't start Travel Assistant",
   "@startupErrorTitle": {

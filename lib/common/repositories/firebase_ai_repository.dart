@@ -12,6 +12,7 @@ import 'package:travel_assistant/common/models/travel_information.dart';
 import 'package:travel_assistant/common/repositories/firebase_remote_config_repository.dart';
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
+import 'package:travel_assistant/common/utils/helpers/app_background_watch.dart';
 
 abstract class _Constants {
   static const String defaultResearchPrompt =
@@ -32,6 +33,7 @@ class FirebaseAIRepository {
     required this.travelFormatPass,
     required this.analyticsFacade,
     required this.errorMonitoringFacade,
+    this.startBackgroundWatch = LifecycleAppBackgroundWatch.start,
   });
 
   /// Model name used for analytics and diagnostics.
@@ -52,6 +54,11 @@ class FirebaseAIRepository {
   /// Error monitoring facade instance.
   final ErrorMonitoringFacade errorMonitoringFacade;
 
+  /// Watches whether the app leaves the foreground during a generation, which
+  /// tells an interrupted request caused by a suspended tab apart from other
+  /// connection failures.
+  final AppBackgroundWatchStarter startBackgroundWatch;
+
   /// Generates a travel plan with two-pass AI orchestration.
   Future<TravelDetails> generateTravelPlan(
     TravelInformation travelInformation,
@@ -59,6 +66,15 @@ class FirebaseAIRepository {
     final userPrompt = jsonEncode(travelInformation.toJson());
     analyticsFacade.logLLMPrompt(modelName, userPrompt);
     final stopwatch = Stopwatch()..start();
+    // Breadcrumbs are attached to the events reported afterwards, so a failure
+    // the passes report shows whether the app was backgrounded, and when.
+    final backgroundWatch = startBackgroundWatch(
+      onBackground: () => errorMonitoringFacade.addBreadcrumb(
+        'App went to the background while generating a travel plan.',
+        category: 'Firebase AI',
+        data: {'elapsedMs': stopwatch.elapsedMilliseconds},
+      ),
+    );
 
     try {
       final researchPrompt =
@@ -108,6 +124,7 @@ class FirebaseAIRepository {
         'prompt': userPrompt,
         'model': modelName,
         'durationMs': stopwatch.elapsedMilliseconds,
+        'wentToBackground': backgroundWatch.wentToBackground,
       };
       if (e is AlreadyReportedError) {
         // A pass already reported the failure. Keep what only this layer
@@ -131,9 +148,13 @@ class FirebaseAIRepository {
         throw FirebaseAppCheckError();
       }
       if (isNetworkInterruption(_rootCause(e))) {
-        throw FirebaseConnectionError();
+        throw FirebaseConnectionError(
+          wentToBackground: backgroundWatch.wentToBackground,
+        );
       }
       throw AiGenerationException(e);
+    } finally {
+      backgroundWatch.dispose();
     }
   }
 

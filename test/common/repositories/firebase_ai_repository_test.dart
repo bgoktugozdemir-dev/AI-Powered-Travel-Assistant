@@ -14,6 +14,8 @@ import 'package:travel_assistant/common/repositories/firebase_remote_config_repo
 import 'package:travel_assistant/common/utils/analytics/analytics_facade.dart';
 import 'package:travel_assistant/common/utils/error_monitoring/error_monitoring_facade.dart';
 
+import '../../support/fake_app_background_watch.dart';
+
 class _FakeRemoteConfigRepository implements FirebaseRemoteConfigRepository {
   @override
   String get aiResearchSystemPrompt => '';
@@ -217,6 +219,7 @@ void main() {
       travelFormatPass: formatPass,
       analyticsFacade: const AnalyticsFacade([]),
       errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      startBackgroundWatch: fakeBackgroundWatch(),
     );
 
     final result = await repository.generateTravelPlan(
@@ -238,6 +241,7 @@ void main() {
       travelFormatPass: formatPass,
       analyticsFacade: const AnalyticsFacade([]),
       errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      startBackgroundWatch: fakeBackgroundWatch(),
     );
 
     await expectLater(
@@ -258,6 +262,7 @@ void main() {
       travelFormatPass: formatPass,
       analyticsFacade: const AnalyticsFacade([]),
       errorMonitoringFacade: const ErrorMonitoringFacade([]),
+      startBackgroundWatch: fakeBackgroundWatch(),
     );
 
     await expectLater(
@@ -283,6 +288,7 @@ void main() {
         travelFormatPass: formatPass,
         analyticsFacade: const AnalyticsFacade([]),
         errorMonitoringFacade: const ErrorMonitoringFacade([]),
+        startBackgroundWatch: fakeBackgroundWatch(),
       );
 
       await expectLater(

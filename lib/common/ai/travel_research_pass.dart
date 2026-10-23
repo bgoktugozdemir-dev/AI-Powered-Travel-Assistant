@@ -1,5 +1,6 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:travel_assistant/common/ai/function_call_dispatcher.dart';
+import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/repositories/currency_repository.dart';
 import 'package:travel_assistant/common/repositories/weather_repository.dart';
@@ -109,6 +110,7 @@ class TravelResearchPass implements TravelResearchPassRunner {
     required String userPrompt,
     required String systemPrompt,
   }) async {
+    final stopwatch = Stopwatch()..start();
     try {
       final model = _firebaseAIService.buildResearchModel(
         systemPrompt: systemPrompt,
@@ -116,7 +118,8 @@ class TravelResearchPass implements TravelResearchPassRunner {
 
       final chat = model.startChat();
       return await _loop.run(
-        sendMessage: chat.sendMessage,
+        sendMessage: (message) =>
+            collectStreamedResponse(chat.sendMessageStream(message)),
         firstMessage: Content.text(userPrompt),
         // The exception thrown after this callback is reported below, so this
         // only leaves a breadcrumb.
@@ -129,7 +132,7 @@ class TravelResearchPass implements TravelResearchPassRunner {
       _errorMonitoring.reportError(
         'TravelResearchPass.generateResearchFindings failed.',
         stackTrace: st,
-        context: {'error': e},
+        context: {'error': e, 'durationMs': stopwatch.elapsedMilliseconds},
       );
       if (e is TravelResearchPassException) {
         rethrow;
