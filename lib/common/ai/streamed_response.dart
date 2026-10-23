@@ -13,14 +13,19 @@ class UnreadableResponseException implements Exception {
   String toString() => 'UnreadableResponseException($cause)';
 }
 
-/// How one streamed request went, for diagnosing requests a browser cut off.
-class StreamedResponseTiming {
-  const StreamedResponseTiming({
+/// How one streamed request went: its timing, for diagnosing requests a
+/// browser cut off, and its token usage.
+class StreamedResponseStats {
+  const StreamedResponseStats({
     required this.totalMs,
     required this.firstChunkMs,
     required this.longestSilenceMs,
     required this.chunkCount,
     required this.failed,
+    this.promptTokens,
+    this.outputTokens,
+    this.thoughtsTokens,
+    this.totalTokens,
   });
 
   /// Time from sending the request until the stream ended or failed.
@@ -39,12 +44,25 @@ class StreamedResponseTiming {
   /// Whether the stream ended with an error.
   final bool failed;
 
+  /// Token usage from the last chunk that reported it, or null when none did
+  /// (e.g. the request failed).
+  final int? promptTokens;
+  final int? outputTokens;
+
+  /// Tokens the model spent thinking, which delay the first chunk.
+  final int? thoughtsTokens;
+  final int? totalTokens;
+
   Map<String, Object?> toJson() => {
     'totalMs': totalMs,
     'firstChunkMs': firstChunkMs,
     'longestSilenceMs': longestSilenceMs,
     'chunkCount': chunkCount,
     'failed': failed,
+    'promptTokens': promptTokens,
+    'outputTokens': outputTokens,
+    'thoughtsTokens': thoughtsTokens,
+    'totalTokens': totalTokens,
   };
 }
 
@@ -61,12 +79,12 @@ class StreamedResponseTiming {
 /// read the same as on a single response. The finish reason, safety ratings
 /// and usage come from the last chunk that carries them.
 ///
-/// [onDone] receives the request's timing once the stream ends, also when it
+/// [onDone] receives the request's stats once the stream ends, also when it
 /// fails. A [FormatException] from the stream is rethrown as an
 /// [UnreadableResponseException].
 Future<GenerateContentResponse> collectStreamedResponse(
   Stream<GenerateContentResponse> chunks, {
-  void Function(StreamedResponseTiming timing)? onDone,
+  void Function(StreamedResponseStats stats)? onDone,
 }) async {
   final stopwatch = Stopwatch()..start();
   int? firstChunkMs;
@@ -113,12 +131,16 @@ Future<GenerateContentResponse> collectStreamedResponse(
       longestSilenceMs = totalMs - lastChunkMs;
     }
     onDone?.call(
-      StreamedResponseTiming(
+      StreamedResponseStats(
         totalMs: totalMs,
         firstChunkMs: firstChunkMs,
         longestSilenceMs: longestSilenceMs,
         chunkCount: chunkCount,
         failed: failed,
+        promptTokens: usageMetadata?.promptTokenCount,
+        outputTokens: usageMetadata?.candidatesTokenCount,
+        thoughtsTokens: usageMetadata?.thoughtsTokenCount,
+        totalTokens: usageMetadata?.totalTokenCount,
       ),
     );
   }
@@ -147,14 +169,15 @@ Future<GenerateContentResponse> collectStreamedResponse(
   );
 }
 
-/// An `onDone` for [collectStreamedResponse] that leaves the timing of the
-/// [request] as a breadcrumb, so it is attached to a failure reported later.
-void Function(StreamedResponseTiming timing) timingBreadcrumb(
+/// An `onDone` for [collectStreamedResponse] that leaves the stats of the
+/// [request] as a breadcrumb, so they are attached to a failure reported
+/// later.
+void Function(StreamedResponseStats stats) requestBreadcrumb(
   ErrorMonitoringFacade errorMonitoring,
   String request,
 ) =>
-    (timing) => errorMonitoring.addBreadcrumb(
+    (stats) => errorMonitoring.addBreadcrumb(
       'Firebase AI request finished.',
       category: 'Firebase AI',
-      data: {'request': request, ...timing.toJson()},
+      data: {'request': request, ...stats.toJson()},
     );

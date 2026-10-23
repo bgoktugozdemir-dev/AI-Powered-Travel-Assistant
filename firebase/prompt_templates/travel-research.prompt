@@ -8,6 +8,10 @@
 model: gemini-3.8-flash
 config:
   candidateCount: 1
+  # Low thinking keeps the time to the first streamed chunk short: Safari can
+  # drop a request that receives nothing for a long time.
+  thinkingConfig:
+    thinkingLevel: low
 input:
   schema:
     travel_information:

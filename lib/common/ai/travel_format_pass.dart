@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:travel_assistant/common/ai/resource_exhausted_retry.dart';
 import 'package:travel_assistant/common/ai/streamed_response.dart';
 import 'package:travel_assistant/common/error/firebase_error.dart';
 import 'package:travel_assistant/common/models/response/travel_details.dart';
@@ -56,13 +57,17 @@ class TravelFormatPass implements TravelFormatPassRunner {
         final model = _firebaseAIService.buildFormatModel(
           systemPrompt: systemPrompt,
         );
-        final response = await collectStreamedResponse(
-          model.generateContentStream([
-            Content.text(
-              'User Input:\n$userPrompt\n\nResearch Findings:\n$researchFindings',
-            ),
-          ]),
-          onDone: timingBreadcrumb(_errorMonitoring, 'format'),
+        final response = await retryOnResourceExhausted(
+          () => collectStreamedResponse(
+            model.generateContentStream([
+              Content.text(
+                'User Input:\n$userPrompt\n\nResearch Findings:\n$researchFindings',
+              ),
+            ]),
+            onDone: requestBreadcrumb(_errorMonitoring, 'format'),
+          ),
+          errorMonitoring: _errorMonitoring,
+          requestName: 'format',
         );
         final text = response.text ?? '{}';
         return ParserUtils.parseTravelDetailsOrThrow(text);
