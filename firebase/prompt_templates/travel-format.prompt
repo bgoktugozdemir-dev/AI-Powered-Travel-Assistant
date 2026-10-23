@@ -3,10 +3,12 @@
 # Template ID: travel-format (Remote Config: ai_format_template_id)
 # Single-turn template. Turns the findings of the research template into the
 # TravelDetails JSON the app parses (lib/common/models/response/travel_details.dart).
-# gemini-3.8-flash was slow and capacity-starved on the global location
-# (13-92 output tokens/s, single requests over 4 minutes), while
-# gemini-3.5-flash runs at ~150 tokens/s. gemini-3.5-flash-lite is faster
-# still but wrote plans with only one or two activities a day.
+# Model choice (2026-10-24, direct Vertex AI calls, global location, one
+# ~1,700-token itinerary prompt): gemini-3.8-flash took 19-132 s (13-92
+# output tokens/s) and production plans took 6-8 minutes; gemini-3.5-flash
+# took 20-34 s (~150-160 tokens/s). gemini-3.5-flash-lite was faster still
+# but wrote plans with only one or two activities a day. The cause of the
+# 3.8 slowness was not established.
 model: gemini-3.5-flash
 config:
   candidateCount: 1
