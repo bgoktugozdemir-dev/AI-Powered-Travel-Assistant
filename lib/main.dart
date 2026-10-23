@@ -130,14 +130,6 @@ Future<MyApp> _initializeApp() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
-  if (kIsWeb) {
-    // firebase_ai sends the X-Firebase-AppId header, which Firebase AI Logic
-    // monitoring needs to attribute requests to the app, only when automatic
-    // data collection is enabled. On web this flag defaults to false and is
-    // only read by the Dart SDKs, so AI monitoring stayed empty without it.
-    await Firebase.app().setAutomaticDataCollectionEnabled(true);
-  }
-
   final firebaseRemoteConfigRepository = FirebaseRemoteConfigRepository(
     firebaseRemoteConfig: FirebaseRemoteConfig.instance,
   );
@@ -167,6 +159,23 @@ Future<MyApp> _initializeApp() async {
     analyticsClients: analyticsClients,
     errorMonitoringClients: errorMonitoringClients,
   );
+}
+
+/// The [FirebaseApp] handed to Firebase AI.
+///
+/// firebase_ai sends the X-Firebase-AppId header, which Firebase AI Logic
+/// monitoring needs to attribute requests to the app, only when the app's
+/// automatic data collection flag is on. On web that flag defaults to false,
+/// is only read by the Dart SDKs, and lives on the `FirebaseApp` object:
+/// every `Firebase.app()` call returns a new object with the flag off again.
+/// So it is enabled on the very object Firebase AI keeps.
+FirebaseApp _firebaseAIApp() {
+  final app = Firebase.app();
+  if (kIsWeb) {
+    // Completes synchronously on web: the setter only stores the flag.
+    unawaited(app.setAutomaticDataCollectionEnabled(true));
+  }
+  return app;
 }
 
 /// Activates Firebase App Check.
@@ -420,7 +429,7 @@ class MyApp extends StatelessWidget {
                 .read<FirebaseRemoteConfigRepository>();
             // App Check is attached automatically (activated in `main`).
             final agentPlatform = FirebaseAI.agentPlatform(
-              app: Firebase.app(),
+              app: _firebaseAIApp(),
               location: _Constants.firebaseAILocation,
             );
             final firebaseAIService = FirebaseAIService(
