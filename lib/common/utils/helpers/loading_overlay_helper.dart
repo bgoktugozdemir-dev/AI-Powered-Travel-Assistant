@@ -28,7 +28,9 @@ mixin LoadingOverlayHelper {
   }
 
   void hideLoadingOverlay() {
-    _overlayEntry?.remove();
+    _overlayEntry
+      ?..remove()
+      ..dispose();
     _overlayEntry = null;
   }
 }

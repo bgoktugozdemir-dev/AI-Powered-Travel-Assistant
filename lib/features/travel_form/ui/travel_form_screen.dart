@@ -51,6 +51,8 @@ class _TravelFormScreenState extends State<TravelFormScreen>
 
   @override
   void dispose() {
+    // The overlay lives above this screen, so leaving it would keep it shown.
+    hideLoadingOverlay();
     _departureAirportController.dispose();
     _arrivalAirportController.dispose();
     _pageController.dispose();
