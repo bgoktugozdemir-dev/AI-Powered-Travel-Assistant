@@ -438,9 +438,16 @@ output:
 ---
 
 {{role "system"}}
-Format given findings into TravelDetails JSON matching schema exactly.
+Turn the given findings into TravelDetails JSON matching schema exactly, and write the travel plan, places to visit and recommendations.
 
-The input has two parts: the trip details as JSON and the research findings as plain text. Use only information that is present in the research findings. Do not add facts of your own and do not change numbers.
+The input has two parts: the trip details as JSON and the research findings as plain text.
+
+For city (including its weather), currency, required_documents, flight_options and tax_information, use only information that is present in the research findings. Do not add facts of your own and do not change numbers.
+
+The research findings do not cover spots, travel_plan and recommendations; write these yourself:
+- spots: places that fit the travel purposes, each with a short description and any requirement such as tickets or dress code.
+- travel_plan: one entry for every date of the trip, each with timed events that have a name, time, location, description and any requirement. Fit the plan to the travel purposes and to the weather in the findings (indoor plans on rainy days), and keep the first and last day consistent with the flight times in the findings.
+- recommendations: short practical tips for this trip, for example SIM cards, insurance, payment habits and plug adapters.
 
 Rules:
 - Return a single JSON object and nothing else: no markdown fences, no explanations.
