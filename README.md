@@ -4,7 +4,7 @@
 ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange.svg)
 ![AI Powered](https://img.shields.io/badge/AI-Powered-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Version](https://img.shields.io/badge/Version-1.3.6-blue.svg)
+![Version](https://img.shields.io/badge/Version-1.3.7-blue.svg)
 
 > **AI-powered travel assistant that helps you plan your perfect trip with personalized recommendations, visa requirements, and travel insights.**
 
